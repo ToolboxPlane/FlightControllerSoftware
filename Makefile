@@ -48,6 +48,10 @@ all: $(PROJECT).bin $(PROJECT).hex size
 clean:
 	rm -f $(PROJECT).bin $(PROJECT).elf $(PROJECT).hex $(PROJECT).map $(PROJECT).lst $(OBJECTS) $(DEPS)
 
+# The installation path needs to get changed depending on the user!
+flash:
+	cp FlightController.bin /media/paul/MBED/
+
 
 .asm.o:
 	$(CC) $(CPU) -c -x assembler-with-cpp -o $@ $<
