@@ -22,15 +22,15 @@
     DigitalOut servoAileronLeft(AILERON_LEFT);
     DigitalOut servoVTailRight(VTAIL_RIGHT);
     DigitalOut servoVTailLeft(VTAIL_LEFT);
-    
+
     DigitalOut i2cSda(I2C_SDA);
     DigitalOut i2cScl(I2C_SCL);
-    
+
     DigitalOut ledRed(LED_RED);
     DigitalOut ledGreen(LED_GREEN);
     DigitalOut ledBlue(LED_BLUE);
-    
-    void testMain(){    
+
+    void testMain(){
         while(true){
             motor = !motor;
             servoAileronLeft = !servoAileronLeft;
@@ -39,11 +39,11 @@
             servoVTailRight = !servoVTailRight;
             i2cSda = !i2cSda;
             i2cScl = !i2cScl;
-            
+
             ledBlue = !ledBlue;
             ledRed = !ledRed;
             ledGreen = !ledGreen;
-            
+
             wait(1);
         }
     }
@@ -54,7 +54,7 @@
 
     void testMain(){
         receiver::init();
-        
+
         while(true){
             ledRed = receiver::get(0) / 1000.0;
             ledGreen = receiver::get(1) / 1000.0;
@@ -67,9 +67,9 @@
     PpmOut servoAileronLeft(AILERON_LEFT);
     PpmOut servoVTailRight(VTAIL_RIGHT);
     PpmOut servoVTailLeft(VTAIL_LEFT);
-    
+
     DigitalOut ledGreen(LED_GREEN);
-    
+
     void testMain(){
         motor.setValue(0);
         wait(10);

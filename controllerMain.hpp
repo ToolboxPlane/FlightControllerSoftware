@@ -1,5 +1,6 @@
 #include "mbed.h"
 #include "hal/PpmOut.hpp"
+#include "hal/bno055.hpp"
 
 #include "defines.hpp"
 #include "receiver.hpp"
@@ -15,6 +16,10 @@ PpmOut servoVTailRight(VTAIL_RIGHT);
 PpmOut servoVTailLeft(VTAIL_LEFT);
 
 Serial pc(USBTX, USBRX);
+
+I2C i2c(I2C_SDA, I2C_SCL);
+
+Bno055 imu(i2c, NDOF_FMC_OFF);
 
 void controllerMain()
 {
