@@ -1,6 +1,8 @@
 #include "mbed.h"
 #include "hal/PpmOut.hpp"
 #include "hal/bno055.hpp"
+#include "hal/mpl3115a2.hpp"
+#include "hal/srf02.hpp"
 
 #include "defines.hpp"
 #include "receiver.hpp"
@@ -20,6 +22,13 @@ Serial pc(USBTX, USBRX);
 I2C i2c(I2C_SDA, I2C_SCL);
 
 Bno055 imu(i2c, NDOF_FMC_OFF);
+//Mpl3115a2 baro(i2c);
+Srf02 us(i2c);
+
+
+#define PITCH_P 1
+#define ROLL_P 1
+
 
 void controllerMain()
 {
@@ -47,22 +56,79 @@ void controllerMain()
 
     ledRed = LED_OFF;
 
+    us.startMeasurement();
     while (true) {
-        if(receiver::get(5)){
-            ledBlue = LED_ON;
+        /*if(baro.isReady()){
+            float alt = baro.getAltitude();
+            printf("Height: %f\t%f\n", alt, alt/65536);
+        }*/
 
-            // @TODO Autonomous mode
+
+        if(imu.getStatus() == SENSOR_FUSION_ALGORITHM_RUNNING){
+            int16_t eulHeading, eulPitch, eulRoll;
+
+            eulHeading = imu.eulHeading();
+            eulPitch = imu.eulPitch();
+            eulRoll = imu.eulRoll();
+
+            printf("IMU: %d\t%d\t%d\t", eulHeading, eulPitch, eulRoll);
+        } else {
+            imu = Bno055(i2c, NDOF_FMC_OFF);
+        }
+
+
+        if(us.isReady()){
+            printf("Dist %d\n", us.readDistance());
+            us.startMeasurement();
+        }
+
+
+        /*if(receiver::get(6) > 800){
+            ledBlue = LED_ON;
+            ledRed = LED_ON;
+
+            motor.setValue(receiver::get(0));
+
+            servoAileronRight.setValue(500);
+            servoAileronLeft.setValue(500);
+            servoVTailRight.setValue(500);
+            servoVTailLeft.setValue(500);
+        } else if(receiver::get(6) > 300){
+            ledBlue = LED_ON;
+            ledRed = LED_OFF;
+
+            /*int16_t eulHeading, eulPitch, eulRoll;
+
+            eulHeading = imu.eulHeading();
+            eulPitch = imu.eulPitch();
+            eulRoll = imu.eulRoll();
+
+            printf("%d\t%d\t%d\n", eulHeading, eulPitch, eulRoll);
+
+            int16_t deltaRoll = eulRoll - 0;
+            int16_t deltaPitch = eulPitch - 0;
+
+            int16_t aileronVal = deltaRoll * ROLL_P + deltaPitch * PITCH_P;
+            int16_t vtailVal = deltaPitch * PITCH_P * 0.5;
+
+            motor.setValue(receiver::get(0));
+            servoAileronRight.setValue(500 - aileronVal);
+            servoAileronRight.setValue(500 - aileronVal);
+            servoVTailRight.setValue(500 - vtailVal);
+            servoVTailLeft.setValue(500 - vtailVal);*
         }else{
             ledBlue = LED_OFF;
+            ledRed = LED_OFF;
 
-            // @TODO Channel
             motor.setValue(receiver::get(0));
             servoAileronRight.setValue(receiver::get(1));
             servoAileronLeft.setValue(receiver::get(2));
-            servoVTailRight.setValue(receiver::get(3));
+            servoVTailRight.setValue(receiver::get(5));
             servoVTailLeft.setValue(receiver::get(4));
 
-            ledGreen = receiver::get(0) > 500;
-        }
+            ledGreen = receiver::get(0) < 500;
+        }*/
+
+        wait_ms(200);
     }
 }

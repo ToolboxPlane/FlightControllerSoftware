@@ -6,7 +6,7 @@
 #define VTAIL_LEFT D6 //PTC2
 
 // Controll ISR
-#define ISR_FREQ 50
+#define ISR_FREQ 1
 
 // SBus
 #define SBUS_RX PTC16
@@ -15,12 +15,6 @@
 // Navboard
 #define NAVBOARD_RX PTB18
 #define NAVBOARD_TX PTB19
-
-// MPU 9250
-#define MPU9250_CS PTE26
-#define MPU9250_MISO PTD3
-#define MPU9250_MOSI PTD2
-#define MPU9250_SCK PTD1
 
 // Leds
 #define LED_ON 0

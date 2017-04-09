@@ -1,22 +1,26 @@
 #include "bno055.hpp"
 
-Bno055::Bno055(I2C i2c, Bno055Mode mode,
+Bno055::Bno055(I2C &_i2c, Bno055Mode mode,
                 AccUnit accUnit,
                 AngularRate angularRate,
                 EulerAngles eulerAngles,
                 TemperatureUnit temperatureUnit,
                 OutputFormat outputFormat,
-                uint8_t addr) : i2c(i2c){
-    this->i2c = i2c;
+                uint8_t addr) : i2c(_i2c){
 
     this->addr = addr;
 
+    //i2c.frequency(400000);
+
     // Reset @CHECK necessary
-    //uint8_t cmd[2] = {0x3F, 0b1<<5};    //SYS_TRIGGER, RST_SYS
-    //i2c.write(addr, cmd, 2);
+    char cmd[2] = {0x3F, 0b1<<5};    //SYS_TRIGGER, RST_SYS
+    i2c.write(addr, cmd, 2);
+
+    wait(1);
+
+    i2c.stop();
 
     // Set units
-    char cmd[2];
     cmd[0] = 0x3B; //UNIT_SEL
     cmd[1] = accUnit << 0 | angularRate << 1 | eulerAngles << 2
             | temperatureUnit << 4 | outputFormat << 7;
@@ -27,7 +31,27 @@ Bno055::Bno055(I2C i2c, Bno055Mode mode,
     cmd[1] = mode;
     i2c.write(addr, cmd, 2);
 
-    wait_ms(10);
+    wait_ms(100);
+}
+
+uint8_t Bno055::getDeviceId(){
+    char cmd[] = {0x00}; // CHIP_ID
+    char res[1];
+
+    i2c.write(addr, cmd, 1);
+    i2c.read(addr, res, 1);
+
+    return res[0];
+}
+
+uint8_t Bno055::getStatus(){
+    char cmd[] = {0x39}; // SYS_STATUS
+    char res[1];
+
+    i2c.write(addr, cmd, 1);
+    i2c.read(addr, res, 1);
+
+    return res[0];
 }
 
 int16_t Bno055::getWord(uint8_t reg){
@@ -82,15 +106,35 @@ int16_t Bno055::gyrDataZ(void)
 //Ausrichtung in Euler-Winkeln
 int16_t Bno055::eulHeading(void)
 {
-	return (int16_t)(this->getWord(0x1A)/16);
+    int16_t angle = (int16_t)(this->getWord(0x1A)/16);
+    angle %= 360;
+
+    if(angle > 180)
+        angle -= 360;
+
+	return angle;
 }
 int16_t Bno055::eulRoll(void)
 {
-	return (int16_t)(this->getWord(0x1C)/16);
+	int16_t angle = (int16_t)(this->getWord(0x1C)/16);
+
+    angle %= 360;
+
+    if(angle > 180)
+        angle -= 360;
+
+	return angle;
 }
 int16_t Bno055::eulPitch(void)
 {
-	return (int16_t)(this->getWord(0x1E)/16);
+	int16_t angle = (int16_t)(this->getWord(0x1E)/16);
+
+    angle %= 360;
+
+    if(angle > 180)
+        angle -= 360;
+
+	return angle;
 }
 //Ausrichtung in Quaternionen
 float Bno055::quaDataW(void)

@@ -44,15 +44,29 @@ enum OutputFormat{
     ANDROID = 1
 };
 
+enum SystemStatus{
+    SYSTEM_IDLE = 0,
+    SYSTEM_ERROR = 1,
+    INITIALIZING_PERIPHERALS = 2,
+    SYSTEM_INITIALIZATION = 3,
+    EXECUTING_SELFTEST = 4,
+    SENSOR_FUSION_ALGORITHM_RUNNING = 5,
+    SYSTEM_RUNNING_WITHOUT_FUSION_ALGORITHM = 6
+};
+
 class Bno055{
     public:
-        Bno055(I2C i2c, Bno055Mode mode,
+        Bno055(I2C& i2c, Bno055Mode mode,
                         AccUnit accUnit=MS2,
                         AngularRate angularRate=DPS,
                         EulerAngles eulerAngles=DEGREES,
                         TemperatureUnit temperatureUnit=CELSIUS,
                         OutputFormat outputFormat=WINDOWS,
-                        uint8_t addr = 0x28<<1);
+                        uint8_t addr = 0x50);
+
+        // Status ...
+        uint8_t getDeviceId();
+        uint8_t getStatus();
 
         //Beschleunigungs Vektoren
 		int16_t accDataX(void);

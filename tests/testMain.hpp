@@ -1,9 +1,8 @@
 #include "mbed.h"
-#include "PpmOut.hpp"
-#include "mpu9250Adapter.hpp"
+#include "../hal/PpmOut.hpp"
 
-#include "defines.hpp"
-#include "receiver.hpp"
+#include "../defines.hpp"
+#include "../receiver.hpp"
 
 /*
     Debug Modes:
@@ -13,8 +12,9 @@
         Sets the Leds to the first three channels of the SBus Receiver
     2: PPM Test
         Continously cycly through the PPM range
+    3: SBus to Serial
 */
-#define _DEBUG_MODE 2
+#define _DEBUG_MODE 3
 
 #if _DEBUG_MODE==0
     DigitalOut motor(MAIN_MOTOR);
@@ -48,17 +48,15 @@
         }
     }
 #elif _DEBUG_MODE==1
-    AnalogOut ledRed(LED_RED);
-    AnalogOut ledGreen(LED_GREEN);
-    AnalogOut ledBlue(LED_BLUE);
+    DigitalOut ledRed(LED_RED);
+    DigitalOut ledGreen(LED_GREEN);
+    DigitalOut ledBlue(LED_BLUE);
 
     void testMain(){
         receiver::init();
 
         while(true){
-            ledRed = receiver::get(0) / 1000.0;
-            ledGreen = receiver::get(1) / 1000.0;
-            ledBlue = receiver::get(2) / 1000.0;
+            ledRed = receiver::sbus.getChannel(0) < 1000;
         }
     }
 #elif _DEBUG_MODE==2
@@ -90,6 +88,19 @@
                 servoVTailLeft.setValue(c*10);
                 wait_ms(20);
             }
+        }
+    }
+#elif _DEBUG_MODE==3
+    Serial pc(USBTX, USBRX);
+
+    void testMain(){
+        receiver::init();
+
+        while(true){
+            printf("Raw: %d\t%d\t%d\t Norm: %d\t%d\t%d\t Status: %d\n",
+                receiver::sbus.getChannel(0), receiver::sbus.getChannel(1), receiver::sbus.getChannel(2),
+                receiver::get(0), receiver::get(1), receiver::get(2), receiver::status());
+            wait(0.1);
         }
     }
 #else
