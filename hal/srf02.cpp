@@ -1,13 +1,10 @@
 #include "srf02.hpp"
 
-Srf02::Srf02(I2C &_i2c, uint8_t addr) : i2c(_i2c){
-    this->addr = addr;
-}
-
+Srf02::Srf02(I2C &_i2c, uint8_t addr) : I2cSensor(_i2c, addr){}
 
 void Srf02::startMeasurement(){
     char cmd[] = {0, 0x51}; // CMD Register, Range cm
-    i2c.write(addr, cmd, 2);
+    I2cSensor::i2c.write(addr, cmd, 2);
 }
 
 uint8_t Srf02::isReady(){

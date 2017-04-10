@@ -2,6 +2,7 @@
 #define _BNO_055_H
 
 #include "mbed.h"
+#include "i2cSensor.hpp"
 
 enum Bno055Mode{
     CONFIGMODE = 0b0000,
@@ -54,15 +55,14 @@ enum SystemStatus{
     SYSTEM_RUNNING_WITHOUT_FUSION_ALGORITHM = 6
 };
 
-class Bno055{
+class Bno055 : public I2cSensor{
     public:
-        Bno055(I2C& i2c, Bno055Mode mode,
+        Bno055(I2C& i2c, uint8_t addr = 0x50, Bno055Mode mode=NDOF_FMC_OFF,
                         AccUnit accUnit=MS2,
                         AngularRate angularRate=DPS,
                         EulerAngles eulerAngles=DEGREES,
                         TemperatureUnit temperatureUnit=CELSIUS,
-                        OutputFormat outputFormat=WINDOWS,
-                        uint8_t addr = 0x50);
+                        OutputFormat outputFormat=WINDOWS);
 
         // Status ...
         uint8_t getDeviceId();
@@ -105,8 +105,6 @@ class Bno055{
 		float grvDataZ(void);
 
     private:
-        I2C i2c;
-        uint8_t addr;
         int16_t getWord(uint8_t reg);
 };
 

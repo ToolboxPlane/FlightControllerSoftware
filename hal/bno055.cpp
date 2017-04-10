@@ -1,16 +1,12 @@
 #include "bno055.hpp"
 
-Bno055::Bno055(I2C &_i2c, Bno055Mode mode,
+Bno055::Bno055(I2C &_i2c, uint8_t addr, Bno055Mode mode,
                 AccUnit accUnit,
                 AngularRate angularRate,
                 EulerAngles eulerAngles,
                 TemperatureUnit temperatureUnit,
-                OutputFormat outputFormat,
-                uint8_t addr) : i2c(_i2c){
-
-    this->addr = addr;
-
-    //i2c.frequency(400000);
+                OutputFormat outputFormat)
+                 : I2cSensor(_i2c, addr){
 
     // Reset @CHECK necessary
     char cmd[2] = {0x3F, 0b1<<5};    //SYS_TRIGGER, RST_SYS
@@ -18,6 +14,7 @@ Bno055::Bno055(I2C &_i2c, Bno055Mode mode,
 
     wait(1);
 
+    // @CHECK necessary?
     i2c.stop();
 
     // Set units
@@ -52,16 +49,6 @@ uint8_t Bno055::getStatus(){
     i2c.read(addr, res, 1);
 
     return res[0];
-}
-
-int16_t Bno055::getWord(uint8_t reg){
-    char res[2];
-    char cmd[] = {reg};
-
-    i2c.write(addr, cmd, 1);
-    i2c.read(addr, res, 2);
-
-    return ((int16_t)res[1] << 8) | res[0];
 }
 
 //Beschleunigungs Vektoren

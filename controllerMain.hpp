@@ -21,7 +21,7 @@ Serial pc(USBTX, USBRX);
 
 I2C i2c(I2C_SDA, I2C_SCL);
 
-Bno055 imu(i2c, NDOF_FMC_OFF);
+//Bno055 imu(i2c);
 //Mpl3115a2 baro(i2c);
 Srf02 us(i2c);
 
@@ -59,10 +59,9 @@ void controllerMain()
     us.startMeasurement();
     while (true) {
         /*if(baro.isReady()){
-            float alt = baro.getAltitude();
-            printf("Height: %f\t%f\n", alt, alt/65536);
-        }*/
-
+            uint16_t alt = baro.getAltitude();
+            printf("Height: %f\t%f\t", alt);
+        }
 
         if(imu.getStatus() == SENSOR_FUSION_ALGORITHM_RUNNING){
             int16_t eulHeading, eulPitch, eulRoll;
@@ -74,7 +73,7 @@ void controllerMain()
             printf("IMU: %d\t%d\t%d\t", eulHeading, eulPitch, eulRoll);
         } else {
             imu = Bno055(i2c, NDOF_FMC_OFF);
-        }
+        }*/
 
 
         if(us.isReady()){
@@ -129,6 +128,6 @@ void controllerMain()
             ledGreen = receiver::get(0) < 500;
         }*/
 
-        wait_ms(200);
+        //wait_ms(200);
     }
 }
