@@ -103,9 +103,6 @@ class Bno055 : public I2cSensor{
 		float grvDataX(void);
 		float grvDataY(void);
 		float grvDataZ(void);
-
-    private:
-        int16_t getWord(uint8_t reg);
 };
 
 #endif

@@ -1,1 +1,7 @@
 *.gch
+*.d
+*.o
+*.bin
+*.elf
+*.hex
+*.map

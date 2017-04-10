@@ -32,23 +32,13 @@ Bno055::Bno055(I2C &_i2c, uint8_t addr, Bno055Mode mode,
 }
 
 uint8_t Bno055::getDeviceId(){
-    char cmd[] = {0x00}; // CHIP_ID
-    char res[1];
-
-    i2c.write(addr, cmd, 1);
-    i2c.read(addr, res, 1);
-
-    return res[0];
+    // CHIP_ID
+    return getByte(0);
 }
 
 uint8_t Bno055::getStatus(){
-    char cmd[] = {0x39}; // SYS_STATUS
-    char res[1];
-
-    i2c.write(addr, cmd, 1);
-    i2c.read(addr, res, 1);
-
-    return res[0];
+    // SYS_STATUS
+    return getByte(0x39);
 }
 
 //Beschleunigungs Vektoren

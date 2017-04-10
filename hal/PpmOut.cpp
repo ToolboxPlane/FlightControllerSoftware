@@ -7,9 +7,7 @@ PpmOut::PpmOut(PinName pin) : out(pin){
 }
 
 void PpmOut::setValue(uint16_t val){
-    if(val < 0)
-        val = 0;
-    else if(val > 1000)
+    if(val > 1000)
         val = 1000;
 
     out.pulsewidth_us(1000+val);

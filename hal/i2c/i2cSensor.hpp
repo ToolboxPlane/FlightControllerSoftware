@@ -15,7 +15,7 @@ class I2cSensor{
         I2C i2c;
         uint8_t addr;
 
-        uint16_t getWord(uint8_t addr, ByteOrder order);
+        uint16_t getWord(uint8_t addr, ByteOrder order=BIG_ENDIAN);
         uint8_t getByte(uint8_t addr);
 };
 

@@ -1,8 +1,8 @@
 #include "mbed.h"
 #include "hal/PpmOut.hpp"
-#include "hal/bno055.hpp"
-#include "hal/mpl3115a2.hpp"
-#include "hal/srf02.hpp"
+#include "hal/i2c/bno055.hpp"
+#include "hal/i2c/mpl3115a2.hpp"
+#include "hal/i2c/srf02.hpp"
 
 #include "defines.hpp"
 #include "receiver.hpp"
