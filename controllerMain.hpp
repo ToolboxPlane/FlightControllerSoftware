@@ -30,7 +30,7 @@ Srf02 us(i2c);
 #define ROLL_P 1
 
 
-void controllerMain()
+void _main()
 {
     // LEDs aus, Rot an
     ledRed = LED_ON;
@@ -64,33 +64,9 @@ void controllerMain()
 
     ledRed = LED_OFF;
 
-    us.startMeasurement();
+    // us.startMeasurement();
     while (true) {
-        /*if(baro.isReady()){
-            uint16_t alt = baro.getAltitude();
-            printf("Height: %f\t%f\t", alt);
-        }
-
-        if(imu.getStatus() == SENSOR_FUSION_ALGORITHM_RUNNING){
-            int16_t eulHeading, eulPitch, eulRoll;
-
-            eulHeading = imu.eulHeading();
-            eulPitch = imu.eulPitch();
-            eulRoll = imu.eulRoll();
-
-            printf("IMU: %d\t%d\t%d\t", eulHeading, eulPitch, eulRoll);
-        } else {
-            imu = Bno055(i2c, NDOF_FMC_OFF);
-        }*/
-
-
-        if(us.isReady()){
-            printf("Dist %d\n", us.readDistance());
-            us.startMeasurement();
-        }
-
-
-        /*if(receiver::get(6) > 800){
+        if(receiver::get(6) > 800){
             ledBlue = LED_ON;
             ledRed = LED_ON;
 
@@ -104,7 +80,7 @@ void controllerMain()
             ledBlue = LED_ON;
             ledRed = LED_OFF;
 
-            /*int16_t eulHeading, eulPitch, eulRoll;
+            int16_t eulHeading, eulPitch, eulRoll;
 
             eulHeading = imu.eulHeading();
             eulPitch = imu.eulPitch();
@@ -115,8 +91,8 @@ void controllerMain()
             int16_t deltaRoll = eulRoll - 0;
             int16_t deltaPitch = eulPitch - 0;
 
-            int16_t aileronVal = deltaRoll * ROLL_P + deltaPitch * PITCH_P;
-            int16_t vtailVal = deltaPitch * PITCH_P * 0.5;
+            int16_t aileronVal = deltaRoll * ROLL_P;
+            int16_t vtailVal = deltaPitch * PITCH_P;
 
             motor.setValue(receiver::get(0));
             servoAileronRight.setValue(500 - aileronVal);
@@ -134,8 +110,6 @@ void controllerMain()
             servoVTailLeft.setValue(receiver::get(4));
 
             ledGreen = receiver::get(0) < 500;
-        }*/
-
-        //wait_ms(200);
+        }
     }
 }
