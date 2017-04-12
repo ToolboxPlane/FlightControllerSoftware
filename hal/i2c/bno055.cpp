@@ -52,6 +52,11 @@ uint8_t Bno055::getStatus(){
     return res[0];
 }
 
+// CHANGED
+uint8_t Bno055::isAvailable(){
+    return getDeviceId() ==  0xA0;
+}
+
 int16_t Bno055::getWord(uint8_t reg){
     char res[2];
     char cmd[] = {reg};

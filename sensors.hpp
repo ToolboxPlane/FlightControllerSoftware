@@ -1,5 +1,11 @@
 #include "mbed.h"
 
+#include "hal/i2c/bno055.hpp"
+#include "hal/i2c/srf02.hpp"
+#include "hal/i2c/mpl3115a2.hpp"
+
+#include "defines.hpp"
+
 enum HeightSource{
     US, BARO
 };
@@ -13,22 +19,8 @@ namespace sensors{
     Srf02 us(i2c);
 
     uint16_t initialHeight;
-    int16_t height;
+    int32_t height;
     HeightSource heightSource;
-
-    uint8_t init(){
-        if(!imu.isAvailable() || !us.isAvailable() || !baro.isAvailable())
-            return false;
-
-        us.startMeasurement();
-        while(!baro.isReady());
-        initialHeight = baro.getAltitude();
-
-        ticker.attach(&tick, 1.0/ISR_FREQ);
-        return true;
-    }
-
-
 
     void tick(void){
         static uint16_t usDist = 1000;
@@ -45,16 +37,28 @@ namespace sensors{
         }
 
         if(usDist < US_MAX_RANGE - US_PRECISION ||
-            usDist > US_MAX_RANGE + US_PRECISION && validUsDistance){
+            (usDist > US_MAX_RANGE + US_PRECISION && validUsDistance)){
             validUsDistance = true;
 
             heightSource = US;
             height = usDist;
         } else{
-            height = baroHeight - initialHeight;
+            height = (baroHeight - initialHeight)*100;
 
             heightSource = BARO;
             validUsDistance = false;
         }
+    }
+
+    uint8_t init(){
+        if(!imu.isAvailable() || !us.isAvailable() || !baro.isAvailable())
+            return false;
+
+        us.startMeasurement();
+        while(!baro.isReady());
+        initialHeight = baro.getAltitude();
+
+        ticker.attach(&tick, 1.0/ISR_FREQ);
+        return true;
     }
 }

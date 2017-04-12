@@ -32,3 +32,14 @@ uint16_t Srf02::readDistance(){
 
     return res[0] << 8 | res[1];
 }
+
+// CHANGED
+uint8_t Srf02::isAvailable(){
+    char cmd[] = {0x01};
+    char res[1];
+
+    i2c.write(addr, cmd, 1);
+    i2c.read(addr, res, 1, true);
+
+    return res[0] == 0x80;
+}

@@ -9,6 +9,7 @@ class Srf02{
         void startMeasurement();
         uint8_t isReady();
         uint16_t readDistance();
+        uint8_t isAvailable();
     private:
         I2C i2c;
         uint8_t addr;

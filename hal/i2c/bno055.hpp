@@ -56,7 +56,7 @@ enum SystemStatus{
 
 class Bno055{
     public:
-        Bno055(I2C& i2c, Bno055Mode mode,
+        Bno055(I2C& i2c, Bno055Mode mode = NDOF_FMC_OFF,
                         AccUnit accUnit=MS2,
                         AngularRate angularRate=DPS,
                         EulerAngles eulerAngles=DEGREES,
@@ -67,6 +67,7 @@ class Bno055{
         // Status ...
         uint8_t getDeviceId();
         uint8_t getStatus();
+        uint8_t isAvailable();
 
         //Beschleunigungs Vektoren
 		int16_t accDataX(void);

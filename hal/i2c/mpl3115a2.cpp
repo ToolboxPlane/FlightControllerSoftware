@@ -29,12 +29,23 @@ uint8_t Mpl3115a2::isReady(){
     return res[0] & 0b1<<2; //CHANGED check wheter <<3 was better
 }
 
-float Mpl3115a2::getAltitude(){
+// CHANGED
+uint8_t Mpl3115a2::isAvailable(){
+    char cmd[] = {0x0C};
+    char res[1];
+
+    i2c.write(addr, cmd, 1);
+    i2c.read(addr, res, 1, true);
+
+    return res[0] == 0xC4;
+}
+
+uint16_t Mpl3115a2::getAltitude(){
     char cmd[] = {1};
     char res[3];
 
     i2c.write(addr, cmd, 1);
     i2c.read(addr, res, 3);
 
-    return (res[0] << 24 | res[1] << 16  | res[2] << 8);
+    return res[0] << 8 | res[1];
 }

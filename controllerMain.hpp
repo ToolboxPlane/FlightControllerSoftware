@@ -48,7 +48,7 @@ void _main()
     }
 
     // I²C und Sensor Fusion initialisieren
-    if(!sensors::init())
+    if(!sensors::init()){
         while(true){
             ledRed = !ledRed;
             ledBlue = !ledBlue;
@@ -58,7 +58,6 @@ void _main()
 
     ledRed = LED_OFF;
 
-    us.startMeasurement();
     while (true) {
         if(receiver::get(6) > 800){
             ledBlue = LED_ON;
@@ -73,26 +72,6 @@ void _main()
         } else if(receiver::get(6) > 300){
             ledBlue = LED_ON;
             ledRed = LED_OFF;
-
-            int16_t eulHeading, eulPitch, eulRoll;
-
-            eulHeading = imu.eulHeading();
-            eulPitch = imu.eulPitch();
-            eulRoll = imu.eulRoll();
-
-            printf("%d\t%d\t%d\n", eulHeading, eulPitch, eulRoll);
-
-            int16_t deltaRoll = eulRoll - 0;
-            int16_t deltaPitch = eulPitch - 0;
-
-            int16_t aileronVal = deltaRoll * ROLL_P;
-            int16_t vtailVal = deltaPitch * PITCH_P;
-
-            motor.setValue(receiver::get(0));
-            servoAileronRight.setValue(500 - aileronVal);
-            servoAileronRight.setValue(500 - aileronVal);
-            servoVTailRight.setValue(500 - vtailVal);
-            servoVTailLeft.setValue(500 - vtailVal);*
         }else{
             ledBlue = LED_OFF;
             ledRed = LED_OFF;

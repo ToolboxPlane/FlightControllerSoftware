@@ -1,4 +1,4 @@
-#define __TESTS__
+//#define __TESTS__
 
 #ifdef __TESTS__
     #warning You are running in test mode!
