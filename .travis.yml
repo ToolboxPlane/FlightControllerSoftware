@@ -1,0 +1,9 @@
+language: cpp
+
+addons:
+  apt:
+    packages:
+      - gcc-arm-none-eabi
+
+script:
+    - make all

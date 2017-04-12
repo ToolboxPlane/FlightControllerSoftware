@@ -40,13 +40,16 @@ else
   CC_FLAGS += -DNDEBUG -Os
 endif
 
-.PHONY: all clean lst size
+.PHONY: all clean lst size flash doc
 
 all: $(PROJECT).bin $(PROJECT).hex size
 
 # The installation path needs to get changed depending on the user!
 flash:
 	cp FlightController.bin /media/paul/MBED/
+
+doc:
+	doxygen Doxyfile
 
 clean:
 	rm -f $(PROJECT).bin $(PROJECT).elf $(PROJECT).hex $(PROJECT).map $(PROJECT).lst $(OBJECTS) $(DEPS)

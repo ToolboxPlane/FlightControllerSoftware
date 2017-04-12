@@ -21,8 +21,8 @@ Serial pc(USBTX, USBRX);
 
 I2C i2c(I2C_SDA, I2C_SCL);
 
-//Bno055 imu(i2c);
-//Mpl3115a2 baro(i2c);
+Bno055 imu(i2c);
+Mpl3115a2 baro(i2c);
 Srf02 us(i2c);
 
 
@@ -52,6 +52,14 @@ void controllerMain()
         wait_ms(100);
         for(int c=0; c<16; c++)
             receiver::get(c);
+    }
+
+    if(!imu.isAvailable() || !us.isAvailable() || !baro.isAvailable()){
+        while(true){
+            ledRed = !ledRed;
+            ledBlue = !ledBlue;
+            ledGreen = !ledGreen;
+        }
     }
 
     ledRed = LED_OFF;

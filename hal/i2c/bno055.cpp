@@ -8,14 +8,12 @@ Bno055::Bno055(I2C &_i2c, uint8_t addr, Bno055Mode mode,
                 OutputFormat outputFormat)
                  : I2cSensor(_i2c, addr){
 
-    // Reset @CHECK necessary
+    // Reset necessary
     char cmd[2] = {0x3F, 0b1<<5};    //SYS_TRIGGER, RST_SYS
     i2c.write(addr, cmd, 2);
 
     wait(1);
 
-    // @CHECK necessary?
-    i2c.stop();
 
     // Set units
     cmd[0] = 0x3B; //UNIT_SEL
@@ -39,6 +37,11 @@ uint8_t Bno055::getDeviceId(){
 uint8_t Bno055::getStatus(){
     // SYS_STATUS
     return getByte(0x39);
+}
+
+// CHANGED Check
+uint8_t Bno055::isAvailable(){
+    return getDeviceId() == 0xA0;
 }
 
 //Beschleunigungs Vektoren

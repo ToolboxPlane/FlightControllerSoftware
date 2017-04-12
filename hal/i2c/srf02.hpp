@@ -10,6 +10,7 @@ class Srf02 : public I2cSensor {
         void startMeasurement();
         uint8_t isReady();
         uint16_t readDistance();
+        uint8_t isAvailable();
 };
 
 #endif

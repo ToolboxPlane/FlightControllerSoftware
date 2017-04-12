@@ -67,6 +67,7 @@ class Bno055 : public I2cSensor{
         // Status ...
         uint8_t getDeviceId();
         uint8_t getStatus();
+        uint8_t isAvailable();
 
         //Beschleunigungs Vektoren
 		int16_t accDataX(void);

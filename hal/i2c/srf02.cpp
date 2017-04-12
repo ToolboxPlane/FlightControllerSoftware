@@ -18,3 +18,8 @@ uint8_t Srf02::isReady(){
 uint16_t Srf02::readDistance(){
     return getWord(0x02);
 }
+
+// CHANGED Check
+uint8_t Srf02::isAvailable(){
+    return getByte(0x01) == 0x80;
+}
