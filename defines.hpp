@@ -19,3 +19,7 @@
 // Leds
 #define LED_ON 0
 #define LED_OFF 1
+
+// Thresholds for the US sensor
+#define US_MAX_RANGE 100
+#define US_PRECISION 5

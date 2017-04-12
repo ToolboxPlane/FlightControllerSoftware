@@ -6,6 +6,7 @@
 
 #include "defines.hpp"
 #include "receiver.hpp"
+#include "sensors.hpp"
 
 DigitalOut ledRed(LED_RED);
 DigitalOut ledGreen(LED_GREEN);
@@ -19,16 +20,8 @@ PpmOut servoVTailLeft(VTAIL_LEFT);
 
 Serial pc(USBTX, USBRX);
 
-I2C i2c(I2C_SDA, I2C_SCL);
-
-Bno055 imu(i2c);
-Mpl3115a2 baro(i2c);
-Srf02 us(i2c);
-
-
 #define PITCH_P 1
 #define ROLL_P 1
-
 
 void _main()
 {
@@ -48,13 +41,14 @@ void _main()
 
     // ESC Initialisieren und Fernbedienungsoffsets lesen
     motor.setValue(0);
-    for(int c=0; c<100; c++){
+    for(int c=0; c<80; c++){
         wait_ms(100);
         for(int c=0; c<16; c++)
             receiver::get(c);
     }
 
-    if(!imu.isAvailable() || !us.isAvailable() || !baro.isAvailable()){
+    // I²C und Sensor Fusion initialisieren
+    if(!sensors::init())
         while(true){
             ledRed = !ledRed;
             ledBlue = !ledBlue;
@@ -64,7 +58,7 @@ void _main()
 
     ledRed = LED_OFF;
 
-    // us.startMeasurement();
+    us.startMeasurement();
     while (true) {
         if(receiver::get(6) > 800){
             ledBlue = LED_ON;
