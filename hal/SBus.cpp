@@ -8,6 +8,7 @@ SBus::SBus(PinName rx, PinName tx) : serial(tx, rx){
     serial.attach(this, &SBus::rxCallback);
 
     rxMux = 0;
+    badConnCount = 0;
 }
 
 void SBus::rxCallback(){
@@ -17,32 +18,36 @@ void SBus::rxCallback(){
         if(data == SBUS_START_BYTE)
             rxMux = 1;
 
-        // @TODO Timeout?
     }else if(rxMux == 24){
         if(data == SBUS_END_BYTE){
             status = rxData[22];
 
-            for(uint8_t c=0; c<16; c++){
-                uint8_t startIndex = (c*11)/8;
-                uint8_t startBit = (c*11)%8;
+            if(status == 0){
+                for(uint8_t c=0; c<16; c++){
+                    uint8_t startIndex = (c*11)/8;
+                    uint8_t startBit = (c*11)%8;
 
-                uint16_t currWord = 0;
-                for(uint8_t d=0; d<11; d++){
-                    currWord |= ((rxData[startIndex] & 0b1<<startBit)?1:0) << d;
+                    uint16_t currWord = 0;
+                    for(uint8_t d=0; d<11; d++){
+                        currWord |= ((rxData[startIndex] & 0b1<<startBit)?1:0) << d;
 
-                    if(++startBit >= 8){
-                        startBit = 0;
-                        startIndex++;
+                        if(++startBit >= 8){
+                            startBit = 0;
+                            startIndex++;
+                        }
                     }
-                }
+                    channels[c] = currWord;
 
-                channels[c] = currWord;
+                    badConnCount = 0;
+                }
+            } else {
+                if(++badConnCount >= 10){
+                    badConnCount = 10;
+                }
             }
 
             rxMux = 0;
         }else{
-            // @TODO Timeout?
-
             rxMux = 0;
         }
     }else{
@@ -63,13 +68,17 @@ uint8_t SBus::getStatusByte(){
 }
 
 uint8_t SBus::frameLost(){
-    return (status & (0b1<<5))?1:0;
+    return (status & (0b1<<3))?1:0;
 }
 
 uint8_t SBus::failSave(){
-    return (status & (0b1<<4))?1:0;
+    return (status & (0b1<<2))?1:0;
+}
+
+uint8_t SBus::badConnection(){
+    return badConnCount >= 10;
 }
 
 uint8_t SBus::getDigital(uint8_t channel){
-    return (status & (0b1<<(6+channel)))?1:0;
+    return (status & (0b1<<channel))?1:0;
 }

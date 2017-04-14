@@ -6,7 +6,7 @@
 #define VTAIL_LEFT D6 //PTC2
 
 // Controll ISR
-#define ISR_FREQ 1
+#define ISR_FREQ 50
 
 // SBus
 #define SBUS_RX PTC16
@@ -21,5 +21,5 @@
 #define LED_OFF 1
 
 // Thresholds for the US sensor
-#define US_MAX_RANGE 100
+#define US_MAX_RANGE 250
 #define US_PRECISION 5

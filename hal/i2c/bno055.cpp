@@ -52,7 +52,6 @@ uint8_t Bno055::getStatus(){
     return res[0];
 }
 
-// CHANGED
 uint8_t Bno055::isAvailable(){
     return getDeviceId() ==  0xA0;
 }

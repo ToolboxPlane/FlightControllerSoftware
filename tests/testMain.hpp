@@ -25,7 +25,7 @@
         Log the orientation in Euler Angles via the uart-interface
     6: I²C Scanner
 */
-#define _DEBUG_MODE 5
+#define _DEBUG_MODE 2
 
 #if _DEBUG_MODE==0
     DigitalOut motor(MAIN_MOTOR);
@@ -96,9 +96,10 @@
         receiver::init();
 
         while(true){
-            printf("Raw: %d\t%d\t%d\t Norm: %d\t%d\t%d\t Status: %d\n",
+            printf("Raw: %d\t%d\t%d\t Norm: %d\t%d\t%d\t Status: %d\tFL: %d\t FS: %d\n",
                 receiver::sbus.getChannel(0), receiver::sbus.getChannel(1), receiver::sbus.getChannel(2),
-                receiver::get(0), receiver::get(1), receiver::get(2), receiver::status());
+                receiver::get(0), receiver::get(1), receiver::get(2), receiver::status(),
+                receiver::sbus.frameLost(), receiver::sbus.failSave());
             wait(0.1);
         }
     }
@@ -117,9 +118,9 @@
                 us.startMeasurement();
             }
 
-            if(!us.isAvailable()){
+            /*if(!us.isAvailable()){
                 printf("Sensor not available\n");
-            }
+            }*/
             wait_ms(100);
         }
     }

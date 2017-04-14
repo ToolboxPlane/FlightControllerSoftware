@@ -13,6 +13,7 @@ class SBus{
         uint8_t getStatusByte();
         uint8_t frameLost();
         uint8_t failSave();
+        uint8_t badConnection();
         uint8_t getDigital(uint8_t channel);
     private:
         void rxCallback();
@@ -21,6 +22,7 @@ class SBus{
         uint8_t status;
         uint8_t rxData[23];
         uint8_t rxMux;
+        uint8_t badConnCount;
 };
 
 #endif

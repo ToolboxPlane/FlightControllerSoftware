@@ -6,7 +6,7 @@
 class PpmOut{
     public:
         PpmOut(PinName pin);
-        void setValue(uint16_t val);
+        void setValue(int16_t val);
     private:
         PwmOut out;
 };

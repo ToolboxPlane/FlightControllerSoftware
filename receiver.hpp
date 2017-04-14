@@ -16,10 +16,10 @@ namespace receiver{
     };
 
     SBus sbus(SBUS_RX, SBUS_TX);
-    MinMax mm[5];
+    MinMax mm[16];
 
     void init(){
-        for(int c=0; c<3; c++){
+        for(int c=0; c<16; c++){
             mm[c].min = 500;
             mm[c].max = 1500;
         }

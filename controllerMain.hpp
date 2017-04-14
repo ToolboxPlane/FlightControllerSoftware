@@ -7,21 +7,17 @@
 #include "defines.hpp"
 #include "receiver.hpp"
 #include "sensors.hpp"
+#include "autonomous.hpp"
+
+#define MIN(x,y) (x<y?x:y)
 
 DigitalOut ledRed(LED_RED);
 DigitalOut ledGreen(LED_GREEN);
 DigitalOut ledBlue(LED_BLUE);
 
-PpmOut motor(MAIN_MOTOR);
-PpmOut servoAileronRight(AILERON_RIGHT);
-PpmOut servoAileronLeft(AILERON_LEFT);
-PpmOut servoVTailRight(VTAIL_RIGHT);
-PpmOut servoVTailLeft(VTAIL_LEFT);
-
 Serial pc(USBTX, USBRX);
 
-#define PITCH_P 1
-#define ROLL_P 1
+uint8_t landingStage = 0;
 
 void _main()
 {
@@ -30,59 +26,77 @@ void _main()
     ledGreen = LED_OFF;
     ledBlue = LED_OFF;
 
-    // Servos auf Mittelstellung
-    servoAileronRight.setValue(500);
-    servoAileronLeft.setValue(500);
-    servoVTailRight.setValue(500);
-    servoVTailLeft.setValue(500);
-
     // Receiver Adapter initialisieren
     receiver::init();
 
     // ESC Initialisieren und Fernbedienungsoffsets lesen
-    motor.setValue(0);
-    for(int c=0; c<80; c++){
-        wait_ms(100);
-        for(int c=0; c<16; c++)
-            receiver::get(c);
-    }
+    flightControl::init();
 
     // I²C und Sensor Fusion initialisieren
-    if(!sensors::init()){
-        while(true){
-            ledRed = !ledRed;
-            ledBlue = !ledBlue;
-            ledGreen = !ledGreen;
-        }
+    while(!sensors::init()){
+        ledRed = !ledRed;
+        ledBlue = !ledBlue;
+        ledGreen = !ledGreen;
+        wait_ms(500);
     }
 
     ledRed = LED_OFF;
 
     while (true) {
-        if(receiver::get(6) > 800){
-            ledBlue = LED_ON;
+        //printf("FL: %d\tFS: %d\tBC: %d\n", receiver::sbus.frameLost(), receiver::sbus.failSave(), receiver::sbus.badConnection());
+        if(receiver::sbus.badConnection()){
+            sensors::heightRequired = false;
+            sensors::imuRequired = true;
+
+            levelFlight(0, -5, 0);
+            ledGreen = LED_ON;
             ledRed = LED_ON;
-
-            motor.setValue(receiver::get(0));
-
-            servoAileronRight.setValue(500);
-            servoAileronLeft.setValue(500);
-            servoVTailRight.setValue(500);
-            servoVTailLeft.setValue(500);
-        } else if(receiver::get(6) > 300){
             ledBlue = LED_ON;
-            ledRed = LED_OFF;
-        }else{
-            ledBlue = LED_OFF;
-            ledRed = LED_OFF;
+        } else {
+            //printf("%d\t%d\t%d\t%d\n", sensors::height, sensors::heading, sensors::pitch, sensors::roll);
 
-            motor.setValue(receiver::get(0));
-            servoAileronRight.setValue(receiver::get(1));
-            servoAileronLeft.setValue(receiver::get(2));
-            servoVTailRight.setValue(receiver::get(5));
-            servoVTailLeft.setValue(receiver::get(4));
+            if(receiver::get(6) > 800){
+                ledBlue = LED_OFF;
+                ledRed = LED_ON;
+                ledGreen = LED_OFF;
+                sensors::heightRequired = true;
+                sensors::imuRequired = true;
 
-            ledGreen = receiver::get(0) < 500;
+                if(landingStage == 1){
+                    levelFlight(0, 45, 0);
+                } else if(sensors::heightSource == BARO){
+                    levelFlight(0, -12, 120);
+                    landingStage = 2;
+                } else if(sensors::height > 50){
+                    levelFlight(0, -8, 100);
+                    landingStage = 2;
+                } else if(sensors::height < 40){
+                    landingStage = 1;
+                }
+
+            } else if(receiver::get(6) > 300){
+                landingStage = 3;
+                ledBlue = LED_ON;
+                ledRed = LED_OFF;
+                ledGreen = LED_OFF;
+                sensors::heightRequired = false;
+                sensors::imuRequired = true;
+
+                levelFlight(0, 0, receiver::get(0));
+            } else {
+                landingStage = 3;
+                ledBlue = LED_OFF;
+                ledRed = LED_OFF;
+                ledGreen = LED_ON;
+                sensors::heightRequired = false;
+                sensors::imuRequired = false;
+
+                flightControl::motor.setValue(receiver::get(0));
+                flightControl::servoAileronRight.setValue(receiver::get(1));
+                flightControl::servoAileronLeft.setValue(receiver::get(2));
+                flightControl::servoVTailRight.setValue(receiver::get(5));
+                flightControl::servoVTailLeft.setValue(receiver::get(4));
+            }
         }
     }
 }
