@@ -49,14 +49,17 @@ Modes:
 ### Autonomous Mode
 In Autonomous Mode the switches control the flight mode:
 
-| Switch 1 	| Switch 2 	| Mode                                                                 	|
-|----------	|----------	|----------------------------------------------------------------------	|
-| -100     	| -100     	| Waypointmode: The plane follows the waypoints saved on the Nav-Board 	|
-| -100     	| 0        	| Return to Home: The plane returns to the start position                  	|
-| -100     	| 100      	| Keep Heading with high altitude Terrain following                    	|
-| 0        	| -100     	| Landing Mode                                                         	|
-| 0        	| 0        	| Launch Mode                                                          	|
-| 0        	| 100      	| Stay at position                                                     	|
-| 100      	| -100     	| Terrain following - low altitude                                      	|
-| 100      	| 0        	| -                                                                    	|
-| 100      	| 100      	| -                                                                    	|
+| Switch 1 | Switch 2 | Mode                                                                 |
+|----------|----------|----------------------------------------------------------------------|
+| | | **GPS** |
+| -100     | -100     | Waypointmode: The plane follows the waypoints saved on the Nav-Board |
+| -100     | 0        | Return to Home: The plane returns to start position                  |
+| -100     | 100      | -                                                                    |
+| | | **Hold** |
+| 0        | -100     | Keep Heading with high altitude Terrain following                    |
+| 0        | 0        | Keep Heading with low altitude Terrain following                     |
+| 0        | 100      | Stay at position                                                     |
+| | | **Maneuver** |
+| 100      | -100     | Launch Mode                                                          |
+| 100      | 0        | Landing Mode                                                         |
+| 100      | 100      | -                                                                    |
