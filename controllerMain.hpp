@@ -44,7 +44,7 @@ void _main()
 
     while (true) {
         //printf("FL: %d\tFS: %d\tBC: %d\n", receiver::sbus.frameLost(), receiver::sbus.failSave(), receiver::sbus.badConnection());
-        if(receiver::sbus.badConnection()){
+        if(!receiver::connected()){
             sensors::heightRequired = false;
             sensors::imuRequired = true;
 
@@ -63,7 +63,7 @@ void _main()
                 sensors::imuRequired = true;
 
                 if(landingStage == 1){
-                    levelFlight(0, 45, 0);
+                    levelFlight(0, 10, 0);
                 } else if(sensors::heightSource == BARO){
                     levelFlight(0, -12, 120);
                     landingStage = 2;

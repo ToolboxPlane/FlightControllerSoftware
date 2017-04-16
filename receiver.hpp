@@ -34,7 +34,10 @@ namespace receiver{
             uint16_t val = sbus.getChannel(c);
 
             if(val == 0){
-                return 0;
+                if(c == 0)
+                    return 0;
+                else
+                    return 500;
             } else {
                 if(val < mm[c].min)
                     mm[c].min = val;
@@ -48,8 +51,8 @@ namespace receiver{
         }
     }
 
-    uint8_t status(){
-        return sbus.getStatusByte();
+    uint8_t connected(){
+        return !sbus.badConnection();
     }
 }
 
