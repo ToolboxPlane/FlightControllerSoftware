@@ -6,6 +6,7 @@ A flight controller for the mini Talon UAV based on a STM Nucleo L432KC
 ## Build
 We use the mbed-cli toolchain, to compile the program run
     
+    mbed new .
     mbed target NUCLEO_L432KC
     mbed toolchain GCC_ARM
     mbed compile
