@@ -11,3 +11,5 @@ cmake-build-debug
 mbed-os
 *.py
 .build
+/.mbed
+.idea
