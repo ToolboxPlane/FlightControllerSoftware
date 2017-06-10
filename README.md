@@ -3,19 +3,10 @@
 
 A flight controller for the mini Talon UAV based on a Freescale FRDM K64F
 
-## Compilation
-Run
+## Build
+We use the mbed-cli toolchain, to compile the program run
 
-
-    make all
-
-to compile the program and generate a .bin file to flash on the controller.
-
-Run
-
-    make flash
-
-to copy the binary onto the dev board.
+    mbed compile
 
 ## Flight Modes
 Different flight modes can be selected with 3-way switches on the

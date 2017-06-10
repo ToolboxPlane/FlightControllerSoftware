@@ -6,3 +6,8 @@
 *.hex
 *.map
 doc/
+BUILD/
+cmake-build-debug
+mbed-os
+*.py
+.build

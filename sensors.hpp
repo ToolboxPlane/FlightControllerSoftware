@@ -12,7 +12,7 @@ enum HeightSource{
 
 namespace sensors{
     Ticker ticker;
-    I2C i2c(I2C_SDA, I2C_SCL);
+    I2C i2c(D4, D5);
 
     Bno055 imu(i2c);
     Mpl3115a2 baro(i2c);
@@ -77,7 +77,7 @@ namespace sensors{
     }
 
     uint8_t init(){
-        us.startMeasurement();
+        //us.startMeasurement();
         while(!baro.isReady());
         initialHeight = baro.getAltitude();
 

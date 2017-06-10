@@ -25,7 +25,7 @@
         Log the orientation in Euler Angles via the uart-interface
     6: I²C Scanner
 */
-#define _DEBUG_MODE 2
+#define _DEBUG_MODE 0
 
 #if _DEBUG_MODE==0
     DigitalOut motor(MAIN_MOTOR);
@@ -34,12 +34,10 @@
     DigitalOut servoVTailRight(VTAIL_RIGHT);
     DigitalOut servoVTailLeft(VTAIL_LEFT);
 
-    DigitalOut i2cSda(I2C_SDA);
-    DigitalOut i2cScl(I2C_SCL);
+    DigitalOut i2cSda(D4);
+    DigitalOut i2cScl(D5);
 
-    DigitalOut ledRed(LED_RED);
-    DigitalOut ledGreen(LED_GREEN);
-    DigitalOut ledBlue(LED_BLUE);
+    DigitalOut led(LED1);
 
     void _main(){
         while(true){
@@ -51,9 +49,7 @@
             i2cSda = !i2cSda;
             i2cScl = !i2cScl;
 
-            ledBlue = !ledBlue;
-            ledRed = !ledRed;
-            ledGreen = !ledGreen;
+            led = !led;
 
             wait(1);
         }

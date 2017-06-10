@@ -11,9 +11,7 @@
 
 #define MIN(x,y) (x<y?x:y)
 
-DigitalOut ledRed(LED_RED);
-DigitalOut ledGreen(LED_GREEN);
-DigitalOut ledBlue(LED_BLUE);
+DigitalOut led(LED1);
 
 Serial pc(USBTX, USBRX);
 
@@ -21,10 +19,8 @@ uint8_t landingStage = 0;
 
 void _main()
 {
-    // LEDs aus, Rot an
-    ledRed = LED_ON;
-    ledGreen = LED_OFF;
-    ledBlue = LED_OFF;
+    // LED aus
+    led = 1;
 
     // Receiver Adapter initialisieren
     receiver::init();
@@ -34,13 +30,13 @@ void _main()
 
     // I²C und Sensor Fusion initialisieren
     while(!sensors::init()){
-        ledRed = !ledRed;
-        ledBlue = !ledBlue;
-        ledGreen = !ledGreen;
-        wait_ms(500);
-    }
+        led = !led;
+        wait_ms(200);
+    }   
 
-    ledRed = LED_OFF;
+    wait_ms(1000);
+
+    led = 0;
 
     while (true) {
         //printf("FL: %d\tFS: %d\tBC: %d\n", receiver::sbus.frameLost(), receiver::sbus.failSave(), receiver::sbus.badConnection());
@@ -49,16 +45,10 @@ void _main()
             sensors::imuRequired = true;
 
             levelFlight(0, -5, 0);
-            ledGreen = LED_ON;
-            ledRed = LED_ON;
-            ledBlue = LED_ON;
         } else {
             //printf("%d\t%d\t%d\t%d\n", sensors::height, sensors::heading, sensors::pitch, sensors::roll);
 
             if(receiver::get(6) > 800){
-                ledBlue = LED_OFF;
-                ledRed = LED_ON;
-                ledGreen = LED_OFF;
                 sensors::heightRequired = true;
                 sensors::imuRequired = true;
 
@@ -76,18 +66,12 @@ void _main()
 
             } else if(receiver::get(6) > 300){
                 landingStage = 3;
-                ledBlue = LED_ON;
-                ledRed = LED_OFF;
-                ledGreen = LED_OFF;
                 sensors::heightRequired = false;
                 sensors::imuRequired = true;
 
                 levelFlight(0, 0, receiver::get(0));
             } else {
                 landingStage = 3;
-                ledBlue = LED_OFF;
-                ledRed = LED_OFF;
-                ledGreen = LED_ON;
                 sensors::heightRequired = false;
                 sensors::imuRequired = false;
 
