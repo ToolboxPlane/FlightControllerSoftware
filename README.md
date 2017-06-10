@@ -1,11 +1,14 @@
 # FlightController
 [![Build Status](https://travis-ci.org/ToolboxBodensee/FlightController.svg?branch=master)](https://travis-ci.org/ToolboxBodensee/FlightController)
 
-A flight controller for the mini Talon UAV based on a Freescale FRDM K64F
+A flight controller for the mini Talon UAV based on a STM Nucleo L432KC
 
 ## Build
 We use the mbed-cli toolchain, to compile the program run
-
+    
+    mbed new .
+    mbed target NUCLEO_L432KC
+    mbed toolchain GCC_ARM
     mbed compile
 
 ## Flight Modes
