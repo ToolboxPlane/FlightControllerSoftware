@@ -12,4 +12,4 @@ mbed-os
 *.py
 .build
 /.mbed
-.idea
+.idea/

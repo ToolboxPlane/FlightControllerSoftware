@@ -7,7 +7,7 @@ class Mpl3115a2{
     public:
         Mpl3115a2(I2C &_i2c, uint8_t addr=0xC0);
         uint8_t isReady();
-        uint16_t getAltitude();
+        float getAltitude();
         uint8_t isAvailable();
     private:
         I2C i2c;

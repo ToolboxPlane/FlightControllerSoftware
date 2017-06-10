@@ -25,166 +25,170 @@
         Log the orientation in Euler Angles via the uart-interface
     6: I²C Scanner
 */
-#define _DEBUG_MODE 0
+#define _DEBUG_MODE 4
 
-#if _DEBUG_MODE==0
-    DigitalOut motor(MAIN_MOTOR);
-    DigitalOut servoAileronRight(AILERON_RIGHT);
-    DigitalOut servoAileronLeft(AILERON_LEFT);
-    DigitalOut servoVTailRight(VTAIL_RIGHT);
-    DigitalOut servoVTailLeft(VTAIL_LEFT);
+#if _DEBUG_MODE == 0
+DigitalOut motor(MAIN_MOTOR);
+DigitalOut servoAileronRight(AILERON_RIGHT);
+DigitalOut servoAileronLeft(AILERON_LEFT);
+DigitalOut servoVTailRight(VTAIL_RIGHT);
+DigitalOut servoVTailLeft(VTAIL_LEFT);
 
-    DigitalOut i2cSda(D4);
-    DigitalOut i2cScl(D5);
+DigitalOut i2cSda(D4);
+DigitalOut i2cScl(D5);
 
-    DigitalOut led(LED1);
+DigitalOut led(LED1);
 
-    void _main(){
-        while(true){
-            motor = !motor;
-            servoAileronLeft = !servoAileronLeft;
-            servoAileronRight = !servoAileronRight;
-            servoVTailLeft = !servoVTailLeft;
-            servoVTailRight = !servoVTailRight;
-            i2cSda = !i2cSda;
-            i2cScl = !i2cScl;
+DigitalOut navTx(NAVBOARD_TX);
+DigitalOut navRx(NAVBOARD_RX);
 
-            led = !led;
+void _main(){
+    while(true){
+        motor = !motor;
+        servoAileronLeft = !servoAileronLeft;
+        servoAileronRight = !servoAileronRight;
+        servoVTailLeft = !servoVTailLeft;
+        servoVTailRight = !servoVTailRight;
+        i2cSda = !i2cSda;
+        i2cScl = !i2cScl;
 
-            wait(1);
+        led = !led;
+
+        navTx = !navTx;
+        navRx = !navRx;
+
+        wait(1);
+    }
+}
+#elif _DEBUG_MODE == 1
+PpmOut motor(MAIN_MOTOR);
+PpmOut servoAileronRight(AILERON_RIGHT);
+PpmOut servoAileronLeft(AILERON_LEFT);
+PpmOut servoVTailRight(VTAIL_RIGHT);
+PpmOut servoVTailLeft(VTAIL_LEFT);
+
+DigitalOut ledGreen(LED_GREEN);
+
+void _main(){
+    motor.setValue(0);
+    wait(10);
+    while(true){
+        for(int c=25; c<75; c++){
+            motor.setValue(c*10);
+            servoAileronRight.setValue(c*10);
+            servoAileronLeft.setValue(c*10);
+            servoVTailRight.setValue(c*10);
+            servoVTailLeft.setValue(c*10);
+            wait_ms(20);
+        }
+        for(int c=75; c>25; c--){
+            motor.setValue(c*10);
+            servoAileronRight.setValue(c*10);
+            servoAileronLeft.setValue(c*10);
+            servoVTailRight.setValue(c*10);
+            servoVTailLeft.setValue(c*10);
+            wait_ms(20);
         }
     }
-#elif _DEBUG_MODE==1
-    PpmOut motor(MAIN_MOTOR);
-    PpmOut servoAileronRight(AILERON_RIGHT);
-    PpmOut servoAileronLeft(AILERON_LEFT);
-    PpmOut servoVTailRight(VTAIL_RIGHT);
-    PpmOut servoVTailLeft(VTAIL_LEFT);
+}
+#elif _DEBUG_MODE == 2
+Serial pc(USBTX, USBRX);
 
-    DigitalOut ledGreen(LED_GREEN);
+void _main(){
+    receiver::init();
 
-    void _main(){
-        motor.setValue(0);
-        wait(10);
-        while(true){
-            for(int c=25; c<75; c++){
-                motor.setValue(c*10);
-                servoAileronRight.setValue(c*10);
-                servoAileronLeft.setValue(c*10);
-                servoVTailRight.setValue(c*10);
-                servoVTailLeft.setValue(c*10);
-                wait_ms(20);
+    while(true){
+        printf("Raw: %d\t%d\t%d\t Norm: %d\t%d\t%d\t Status: %d\tFL: %d\t FS: %d\n",
+            receiver::sbus.getChannel(0), receiver::sbus.getChannel(1), receiver::sbus.getChannel(2),
+            receiver::get(0), receiver::get(1), receiver::get(2), receiver::status(),
+            receiver::sbus.frameLost(), receiver::sbus.failSave());
+        wait(0.1);
+    }
+}
+#elif _DEBUG_MODE == 3
+Serial pc(USBTX, USBRX);
+I2C i2c(D4, D5);
+Srf02 us(i2c);
+
+void _main(){
+    printf("SRF-02 Test\n");
+
+    us.startMeasurement();
+    while(true){
+        if(us.isReady()){
+            printf("Dist %d\n", us.readDistance());
+            us.startMeasurement();
+        }
+
+        /*if(!us.isAvailable()){
+            printf("Sensor not available\n");
+        }*/
+        wait_ms(100);
+    }
+}
+#elif _DEBUG_MODE == 4
+Serial pc(USBTX, USBRX);
+I2C i2c(D4, D5);
+Mpl3115a2 baro(i2c);
+
+void _main(){
+    while(true){
+        if(baro.isReady()){
+            printf("Height: %f [m]\n", baro.getAltitude());
+        }
+    }
+}
+#elif _DEBUG_MODE == 5
+Serial pc(USBTX, USBRX);
+I2C i2c(D4, D5);
+Bno055 imu(i2c);
+
+void _main(){
+    while(true){
+        int16_t eulHeading, eulPitch, eulRoll;
+
+        eulHeading = imu.eulHeading();
+        eulPitch = imu.eulPitch();
+        eulRoll = imu.eulRoll();
+
+        printf("IMU: %d\t%d\t%d\n", eulHeading, eulPitch, eulRoll);
+    }
+}
+#elif _DEBUG_MODE == 6
+
+I2C i2c(I2C_SDA, I2C_SCL);
+
+void _main() {
+    printf("\nI2C Scanner");
+
+    while (1) {
+        int error, address;
+        int nDevices;
+
+        printf("Scanning...\n");
+
+        nDevices = 0;
+
+        for (address = 1; address < 127; address++) {
+            i2c.start();
+            error = i2c.write(address << 1); //We shift it left because mbed takes in 8 bit addreses
+            i2c.stop();
+            if (error == 1) {
+                printf("I2C device found at address 0x%X aka 0x%X\n", address, address << 1);
+                nDevices++;
             }
-            for(int c=75; c>25; c--){
-                motor.setValue(c*10);
-                servoAileronRight.setValue(c*10);
-                servoAileronLeft.setValue(c*10);
-                servoVTailRight.setValue(c*10);
-                servoVTailLeft.setValue(c*10);
-                wait_ms(20);
-            }
+
         }
+        if (nDevices == 0)
+            printf("No I2C devices found\n");
+        else
+            printf("\ndone\n");
+
+        wait(5);           // wait 5 seconds for next scan
+
     }
-#elif _DEBUG_MODE==2
-    Serial pc(USBTX, USBRX);
+}
 
-    void _main(){
-        receiver::init();
-
-        while(true){
-            printf("Raw: %d\t%d\t%d\t Norm: %d\t%d\t%d\t Status: %d\tFL: %d\t FS: %d\n",
-                receiver::sbus.getChannel(0), receiver::sbus.getChannel(1), receiver::sbus.getChannel(2),
-                receiver::get(0), receiver::get(1), receiver::get(2), receiver::status(),
-                receiver::sbus.frameLost(), receiver::sbus.failSave());
-            wait(0.1);
-        }
-    }
-#elif _DEBUG_MODE==3
-    Serial pc(USBTX, USBRX);
-    I2C i2c(I2C_SDA, I2C_SCL);
-    Srf02 us(i2c);
-
-    void _main(){
-        printf("SRF-02 Test\n");
-
-        us.startMeasurement();
-        while(true){
-            if(us.isReady()){
-                printf("Dist %d\n", us.readDistance());
-                us.startMeasurement();
-            }
-
-            /*if(!us.isAvailable()){
-                printf("Sensor not available\n");
-            }*/
-            wait_ms(100);
-        }
-    }
-#elif _DEBUG_MODE==4
-    Serial pc(USBTX, USBRX);
-    I2C i2c(I2C_SDA, I2C_SCL);
-    Mpl3115a2 baro(i2c);
-
-    void _main(){
-        while(true){
-            if(baro.isReady()){
-                uint16_t alt = baro.getAltitude();
-                printf("Height: %f [m]\t", alt);
-            }
-        }
-    }
-#elif _DEBUG_MODE==5
-    Serial pc(USBTX, USBRX);
-    I2C i2c(I2C_SDA, I2C_SCL);
-    Bno055 imu(i2c);
-
-    void _main(){
-        while(true){
-            int16_t eulHeading, eulPitch, eulRoll;
-
-            eulHeading = imu.eulHeading();
-            eulPitch = imu.eulPitch();
-            eulRoll = imu.eulRoll();
-
-            printf("IMU: %d\t%d\t%d\n", eulHeading, eulPitch, eulRoll);
-        }
-    }
-#elif _DEBUG_MODE==6
-
-    I2C i2c(I2C_SDA , I2C_SCL );
-
-    void _main() {
-        printf("\nI2C Scanner");
-
-        while(1) {
-            int error, address;
-            int nDevices;
-
-            printf("Scanning...\n");
-
-             nDevices = 0;
-
-              for(address = 1; address < 127; address++ )
-              {
-                i2c.start();
-                error = i2c.write(address << 1); //We shift it left because mbed takes in 8 bit addreses
-                i2c.stop();
-                if (error == 1)
-                {
-                  printf("I2C device found at address 0x%X aka 0x%X\n", address, address<<1);
-                  nDevices++;
-                }
-
-              }
-              if (nDevices == 0)
-                printf("No I2C devices found\n");
-              else
-                printf("\ndone\n");
-
-              wait(5);           // wait 5 seconds for next scan
-
-            }
-    }
 #else
-    #error You need to select a _DEBUG_MODE
+#error You need to select a _DEBUG_MODE
 #endif
