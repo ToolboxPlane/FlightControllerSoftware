@@ -1,4 +1,4 @@
-ARM GAS  /tmp/cck3pP1q.s 			page 1
+ARM GAS  /tmp/ccC2ksGA.s 			page 1
 
 
    1              		.syntax unified
@@ -58,7 +58,7 @@ ARM GAS  /tmp/cck3pP1q.s 			page 1
   28:Src/tim.c     ****   * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
   29:Src/tim.c     ****   * DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE
   30:Src/tim.c     ****   * FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
-ARM GAS  /tmp/cck3pP1q.s 			page 2
+ARM GAS  /tmp/ccC2ksGA.s 			page 2
 
 
   31:Src/tim.c     ****   * DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
@@ -118,13 +118,13 @@ ARM GAS  /tmp/cck3pP1q.s 			page 1
   85:Src/tim.c     ****   if (HAL_TIMEx_MasterConfigSynchronization(&htim1, &sMasterConfig) != HAL_OK)
   86:Src/tim.c     ****   {
   87:Src/tim.c     ****     _Error_Handler(__FILE__, __LINE__);
-ARM GAS  /tmp/cck3pP1q.s 			page 3
+ARM GAS  /tmp/ccC2ksGA.s 			page 3
 
 
   88:Src/tim.c     ****   }
   89:Src/tim.c     **** 
   90:Src/tim.c     ****   sConfigOC.OCMode = TIM_OCMODE_PWM1;
-  91:Src/tim.c     ****   sConfigOC.Pulse = 3000;
+  91:Src/tim.c     ****   sConfigOC.Pulse = 1000;
   92:Src/tim.c     ****   sConfigOC.OCPolarity = TIM_OCPOLARITY_HIGH;
   93:Src/tim.c     ****   sConfigOC.OCNPolarity = TIM_OCNPOLARITY_HIGH;
   94:Src/tim.c     ****   sConfigOC.OCFastMode = TIM_OCFAST_DISABLE;
@@ -178,7 +178,7 @@ ARM GAS  /tmp/cck3pP1q.s 			page 1
  142:Src/tim.c     ****   htim2.Init.AutoReloadPreload = TIM_AUTORELOAD_PRELOAD_DISABLE;
  143:Src/tim.c     ****   if (HAL_TIM_PWM_Init(&htim2) != HAL_OK)
  144:Src/tim.c     ****   {
-ARM GAS  /tmp/cck3pP1q.s 			page 4
+ARM GAS  /tmp/ccC2ksGA.s 			page 4
 
 
  145:Src/tim.c     ****     _Error_Handler(__FILE__, __LINE__);
@@ -192,7 +192,7 @@ ARM GAS  /tmp/cck3pP1q.s 			page 1
  153:Src/tim.c     ****   }
  154:Src/tim.c     **** 
  155:Src/tim.c     ****   sConfigOC.OCMode = TIM_OCMODE_PWM1;
- 156:Src/tim.c     ****   sConfigOC.Pulse = 3000;
+ 156:Src/tim.c     ****   sConfigOC.Pulse = 1000;
  157:Src/tim.c     ****   sConfigOC.OCPolarity = TIM_OCPOLARITY_HIGH;
  158:Src/tim.c     ****   sConfigOC.OCFastMode = TIM_OCFAST_DISABLE;
  159:Src/tim.c     ****   if (HAL_TIM_PWM_ConfigChannel(&htim2, &sConfigOC, TIM_CHANNEL_2) != HAL_OK)
@@ -238,7 +238,7 @@ ARM GAS  /tmp/cck3pP1q.s 			page 1
  199:Src/tim.c     ****     _Error_Handler(__FILE__, __LINE__);
  200:Src/tim.c     ****   }
  201:Src/tim.c     **** 
-ARM GAS  /tmp/cck3pP1q.s 			page 5
+ARM GAS  /tmp/ccC2ksGA.s 			page 5
 
 
  202:Src/tim.c     ****   sBreakDeadTimeConfig.OffStateRunMode = TIM_OSSR_DISABLE;
@@ -298,7 +298,7 @@ ARM GAS  /tmp/cck3pP1q.s 			page 1
  229:Src/tim.c     ****   /* USER CODE BEGIN TIM1_MspInit 1 */
  230:Src/tim.c     **** 
  231:Src/tim.c     ****   /* USER CODE END TIM1_MspInit 1 */
-ARM GAS  /tmp/cck3pP1q.s 			page 6
+ARM GAS  /tmp/ccC2ksGA.s 			page 6
 
 
  232:Src/tim.c     ****   }
@@ -358,7 +358,7 @@ ARM GAS  /tmp/cck3pP1q.s 			page 1
   96              		.cfi_startproc
   97              		@ args = 0, pretend = 0, frame = 8
   98              		@ frame_needed = 0, uses_anonymous_args = 0
-ARM GAS  /tmp/cck3pP1q.s 			page 7
+ARM GAS  /tmp/ccC2ksGA.s 			page 7
 
 
   99              		@ link register save eliminated.
@@ -418,7 +418,7 @@ ARM GAS  /tmp/cck3pP1q.s 			page 1
  139              		.cfi_startproc
  140              		@ args = 0, pretend = 0, frame = 24
  141              		@ frame_needed = 0, uses_anonymous_args = 0
-ARM GAS  /tmp/cck3pP1q.s 			page 8
+ARM GAS  /tmp/ccC2ksGA.s 			page 8
 
 
  142              	.LVL2:
@@ -478,7 +478,7 @@ ARM GAS  /tmp/cck3pP1q.s 			page 1
  281:Src/tim.c     **** 
  282:Src/tim.c     ****     GPIO_InitStruct.Pin = PPM_VTAIL_R_Pin|PPM_MOTOR_Pin;
  178              		.loc 1 282 0
-ARM GAS  /tmp/cck3pP1q.s 			page 9
+ARM GAS  /tmp/ccC2ksGA.s 			page 9
 
 
  179 0028 0323     		movs	r3, #3
@@ -538,7 +538,7 @@ ARM GAS  /tmp/cck3pP1q.s 			page 1
  306:Src/tim.c     ****     GPIO_InitStruct.Alternate = GPIO_AF1_TIM2;
  210              		.loc 1 306 0
  211 0050 0123     		movs	r3, #1
-ARM GAS  /tmp/cck3pP1q.s 			page 10
+ARM GAS  /tmp/ccC2ksGA.s 			page 10
 
 
  212 0052 0593     		str	r3, [sp, #20]
@@ -598,7 +598,7 @@ ARM GAS  /tmp/cck3pP1q.s 			page 1
  245              	.LVL11:
  246              	.L12:
  328:Src/tim.c     **** 
-ARM GAS  /tmp/cck3pP1q.s 			page 11
+ARM GAS  /tmp/ccC2ksGA.s 			page 11
 
 
  329:Src/tim.c     ****   /* USER CODE BEGIN TIM16_MspPostInit 1 */
@@ -658,7 +658,7 @@ ARM GAS  /tmp/cck3pP1q.s 			page 1
  292 0012 44F62062 		movw	r2, #20000
  293 0016 C260     		str	r2, [r0, #12]
   63:Src/tim.c     ****   htim1.Init.RepetitionCounter = 0;
-ARM GAS  /tmp/cck3pP1q.s 			page 12
+ARM GAS  /tmp/ccC2ksGA.s 			page 12
 
 
  294              		.loc 1 63 0
@@ -718,7 +718,7 @@ ARM GAS  /tmp/cck3pP1q.s 			page 1
  338 0058 1393     		str	r3, [sp, #76]
   83:Src/tim.c     ****   sMasterConfig.MasterSlaveMode = TIM_MASTERSLAVEMODE_DISABLE;
  339              		.loc 1 83 0
-ARM GAS  /tmp/cck3pP1q.s 			page 13
+ARM GAS  /tmp/ccC2ksGA.s 			page 13
 
 
  340 005a 1493     		str	r3, [sp, #80]
@@ -739,13 +739,13 @@ ARM GAS  /tmp/cck3pP1q.s 			page 1
  352 006c FFF7FEFF 		bl	_Error_Handler
  353              	.LVL19:
  354              	.L23:
-  90:Src/tim.c     ****   sConfigOC.Pulse = 3000;
+  90:Src/tim.c     ****   sConfigOC.Pulse = 1000;
  355              		.loc 1 90 0
  356 0070 6023     		movs	r3, #96
  357 0072 0C93     		str	r3, [sp, #48]
   91:Src/tim.c     ****   sConfigOC.OCPolarity = TIM_OCPOLARITY_HIGH;
  358              		.loc 1 91 0
- 359 0074 40F6B833 		movw	r3, #3000
+ 359 0074 4FF47A73 		mov	r3, #1000
  360 0078 0D93     		str	r3, [sp, #52]
   92:Src/tim.c     ****   sConfigOC.OCNPolarity = TIM_OCNPOLARITY_HIGH;
  361              		.loc 1 92 0
@@ -778,7 +778,7 @@ ARM GAS  /tmp/cck3pP1q.s 			page 1
  382              	.LVL21:
  383              	.L24:
  102:Src/tim.c     ****   {
-ARM GAS  /tmp/cck3pP1q.s 			page 14
+ARM GAS  /tmp/ccC2ksGA.s 			page 14
 
 
  384              		.loc 1 102 0
@@ -838,7 +838,7 @@ ARM GAS  /tmp/cck3pP1q.s 			page 1
  427 00d4 0893     		str	r3, [sp, #32]
  120:Src/tim.c     ****   sBreakDeadTimeConfig.Break2Filter = 0;
  428              		.loc 1 120 0
-ARM GAS  /tmp/cck3pP1q.s 			page 15
+ARM GAS  /tmp/ccC2ksGA.s 			page 15
 
 
  429 00d6 4FF00072 		mov	r2, #33554432
@@ -898,7 +898,7 @@ ARM GAS  /tmp/cck3pP1q.s 			page 1
  478 0000 00B5     		push	{lr}
  479              	.LCFI10:
  480              		.cfi_def_cfa_offset 4
-ARM GAS  /tmp/cck3pP1q.s 			page 16
+ARM GAS  /tmp/ccC2ksGA.s 			page 16
 
 
  481              		.cfi_offset 14, -4
@@ -958,19 +958,19 @@ ARM GAS  /tmp/cck3pP1q.s 			page 1
  523              		.loc 1 152 0
  524 003c 0E48     		ldr	r0, .L36+4
  525 003e 9821     		movs	r1, #152
-ARM GAS  /tmp/cck3pP1q.s 			page 17
+ARM GAS  /tmp/ccC2ksGA.s 			page 17
 
 
  526 0040 FFF7FEFF 		bl	_Error_Handler
  527              	.LVL32:
  528              	.L33:
- 155:Src/tim.c     ****   sConfigOC.Pulse = 3000;
+ 155:Src/tim.c     ****   sConfigOC.Pulse = 1000;
  529              		.loc 1 155 0
  530 0044 6023     		movs	r3, #96
  531 0046 0093     		str	r3, [sp]
  156:Src/tim.c     ****   sConfigOC.OCPolarity = TIM_OCPOLARITY_HIGH;
  532              		.loc 1 156 0
- 533 0048 40F6B833 		movw	r3, #3000
+ 533 0048 4FF47A73 		mov	r3, #1000
  534 004c 0193     		str	r3, [sp, #4]
  157:Src/tim.c     ****   sConfigOC.OCFastMode = TIM_OCFAST_DISABLE;
  535              		.loc 1 157 0
@@ -1018,7 +1018,7 @@ ARM GAS  /tmp/cck3pP1q.s 			page 1
  573              		.global	MX_TIM16_Init
  574              		.thumb
  575              		.thumb_func
-ARM GAS  /tmp/cck3pP1q.s 			page 18
+ARM GAS  /tmp/ccC2ksGA.s 			page 18
 
 
  577              	MX_TIM16_Init:
@@ -1078,7 +1078,7 @@ ARM GAS  /tmp/cck3pP1q.s 			page 1
  620 002c 1A48     		ldr	r0, .L44
  621 002e FFF7FEFF 		bl	HAL_TIM_PWM_Init
  622              	.LVL38:
-ARM GAS  /tmp/cck3pP1q.s 			page 19
+ARM GAS  /tmp/ccC2ksGA.s 			page 19
 
 
  623 0032 18B1     		cbz	r0, .L40
@@ -1138,7 +1138,7 @@ ARM GAS  /tmp/cck3pP1q.s 			page 1
  664              		.loc 1 204 0
  665 006a 0293     		str	r3, [sp, #8]
  205:Src/tim.c     ****   sBreakDeadTimeConfig.BreakState = TIM_BREAK_DISABLE;
-ARM GAS  /tmp/cck3pP1q.s 			page 20
+ARM GAS  /tmp/ccC2ksGA.s 			page 20
 
 
  666              		.loc 1 205 0
@@ -1198,7 +1198,7 @@ ARM GAS  /tmp/cck3pP1q.s 			page 1
  714              	HAL_TIM_Base_MspDeInit:
  715              	.LFB131:
  335:Src/tim.c     **** 
-ARM GAS  /tmp/cck3pP1q.s 			page 21
+ARM GAS  /tmp/ccC2ksGA.s 			page 21
 
 
  336:Src/tim.c     **** void HAL_TIM_Base_MspDeInit(TIM_HandleTypeDef* tim_baseHandle)
@@ -1258,7 +1258,7 @@ ARM GAS  /tmp/cck3pP1q.s 			page 1
  749 0030 00440140 		.word	1073824768
  750              		.cfi_endproc
  751              	.LFE131:
-ARM GAS  /tmp/cck3pP1q.s 			page 22
+ARM GAS  /tmp/ccC2ksGA.s 			page 22
 
 
  753              		.section	.text.HAL_TIM_PWM_MspDeInit,"ax",%progbits
@@ -1318,7 +1318,7 @@ ARM GAS  /tmp/cck3pP1q.s 			page 1
  791      6300
  792              		.text
  793              	.Letext0:
-ARM GAS  /tmp/cck3pP1q.s 			page 23
+ARM GAS  /tmp/ccC2ksGA.s 			page 23
 
 
  794              		.file 2 "/usr/include/newlib/machine/_default_types.h"
@@ -1331,38 +1331,38 @@ ARM GAS  /tmp/cck3pP1q.s 			page 1
  801              		.file 9 "Drivers/CMSIS/Include/core_cm4.h"
  802              		.file 10 "Inc/tim.h"
  803              		.file 11 "Drivers/STM32L4xx_HAL_Driver/Inc/stm32l4xx_hal_tim_ex.h"
-ARM GAS  /tmp/cck3pP1q.s 			page 24
+ARM GAS  /tmp/ccC2ksGA.s 			page 24
 
 
 DEFINED SYMBOLS
                             *ABS*:0000000000000000 tim.c
-     /tmp/cck3pP1q.s:21     .text.HAL_TIM_Base_MspInit:0000000000000000 $t
-     /tmp/cck3pP1q.s:26     .text.HAL_TIM_Base_MspInit:0000000000000000 HAL_TIM_Base_MspInit
-     /tmp/cck3pP1q.s:81     .text.HAL_TIM_Base_MspInit:0000000000000040 $d
-     /tmp/cck3pP1q.s:88     .text.HAL_TIM_PWM_MspInit:0000000000000000 $t
-     /tmp/cck3pP1q.s:93     .text.HAL_TIM_PWM_MspInit:0000000000000000 HAL_TIM_PWM_MspInit
-     /tmp/cck3pP1q.s:131    .text.HAL_TIM_MspPostInit:0000000000000000 $t
-     /tmp/cck3pP1q.s:136    .text.HAL_TIM_MspPostInit:0000000000000000 HAL_TIM_MspPostInit
-     /tmp/cck3pP1q.s:256    .text.HAL_TIM_MspPostInit:0000000000000088 $d
-     /tmp/cck3pP1q.s:263    .text.MX_TIM1_Init:0000000000000000 $t
-     /tmp/cck3pP1q.s:268    .text.MX_TIM1_Init:0000000000000000 MX_TIM1_Init
-     /tmp/cck3pP1q.s:460    .text.MX_TIM1_Init:0000000000000100 $d
+     /tmp/ccC2ksGA.s:21     .text.HAL_TIM_Base_MspInit:0000000000000000 $t
+     /tmp/ccC2ksGA.s:26     .text.HAL_TIM_Base_MspInit:0000000000000000 HAL_TIM_Base_MspInit
+     /tmp/ccC2ksGA.s:81     .text.HAL_TIM_Base_MspInit:0000000000000040 $d
+     /tmp/ccC2ksGA.s:88     .text.HAL_TIM_PWM_MspInit:0000000000000000 $t
+     /tmp/ccC2ksGA.s:93     .text.HAL_TIM_PWM_MspInit:0000000000000000 HAL_TIM_PWM_MspInit
+     /tmp/ccC2ksGA.s:131    .text.HAL_TIM_MspPostInit:0000000000000000 $t
+     /tmp/ccC2ksGA.s:136    .text.HAL_TIM_MspPostInit:0000000000000000 HAL_TIM_MspPostInit
+     /tmp/ccC2ksGA.s:256    .text.HAL_TIM_MspPostInit:0000000000000088 $d
+     /tmp/ccC2ksGA.s:263    .text.MX_TIM1_Init:0000000000000000 $t
+     /tmp/ccC2ksGA.s:268    .text.MX_TIM1_Init:0000000000000000 MX_TIM1_Init
+     /tmp/ccC2ksGA.s:460    .text.MX_TIM1_Init:0000000000000100 $d
                             *COM*:0000000000000040 htim1
-     /tmp/cck3pP1q.s:467    .text.MX_TIM2_Init:0000000000000000 $t
-     /tmp/cck3pP1q.s:472    .text.MX_TIM2_Init:0000000000000000 MX_TIM2_Init
-     /tmp/cck3pP1q.s:566    .text.MX_TIM2_Init:0000000000000074 $d
+     /tmp/ccC2ksGA.s:467    .text.MX_TIM2_Init:0000000000000000 $t
+     /tmp/ccC2ksGA.s:472    .text.MX_TIM2_Init:0000000000000000 MX_TIM2_Init
+     /tmp/ccC2ksGA.s:566    .text.MX_TIM2_Init:0000000000000074 $d
                             *COM*:0000000000000040 htim2
-     /tmp/cck3pP1q.s:572    .text.MX_TIM16_Init:0000000000000000 $t
-     /tmp/cck3pP1q.s:577    .text.MX_TIM16_Init:0000000000000000 MX_TIM16_Init
-     /tmp/cck3pP1q.s:702    .text.MX_TIM16_Init:0000000000000098 $d
+     /tmp/ccC2ksGA.s:572    .text.MX_TIM16_Init:0000000000000000 $t
+     /tmp/ccC2ksGA.s:577    .text.MX_TIM16_Init:0000000000000000 MX_TIM16_Init
+     /tmp/ccC2ksGA.s:702    .text.MX_TIM16_Init:0000000000000098 $d
                             *COM*:0000000000000040 htim16
-     /tmp/cck3pP1q.s:709    .text.HAL_TIM_Base_MspDeInit:0000000000000000 $t
-     /tmp/cck3pP1q.s:714    .text.HAL_TIM_Base_MspDeInit:0000000000000000 HAL_TIM_Base_MspDeInit
-     /tmp/cck3pP1q.s:748    .text.HAL_TIM_Base_MspDeInit:000000000000002c $d
-     /tmp/cck3pP1q.s:754    .text.HAL_TIM_PWM_MspDeInit:0000000000000000 $t
-     /tmp/cck3pP1q.s:759    .text.HAL_TIM_PWM_MspDeInit:0000000000000000 HAL_TIM_PWM_MspDeInit
-     /tmp/cck3pP1q.s:781    .text.HAL_TIM_PWM_MspDeInit:0000000000000014 $d
-     /tmp/cck3pP1q.s:789    .rodata.str1.4:0000000000000000 $d
+     /tmp/ccC2ksGA.s:709    .text.HAL_TIM_Base_MspDeInit:0000000000000000 $t
+     /tmp/ccC2ksGA.s:714    .text.HAL_TIM_Base_MspDeInit:0000000000000000 HAL_TIM_Base_MspDeInit
+     /tmp/ccC2ksGA.s:748    .text.HAL_TIM_Base_MspDeInit:000000000000002c $d
+     /tmp/ccC2ksGA.s:754    .text.HAL_TIM_PWM_MspDeInit:0000000000000000 $t
+     /tmp/ccC2ksGA.s:759    .text.HAL_TIM_PWM_MspDeInit:0000000000000000 HAL_TIM_PWM_MspDeInit
+     /tmp/ccC2ksGA.s:781    .text.HAL_TIM_PWM_MspDeInit:0000000000000014 $d
+     /tmp/ccC2ksGA.s:789    .rodata.str1.4:0000000000000000 $d
                      .debug_frame:0000000000000010 $d
 
 UNDEFINED SYMBOLS
