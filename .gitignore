@@ -86,3 +86,5 @@ dkms.conf
 *.iml
 out
 gen
+build/
+.dep/

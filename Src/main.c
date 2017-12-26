@@ -66,6 +66,8 @@ void SystemClock_Config(void);
 
 /* USER CODE BEGIN 0 */
 
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wmissing-noreturn"
 /* USER CODE END 0 */
 
 int main(void) {
@@ -136,12 +138,11 @@ int main(void) {
     while (1) {
         /* USER CODE END WHILE */
 
+        /* USER CODE BEGIN 3 */
         // UART mit DMA
-        char data[] = "Test\n\r";
+        uint8_t data[] = "Test\n\r";
         HAL_UART_Transmit_DMA(&huart2, data, sizeof(data));
         HAL_Delay(100);
-
-
 
         /*
         // Daten von BNO-055
@@ -163,15 +164,11 @@ int main(void) {
         data[9] = '\n';
         HAL_UART_Transmit_DMA(&huart2, data, sizeof(data));
         HAL_Delay(200);*/
-
-
-
-        /* USER CODE BEGIN 3 */
-
     }
     /* USER CODE END 3 */
 
 }
+#pragma clang diagnostic pop
 
 /** System Clock Configuration
 */
@@ -251,6 +248,8 @@ void SystemClock_Config(void) {
 
 /* USER CODE END 4 */
 
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wmissing-noreturn"
 /**
   * @brief  This function is executed in case of error occurrence.
   * @param  None
@@ -263,6 +262,7 @@ void _Error_Handler(char *file, int line) {
     }
     /* USER CODE END Error_Handler_Debug */
 }
+#pragma clang diagnostic pop
 
 #ifdef USE_FULL_ASSERT
 
