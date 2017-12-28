@@ -114,8 +114,8 @@ int main(void)
     HAL_TIM_PWM_Start(&htim2,TIM_CHANNEL_2);
     HAL_TIM_PWM_Start(&htim16,TIM_CHANNEL_1);
 
-    // BNO-055 Konfigurieren
-    uint8_t cmd[2];
+    //BNO-055 Konfigurieren
+    /*uint8_t cmd[2];
     cmd[0] = 0x3B; //UNIT_SEL
     cmd[1] = 0 << 0 | 1 << 1 | 0 << 2
              | 0 << 4 | 0 << 7;
@@ -127,9 +127,25 @@ int main(void)
 
     HAL_I2C_Master_Transmit_DMA(&hi2c1, 0x28  << 1, cmd, sizeof(cmd));
 
-    HAL_Delay(20);
-    */
-  /* USER CODE END 2 */
+    HAL_Delay(20);*/
+
+    // MPL konfigurieren
+    uint8_t cmd[] = {0x26, 0xB8}; //CTRL-Reg, Oversampling x128/Altimeter
+    HAL_I2C_Master_Transmit_DMA(&hi2c1, 0xC0, cmd, sizeof(cmd));
+
+
+    // Enable Data Ready Flags
+    cmd[0] = 0x13;
+    cmd[1] = 0b111;
+    HAL_I2C_Master_Transmit_DMA(&hi2c1, 0xC0, cmd, sizeof(cmd));
+
+    // Set active
+    cmd[0] = 0x26;
+    cmd[1] = 0xB9;
+    HAL_I2C_Master_Transmit_DMA(&hi2c1, 0xC0, cmd, sizeof(cmd));
+    HAL_Delay(1000);
+
+    /* USER CODE END 2 */
 
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
@@ -147,8 +163,7 @@ int main(void)
 
 
         // Daten von BNO-055
-        uint8_t reg[1];
-        //reg[0] = 0x1A;
+        /*uint8_t reg[1];
         reg[0] = 0;
 
         HAL_I2C_Master_Transmit_DMA(&hi2c1, 0x28 << 1, reg, sizeof(reg));
@@ -158,23 +173,38 @@ int main(void)
 
         HAL_I2C_Master_Receive_DMA(&hi2c1, 0x28 << 1, recv, sizeof(recv));
 
-        uint16_t heading = (uint16_t)(((uint16_t)recv[0x1B] << 8 | recv[0x1A])/16);
-        //uint16_t heading = ((uint16_t)recv[1] << 8 | recv[0]) / 16;
+        int16_t heading = (int16_t)(((uint16_t)recv[0x1B] << 8 | recv[0x1A]));
 
         char data[10] = {' '};
         itoa(heading, data, 10);
         data[8] = '\r';
         data[9] = '\n';
+        HAL_UART_Transmit_DMA(&huart2, data, sizeof(data));*/
+
+        uint8_t out[] = {1};
+        uint8_t res[3];
+
+        HAL_I2C_Master_Transmit_DMA(&hi2c1, 0xC0, out, sizeof(cmd));
+        HAL_I2C_Master_Receive_DMA(&hi2c1, 0xC0, res, sizeof(res));
+
+        //float csb = (res[3]>>4)/16.0;
+
+        uint16_t height = ((uint16_t)res[0] << 8 | res[1]);
+
+        char data[10] = {' '};
+        itoa(height, data, 10);
+        data[8] = '\r';
+        data[9] = '\n';
         HAL_UART_Transmit_DMA(&huart2, data, sizeof(data));
-        HAL_Delay(200);
-        */
 
         // Blink onboard LED
         HAL_GPIO_WritePin(LD3_GPIO_Port, LD3_Pin, GPIO_PIN_SET);
         HAL_Delay(1000);
         HAL_GPIO_WritePin(LD3_GPIO_Port, LD3_Pin, GPIO_PIN_RESET);
-        HAL_Delay(1000);
+
+        HAL_Delay(600);
     }
+    /* USER CODE END 3 */
 #pragma clang diagnostic pop
   /* USER CODE END 3 */
 
@@ -263,6 +293,8 @@ void SystemClock_Config(void)
 
 /* USER CODE END 4 */
 
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wmissing-noreturn"
 /**
   * @brief  This function is executed in case of error occurrence.
   * @param  None
@@ -274,7 +306,7 @@ void _Error_Handler(char * file, int line)
     /* User can add his own implementation to report the HAL error return state */
     while (1) {
     }
-  /* USER CODE END Error_Handler_Debug */ 
+  /* USER CODE END Error_Handler_Debug */
 }
 
 #ifdef USE_FULL_ASSERT
@@ -299,10 +331,10 @@ void assert_failed(uint8_t* file, uint32_t line)
 
 /**
   * @}
-  */ 
+  */
 
 /**
   * @}
-*/ 
+*/
 
 /************************ (C) COPYRIGHT STMicroelectronics *****END OF FILE****/
