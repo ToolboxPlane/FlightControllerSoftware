@@ -115,8 +115,6 @@ int main(void) {
     HAL_TIM_PWM_Start(&htim2,TIM_CHANNEL_2);
     HAL_TIM_PWM_Start(&htim16,TIM_CHANNEL_1);
 
-
-    /*
     //BNO-055 Konfigurieren
     uint8_t cmd[2];
     cmd[0] = 0x3B; //UNIT_SEL
@@ -130,7 +128,7 @@ int main(void) {
 
     HAL_I2C_Master_Transmit_DMA(&hi2c1, 0x28  << 1, cmd, sizeof(cmd));
 
-    HAL_Delay(20);*/
+    HAL_Delay(20);
     /* USER CODE END 2 */
 
     /* Infinite loop */
@@ -140,30 +138,32 @@ int main(void) {
 
         /* USER CODE BEGIN 3 */
         // UART mit DMA
-        uint8_t data[] = "Test\n\r";
+        /*uint8_t data[] = "Test\n\r";
         HAL_UART_Transmit_DMA(&huart2, data, sizeof(data));
-        HAL_Delay(100);
+        HAL_Delay(100);*/
 
-        /*
+
         // Daten von BNO-055
         uint8_t reg[1];
-        reg[0] = 0x1A;
+        //reg[0] = 0x1A;
+        reg[0] = 0;
 
         HAL_I2C_Master_Transmit_DMA(&hi2c1, 0x28 << 1, reg, sizeof(reg));
 
         HAL_Delay(10);
-        uint8_t recv[2];
+        uint8_t recv[64];
 
         HAL_I2C_Master_Receive_DMA(&hi2c1, 0x28 << 1, recv, sizeof(recv));
 
-        uint16_t heading = ((uint16_t)recv[1] << 8 | recv[0]) / 16;
+        uint16_t heading = (uint16_t)(((uint16_t)recv[0x1B] << 8 | recv[0x1A])/16);
+        //uint16_t heading = ((uint16_t)recv[1] << 8 | recv[0]) / 16;
 
         char data[10] = {' '};
         itoa(heading, data, 10);
         data[8] = '\r';
         data[9] = '\n';
         HAL_UART_Transmit_DMA(&huart2, data, sizeof(data));
-        HAL_Delay(200);*/
+        HAL_Delay(200);
     }
     /* USER CODE END 3 */
 
