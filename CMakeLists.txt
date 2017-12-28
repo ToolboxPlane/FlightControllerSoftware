@@ -12,6 +12,7 @@ set(OBJCOPY arm-none-eabi-objcopy)
 set(OBJDUMP arm-none-eabi-objdump)
 set(SIZE arm-none-eabi-size)
 
+
 SET(LINKER_SCRIPT ${CMAKE_SOURCE_DIR}/STM32L432KCUx_FLASH.ld)
 
 #Uncomment for hardware floating point
@@ -27,7 +28,7 @@ SET(CMAKE_CXX_FLAGS_INIT "${COMMON_FLAGS} -std=c++11")
 SET(CMAKE_C_FLAGS_INIT "${COMMON_FLAGS} -std=gnu99")
 SET(CMAKE_EXE_LINKER_FLAGS_INIT "-Wl,-gc-sections -T ${LINKER_SCRIPT}")
 
-PROJECT(FlightController2 C ASM)
+PROJECT(FlightController C ASM)
 set(CMAKE_CXX_STANDARD 11)
 
 #add_definitions(-DARM_MATH_CM4 -DARM_MATH_MATRIX_CHECK -DARM_MATH_ROUNDING -D__FPU_PRESENT=1 )
@@ -49,18 +50,3 @@ add_custom_command(TARGET ${PROJECT_NAME}.elf POST_BUILD
         COMMAND ${CMAKE_OBJCOPY} -Obinary $<TARGET_FILE:${PROJECT_NAME}.elf> ${BIN_FILE}
         COMMENT "Building ${HEX_FILE}
 Building ${BIN_FILE}")
-
-#add_custom_target(UPLOAD
-#        arm-none-eabi-gdb -iex "target remote tcp:127.0.0.1:3333"
-#        -iex "monitor program $<TARGET_FILE:${PROJECT_NAME}.elf>"
-#        -iex "monitor reset init"
-#        -iex "disconnect" -iex "quit")
-
-
-
-add_custom_target(
-        BuildWithMake ALL
-        COMMAND make
-        WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/
-)
-
