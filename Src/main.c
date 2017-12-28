@@ -53,7 +53,9 @@
 
 /* USER CODE BEGIN PV */
 /* Private variables ---------------------------------------------------------*/
-
+uint8_t bnoBuffer0[64], bnoBuffer1[64];
+uint8_t *currBnoBuffer;
+float height = 0;
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
@@ -65,6 +67,41 @@ void SystemClock_Config(void);
 /* USER CODE END PFP */
 
 /* USER CODE BEGIN 0 */
+uint8_t state = 0;
+
+void handle_i2c() {
+
+    uint8_t reg;
+    uint8_t buf[3];
+
+    switch (state++) {
+        case 0:
+            reg = 0;
+            HAL_I2C_Master_Transmit_DMA(&hi2c1, 0x28 << 1, &reg, sizeof(reg));
+            break;
+        case 1:
+            if(currBnoBuffer == bnoBuffer0) {
+                currBnoBuffer = bnoBuffer1;
+                HAL_I2C_Master_Receive_DMA(&hi2c1, 0x28 << 1, bnoBuffer0, sizeof(bnoBuffer0));
+            } else {
+                currBnoBuffer = bnoBuffer0;
+                HAL_I2C_Master_Receive_DMA(&hi2c1, 0x28 << 1, bnoBuffer1, sizeof(bnoBuffer1));
+            }
+            break;
+        case 2:
+            reg = 1;
+            HAL_I2C_Master_Transmit_DMA(&hi2c1, 0xC0, &reg, sizeof(reg));
+            break;
+        case 3:
+            HAL_I2C_Master_Receive_DMA(&hi2c1, 0xC0, buf, sizeof(buf));
+            if(buf[0] != 0 || buf[1] != 0 || buf[2] != 0)
+                height = ((uint16_t)buf[1] << 8 | buf[2]) + (buf[3]>>4)/16.0f;
+            break;
+        default:
+            state = 0;
+            break;
+    }
+}
 
 /* USER CODE END 0 */
 
@@ -102,7 +139,7 @@ int main(void) {
 
     /* USER CODE BEGIN 2 */
     HAL_GPIO_WritePin(LD3_GPIO_Port, LD3_Pin, GPIO_PIN_SET);
-    /*
+
     // Timer starten
     HAL_TIM_Base_Start(&htim1);
     HAL_TIM_Base_Start(&htim2);
@@ -115,7 +152,7 @@ int main(void) {
     HAL_TIM_PWM_Start(&htim16,TIM_CHANNEL_1);
 
     //BNO-055 Konfigurieren
-    /*uint8_t cmd[2];
+    uint8_t cmd[2];
     cmd[0] = 0x3B; //UNIT_SEL
     cmd[1] = 0 << 0 | 1 << 1 | 0 << 2
              | 0 << 4 | 0 << 7;
@@ -127,12 +164,12 @@ int main(void) {
 
     HAL_I2C_Master_Transmit_DMA(&hi2c1, 0x28  << 1, cmd, sizeof(cmd));
 
-    HAL_Delay(20);*/
+    currBnoBuffer = bnoBuffer0;
 
     // MPL konfigurieren
-    uint8_t cmd[] = {0x26, 0xB8}; //CTRL-Reg, Oversampling x128/Altimeter
+    cmd[0] = 0x26; // CTRL-Reg
+    cmd[1] = (0b1 << 7 | 0b0 << 3); // Oversampling x1/Altimeter
     HAL_I2C_Master_Transmit_DMA(&hi2c1, 0xC0, cmd, sizeof(cmd));
-
 
     // Enable Data Ready Flags
     cmd[0] = 0x13;
@@ -143,7 +180,7 @@ int main(void) {
     cmd[0] = 0x26;
     cmd[1] = 0xB9;
     HAL_I2C_Master_Transmit_DMA(&hi2c1, 0xC0, cmd, sizeof(cmd));
-    HAL_Delay(1000);
+    HAL_Delay(100);
     HAL_GPIO_WritePin(LD3_GPIO_Port, LD3_Pin, GPIO_PIN_RESET);
     /* USER CODE END 2 */
 
@@ -171,36 +208,46 @@ int main(void) {
         HAL_Delay(10);
         uint8_t recv[64];
 
-        HAL_I2C_Master_Receive_DMA(&hi2c1, 0x28 << 1, recv, sizeof(recv));
+        HAL_I2C_Master_Receive_DMA(&hi2c1, 0x28 << 1, recv, sizeof(recv));*/
 
-        int16_t heading = (int16_t)(((uint16_t)recv[0x1B] << 8 | recv[0x1A]));
+       // uint16_t heading = (uint16_t)(((uint16_t)currBnoBuffer[0x1B] << 8 | currBnoBuffer[0x1A])/16);
+       // uint8_t val = (uint8_t)(heading/2);
 
-        char data[10] = {' '};
-        itoa(heading, data, 10);
-        data[8] = '\r';
-        data[9] = '\n';
-        HAL_UART_Transmit_DMA(&huart2, data, sizeof(data));*/
+        /*char data[20] = {' '};
+        itoa(heading, data, sizeof(data));
+        data[17] = (char)((currBnoBuffer == bnoBuffer0) ? '0' : '1');
+        data[18] = '\r';
+        data[19] = '\n';*/
+     //   HAL_UART_Transmit_DMA(&huart2, &val, sizeof(val));
 
-        uint8_t out[] = {0x1};
+        uint8_t val = (uint8_t)(height/2);
+        HAL_UART_Transmit_DMA(&huart2, &val, sizeof(val));
+
+
+        /*uint8_t out[] = {0x1};
         uint8_t res[3];
 
         HAL_I2C_Master_Transmit_DMA(&hi2c1, 0xC0, out, sizeof(cmd));
 
         HAL_Delay(10);
 
-        HAL_I2C_Master_Receive_DMA(&hi2c1, 0xC0, res, sizeof(res));
+        HAL_I2C_Master_Receive_DMA(&hi2c1, 0xC0, res, sizeof(res));*/
 
         //float csb = (res[3]>>4)/16.0;
 
-        float height = ((uint16_t)res[1] << 8 | res[2]) + (res[3]>>4)/16.0f;
+        /*float height = ((uint16_t)res[1] << 8 | res[2]) + (res[3]>>4)/16.0f;
 
         char data[10] = {' '};
         itoa((int)height, data, 10);
         data[8] = '\r';
         data[9] = '\n';
-        HAL_UART_Transmit_DMA(&huart2, (uint8_t*)data, sizeof(data));
+        HAL_UART_Transmit_DMA(&huart2, (uint8_t*)data, sizeof(data));*/
 
-        HAL_Delay(600);
+        if(hi2c1.State == HAL_I2C_STATE_READY) {
+            handle_i2c();
+        }
+
+       // HAL_Delay(600);
     }
     /* USER CODE END 3 */
 #pragma clang diagnostic pop
