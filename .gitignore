@@ -9,3 +9,5 @@ Src/Backup/
 /build/
 .idea/encodings.xml
 .idea/FlightControllerSoftware.iml
+/Src/Backup/
+/Inc/Backup/
