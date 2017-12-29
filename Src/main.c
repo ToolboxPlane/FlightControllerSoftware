@@ -47,17 +47,18 @@
 
 /* USER CODE BEGIN Includes */
 #include <stdlib.h>
-#include "../rc_lib/rc_lib.h"
+#include "rc_lib.h"
 /* USER CODE END Includes */
 
 /* Private variables ---------------------------------------------------------*/
 
 /* USER CODE BEGIN PV */
 /* Private variables ---------------------------------------------------------*/
-#define HEADING (((uint16_t)currBnoBuffer[0x1B] << 8 | currBnoBuffer[0x1A])/16.0)
-#define ROLL (((uint16_t)currBnoBuffer[0x1D] << 8 | currBnoBuffer[0x1C])/16.0)
-#define PITCH (((uint16_t)currBnoBuffer[0x1F] << 8 | currBnoBuffer[0x1E])/16.0)
-
+#define BNO055_HEADING (((uint16_t)currBnoBuffer[0x1B] << 8 | currBnoBuffer[0x1A])/16.0)
+#define BNO055_ROLL (((uint16_t)currBnoBuffer[0x1D] << 8 | currBnoBuffer[0x1C])/16.0)
+#define BNO055_PITCH (((uint16_t)currBnoBuffer[0x1F] << 8 | currBnoBuffer[0x1E])/16.0)
+#define BNO055_TEMP (currBnoBuffer[0x34]);
+#define BNO055_CALIBSTATUS (currBnoBuffer[0x35]);
 
 uint8_t bnoBuffer0[64], bnoBuffer1[64];
 uint8_t *currBnoBuffer;
@@ -75,12 +76,12 @@ void SystemClock_Config(void);
 /* USER CODE END PFP */
 
 /* USER CODE BEGIN 0 */
+uint8_t buf[5];
 
 bool handle_i2c() {
     static uint8_t state = 0;
 
     uint8_t reg;
-    uint8_t buf[5];
 
     switch (state++) {
         case 0:
@@ -102,12 +103,8 @@ bool handle_i2c() {
             break;
         case 3:
             HAL_I2C_Master_Receive_DMA(&hi2c1, 0xC0, buf, sizeof(buf));
-            if(buf[0] != 0 || buf[1] != 0 || buf[2] != 0) {
-                height = ((uint16_t) buf[1] << 8 | buf[2]) + (buf[0] >> 4) / 16.0f;
-            }
-            if(buf[3] != 0 || buf[4] != 0) {
-                temp = buf[4] + (buf[3]>>4)/16.0f;
-            }
+            height = ((uint16_t) buf[1] << 8 | buf[2]) + (buf[0] >> 4) / 16.0f;
+            temp = buf[4] + (buf[3]>>4)/16.0f;
             break;
         default:
             state = 0;
@@ -205,10 +202,10 @@ int main(void)
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wmissing-noreturn"
 
-    rc_lib_package_t package;
-    package.mesh = false;
-    package.channel_count = 8;
-    package.resolution = 1024;
+    rc_lib_package_t transmit_package;
+    transmit_package.mesh = false;
+    transmit_package.channel_count = 8;
+    transmit_package.resolution = 1024;
 
     rc_lib_transmitter_id = 23;
 
@@ -216,16 +213,20 @@ int main(void)
   /* USER CODE END WHILE */
 
   /* USER CODE BEGIN 3 */
+
         if(hi2c1.State == HAL_I2C_STATE_READY) {
             if(handle_i2c()) {
-                package.channel_data[0] = (uint16_t)HEADING;
-                package.channel_data[1] = (uint16_t)ROLL;
-                package.channel_data[2] = (uint16_t)PITCH;
-                package.channel_data[3] = (uint16_t)height;
-                package.channel_data[4] = (uint16_t)temp;
+                transmit_package.channel_data[0] = (uint16_t)BNO055_HEADING;
+                transmit_package.channel_data[1] = (uint16_t)(BNO055_ROLL+180);
+                transmit_package.channel_data[2] = (uint16_t)(BNO055_PITCH+180);
+                transmit_package.channel_data[3] = BNO055_TEMP;
+                transmit_package.channel_data[4] = BNO055_CALIBSTATUS;
+                transmit_package.channel_data[5] = 0;
+                transmit_package.channel_data[6] = (uint16_t)height;
+                transmit_package.channel_data[7] = (uint16_t)temp;
 
-                uint16_t length = rc_lib_encode(&package);
-                HAL_UART_Transmit_DMA(&huart2, package.buffer, length);
+                uint16_t length = rc_lib_encode(&transmit_package);
+                HAL_UART_Transmit_DMA(&huart2, transmit_package.buffer, length);
             }
         }
     }
