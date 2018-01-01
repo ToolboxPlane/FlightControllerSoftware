@@ -46,19 +46,27 @@
 #include "gpio.h"
 
 /* USER CODE BEGIN Includes */
-#include <stdlib.h>
 #include "rc_lib.h"
+#include "controller.h"
 /* USER CODE END Includes */
 
 /* Private variables ---------------------------------------------------------*/
 
 /* USER CODE BEGIN PV */
 /* Private variables ---------------------------------------------------------*/
-#define BNO055_HEADING (((uint16_t)currBnoBuffer[0x1B] << 8 | currBnoBuffer[0x1A])/16.0)
-#define BNO055_ROLL (((uint16_t)currBnoBuffer[0x1D] << 8 | currBnoBuffer[0x1C])/16.0)
-#define BNO055_PITCH (((uint16_t)currBnoBuffer[0x1F] << 8 | currBnoBuffer[0x1E])/16.0)
+#define BNO055_HEADING (((uint16_t)currBnoBuffer[0x1B] << 8 | currBnoBuffer[0x1A])/16.0f)
+#define BNO055_ROLL (((uint16_t)currBnoBuffer[0x1D] << 8 | currBnoBuffer[0x1C])/16.0f)
+#define BNO055_HEADING_PM (BNO055_HEADING > 180 ? BNO055_HEADING-360 : BNO055_HEADING);
+#define BNO055_PITCH (((uint16_t)currBnoBuffer[0x1F] << 8 | currBnoBuffer[0x1E])/16.0f)
+
+#define BNO055_GYRO_X ((uint16_t)currBnoBuffer[0x19] << 8 | currBnoBuffer[0x18])
+#define BNO055_GYRO_Y ((uint16_t)currBnoBuffer[0x17] << 8 | currBnoBuffer[0x16])
+#define BNO055_GYRO_Z ((uint16_t)currBnoBuffer[0x15] << 8 | currBnoBuffer[0x14])
+
 #define BNO055_TEMP (currBnoBuffer[0x34]);
 #define BNO055_CALIBSTATUS (currBnoBuffer[0x35]);
+#define BNO055_OPMODE (currBnoBuffer[0x3D]&(uint8_t)0b1111)
+#define BNO055_SYSERR (currBnoBuffer[0x3A])
 
 uint8_t bnoBuffer0[64], bnoBuffer1[64];
 uint8_t *currBnoBuffer;
@@ -76,17 +84,21 @@ void SystemClock_Config(void);
 /* USER CODE END PFP */
 
 /* USER CODE BEGIN 0 */
-uint8_t buf[5];
+uint8_t buf[6];
 
 bool handle_i2c() {
     static uint8_t state = 0;
 
-    uint8_t reg;
+    if(hi2c1.State != HAL_I2C_STATE_READY) {
+        return true;
+    }
 
     switch (state++) {
         case 0:
-            reg = 0;
-            HAL_I2C_Master_Transmit_DMA(&hi2c1, 0x28 << 1, &reg, sizeof(reg));
+            {
+                uint8_t reg = 0;
+                HAL_I2C_Master_Transmit_DMA(&hi2c1, 0x28 << 1, &reg, sizeof(reg));
+            }
             break;
         case 1:
             if(currBnoBuffer == bnoBuffer0) {
@@ -98,13 +110,18 @@ bool handle_i2c() {
             }
             break;
         case 2:
-            reg = 1;
-            HAL_I2C_Master_Transmit_DMA(&hi2c1, 0xC0, &reg, sizeof(reg));
+            {
+                uint8_t reg = 0;
+                HAL_I2C_Master_Transmit_DMA(&hi2c1, 0xC0, &reg, sizeof(reg));
+            }
             break;
         case 3:
             HAL_I2C_Master_Receive_DMA(&hi2c1, 0xC0, buf, sizeof(buf));
-            height = ((uint16_t) buf[1] << 8 | buf[2]) + (buf[0] >> 4) / 16.0f;
-            temp = buf[4] + (buf[3]>>4)/16.0f;
+        //HAL_UART_Transmit_DMA(&huart2, buf, sizeof(buf));
+            if(buf[0] & ((0b1) << 3)) {
+                height = ((uint16_t) buf[1] << 8 | buf[2]) + (buf[3] >> 4) / 16.0f;
+                temp = buf[4] + (buf[5] >> 4) / 16.0f;
+            }
             break;
         default:
             state = 0;
@@ -128,7 +145,6 @@ int main(void)
   HAL_Init();
 
   /* USER CODE BEGIN Init */
-
   /* USER CODE END Init */
 
   /* Configure the system clock */
@@ -164,16 +180,26 @@ int main(void)
 
     //BNO-055 Konfigurieren
     uint8_t cmd[2];
+
+   /* cmd[0] = 0x3F; // SYS_TRIGGER
+    cmd[1] = 0b1 << 5; //RST_SYS
+    HAL_I2C_Master_Transmit_DMA(&hi2c1, 0x28  << 1, cmd, sizeof(cmd));
+    while (hi2c1.State != HAL_I2C_STATE_READY);*/
+
+    HAL_Delay(1000);
+
     cmd[0] = 0x3B; //UNIT_SEL
     cmd[1] = 0 << 0 | 1 << 1 | 0 << 2
              | 0 << 4 | 0 << 7;
 
     HAL_I2C_Master_Transmit_DMA(&hi2c1, 0x28  << 1, cmd, sizeof(cmd));
+    while (hi2c1.State != HAL_I2C_STATE_READY);
 
     cmd[0] = 0x3D;  //OPR_MODE
     cmd[1] = 0b1011;
 
     HAL_I2C_Master_Transmit_DMA(&hi2c1, 0x28  << 1, cmd, sizeof(cmd));
+    while (hi2c1.State != HAL_I2C_STATE_READY);
 
     currBnoBuffer = bnoBuffer0;
 
@@ -183,11 +209,13 @@ int main(void)
     cmd[0] = 0x26; // CTRL-Reg
     cmd[1] = (0b1 << 7 | 0b0 << 3); // Oversampling x1/Altimeter
     HAL_I2C_Master_Transmit_DMA(&hi2c1, 0xC0, cmd, sizeof(cmd));
+    while (hi2c1.State != HAL_I2C_STATE_READY);
 
     // Enable Data Ready Flags
     cmd[0] = 0x13;
     cmd[1] = 0b111;
     HAL_I2C_Master_Transmit_DMA(&hi2c1, 0xC0, cmd, sizeof(cmd));
+    while (hi2c1.State != HAL_I2C_STATE_READY);
 
     // Set active
     cmd[0] = 0x26;
@@ -204,31 +232,59 @@ int main(void)
 
     rc_lib_package_t transmit_package;
     transmit_package.mesh = false;
-    transmit_package.channel_count = 8;
+    transmit_package.channel_count = 16;
     transmit_package.resolution = 1024;
 
     rc_lib_transmitter_id = 23;
+
+    controller_t roll_controller, pitch_controller, heading_controller;
+
+    roll_controller.P = 1;
+    pitch_controller.P = 1;
+    heading_controller.P = 1;
+
+    roll_controller.I = pitch_controller.I = heading_controller.I = 0.001;
+    roll_controller.D = pitch_controller.D = heading_controller.D = 0.001;
 
     while (1) {
   /* USER CODE END WHILE */
 
   /* USER CODE BEGIN 3 */
+        roll_controller.is_value = BNO055_ROLL;
+        pitch_controller.is_value = BNO055_PITCH;
+        heading_controller.is_value = BNO055_HEADING_PM;
 
-        if(hi2c1.State == HAL_I2C_STATE_READY) {
-            if(handle_i2c()) {
-                transmit_package.channel_data[0] = (uint16_t)BNO055_HEADING;
-                transmit_package.channel_data[1] = (uint16_t)(BNO055_ROLL+180);
-                transmit_package.channel_data[2] = (uint16_t)(BNO055_PITCH+180);
-                transmit_package.channel_data[3] = BNO055_TEMP;
-                transmit_package.channel_data[4] = BNO055_CALIBSTATUS;
-                transmit_package.channel_data[5] = 0;
-                transmit_package.channel_data[6] = (uint16_t)height;
-                transmit_package.channel_data[7] = (uint16_t)temp;
+        roll_controller.deriv = BNO055_GYRO_Z;
+        heading_controller.deriv = BNO055_GYRO_X;
+        pitch_controller.deriv = BNO055_GYRO_Y;
 
-                uint16_t length = rc_lib_encode(&transmit_package);
-                HAL_UART_Transmit_DMA(&huart2, transmit_package.buffer, length);
-            }
+        heading_controller.target_value = 0;
+
+        float heading_control = update_controller(&heading_controller);
+
+        if(handle_i2c()) {
+            transmit_package.channel_data[0] = (uint16_t)BNO055_HEADING;
+            transmit_package.channel_data[1] = 0;(uint16_t)(BNO055_ROLL+180);
+            transmit_package.channel_data[2] = 0;//(uint16_t)(BNO055_PITCH+180);
+            transmit_package.channel_data[3] = (uint16_t)(BNO055_GYRO_X+512);
+            transmit_package.channel_data[4] = 0;//(uint16_t)(BNO055_GYRO_Y+512);
+            transmit_package.channel_data[5] = 0;//(uint16_t)(BNO055_GYRO_Z+512);
+            transmit_package.channel_data[6] = BNO055_CALIBSTATUS;
+            transmit_package.channel_data[7] = 0;
+            transmit_package.channel_data[8] = (uint16_t)height;
+            transmit_package.channel_data[9] = (uint16_t)temp;
+            transmit_package.channel_data[10] = 0;
+            transmit_package.channel_data[11] = 0;
+            transmit_package.channel_data[12] = 0;
+            transmit_package.channel_data[13] = 0;
+            transmit_package.channel_data[14] = 0;
+            transmit_package.channel_data[15] = (uint16_t)(heading_control+512);
+
+            uint16_t length = rc_lib_encode(&transmit_package);
+            HAL_UART_Transmit_DMA(&huart2, transmit_package.buffer, length);
         }
+        HAL_Delay(10);
+
     }
   /* USER CODE END 3 */
 
@@ -327,6 +383,10 @@ void _Error_Handler(char * file, int line)
   /* USER CODE BEGIN Error_Handler_Debug */
     /* User can add his own implementation to report the HAL error return state */
     while (1) {
+        HAL_GPIO_WritePin(LD3_GPIO_Port, LD3_Pin, GPIO_PIN_SET);
+        HAL_Delay(200);
+        HAL_GPIO_WritePin(LD3_GPIO_Port, LD3_Pin, GPIO_PIN_RESET);
+        HAL_Delay(200);
     }
   /* USER CODE END Error_Handler_Debug */ 
 }

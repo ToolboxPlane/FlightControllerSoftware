@@ -14,7 +14,7 @@ uint8_t rc_lib_encode(rc_lib_package_t* package) {
                                      (rc_lib_error_count>0?1:0) << 6 |
                                      package->mesh << 7);
     if(package->mesh){
-        package->buffer[4] = package->mesh | package->routing_length << 1;
+        package->buffer[4] = package->routing_length;
     }
 
     uint8_t resBits = _rc_lib_resolution_steps_2_bit_count(package->resolution);
@@ -28,7 +28,7 @@ uint8_t rc_lib_encode(rc_lib_package_t* package) {
 
     for(int c=0; c<dataSize; c++){
         package->buffer[4+c+package->mesh] = 0;
-        for(int b=0; b<8 && (c*8+b)<(package->resolution*package->channel_count); b++){
+        for(int b=0; b<8 && (c*8+b)<(resBits*package->channel_count); b++){
             uint8_t bit = (uint8_t)(package->channel_data[(c * 8 + b) / resBits] & (0b1 << ((c * 8 + b) % resBits)) ? 1:0);
             package->buffer[4+c+package->mesh] |= bit << b;
         }
@@ -79,8 +79,8 @@ uint8_t rc_lib_decode(rc_lib_package_t* package, uint8_t data) {
             }
             break;
         case 4: // Mesh
-            package->mesh = data & 0b1;
-            package->routing_length = (data & (0b111<<1)) >> 1;
+            package->routing_length = data & 0b1111;
+            package->mesh = package->routing_length > 0;
             receiveStateMachineState = 5;
             break;
         case 5: // Data
