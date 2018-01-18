@@ -5,6 +5,9 @@
 #ifndef FLIGHTCONTROLLER_CONTROLLER_H
 #define FLIGHTCONTROLLER_CONTROLLER_H
 
+#include <stdbool.h>
+#include "main.h"
+
 typedef struct controller {
     float target_value, is_value;
 
@@ -13,8 +16,15 @@ typedef struct controller {
     float i_area, last_is_value;
     float deriv;
     float delta_t;
+
+    bool enabled;
 } controller_t;
 
 float update_controller(controller_t* c);
+
+void init_all_controller();
+void update_all_controller();
+
+extern controller_t roll_controller, pitch_controller, heading_controller;
 
 #endif //FLIGHTCONTROLLER_CONTROLLER_H

@@ -140,6 +140,48 @@ uint8_t rc_lib_calculate_checksum(rc_lib_package_t* package) {
     return checksum;
 }
 
+uint8_t is_discover_message(rc_lib_package_t *package) {
+    return (uint8_t) (package->discover_state == 1);
+}
+
+uint8_t is_discover_response(rc_lib_package_t *package) {
+    return (uint8_t) (package->discover_state == 2);
+}
+
+void set_discover_message(rc_lib_package_t *package) {
+    package->discover_state = 1;
+    package->channel_count = 0;
+    package->mesh = 1;
+}
+
+void make_discover_response(rc_lib_package_t *new_package, rc_lib_package_t *responses, uint8_t len) {
+    new_package->resolution = 256;
+    new_package->channel_count = 1;
+    new_package->mesh = 1;
+    new_package->discover_state = 2;
+
+    uint16_t tidCount = 0;
+    for(uint8_t r=0; r<len; r++) {
+        for(uint16_t c=0; c<responses[r].channel_count; c++) {
+            if(responses[r].channel_data[c] != 0) {
+                if(tidCount+1 > new_package->channel_count) {
+                    new_package->channel_count *= 2;
+                }
+
+                new_package->channel_data[tidCount++] = responses[r].channel_data[c];
+            }
+        }
+    }
+
+    if(tidCount+1 > new_package->channel_count) {
+        new_package->channel_count *= 2;
+    }
+    new_package->channel_data[tidCount++] = rc_lib_transmitter_id;
+    for(uint16_t c=tidCount; c<new_package->channel_count; c++) {
+        new_package->channel_data[c] = 0;
+    }
+}
+
 uint8_t _rc_lib_resolution_steps_2_key(uint16_t steps) {
     switch(steps){
         case 32:

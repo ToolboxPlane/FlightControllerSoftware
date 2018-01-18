@@ -26,11 +26,16 @@ typedef struct rc_lib_package {
 
     uint8_t mesh;
     uint8_t routing_length;
+    uint8_t discover_state; ///< Zero means no discovery-message, one is a discovery message, two a discovery response
 } rc_lib_package_t;
 
 uint8_t rc_lib_encode(rc_lib_package_t* package);
 uint8_t rc_lib_decode(rc_lib_package_t* package, uint8_t data);
 uint8_t rc_lib_calculate_checksum(rc_lib_package_t* checksum);
+uint8_t is_discover_message(rc_lib_package_t* package);
+uint8_t is_discover_response(rc_lib_package_t* package);
+void set_discover_message(rc_lib_package_t* package);
+void make_discover_response(rc_lib_package_t* new_package, rc_lib_package_t* responses, uint8_t len);
 
 uint8_t _rc_lib_resolution_steps_2_key(uint16_t steps);
 uint8_t _rc_lib_channel_count_2_key(uint16_t channel_count);

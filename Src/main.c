@@ -9,7 +9,7 @@
   * inserted by the user or by software development tools
   * are owned by their respective copyright owners.
   *
-  * COPYRIGHT(c) 2017 STMicroelectronics
+  * COPYRIGHT(c) 2018 STMicroelectronics
   *
   * Redistribution and use in source and binary forms, with or without modification,
   * are permitted provided that the following conditions are met:
@@ -48,26 +48,13 @@
 /* USER CODE BEGIN Includes */
 #include "rc_lib.h"
 #include "controller.h"
+#include "statemachine.h"
 /* USER CODE END Includes */
 
 /* Private variables ---------------------------------------------------------*/
 
 /* USER CODE BEGIN PV */
 /* Private variables ---------------------------------------------------------*/
-#define BNO055_HEADING (((uint16_t)currBnoBuffer[0x1B] << 8 | currBnoBuffer[0x1A])/16.0f)
-#define BNO055_ROLL (((uint16_t)currBnoBuffer[0x1D] << 8 | currBnoBuffer[0x1C])/16.0f)
-#define BNO055_HEADING_PM (BNO055_HEADING > 180 ? BNO055_HEADING-360 : BNO055_HEADING);
-#define BNO055_PITCH (((uint16_t)currBnoBuffer[0x1F] << 8 | currBnoBuffer[0x1E])/16.0f)
-
-#define BNO055_GYRO_X ((uint16_t)currBnoBuffer[0x19] << 8 | currBnoBuffer[0x18])
-#define BNO055_GYRO_Y ((uint16_t)currBnoBuffer[0x17] << 8 | currBnoBuffer[0x16])
-#define BNO055_GYRO_Z ((uint16_t)currBnoBuffer[0x15] << 8 | currBnoBuffer[0x14])
-
-#define BNO055_TEMP (currBnoBuffer[0x34]);
-#define BNO055_CALIBSTATUS (currBnoBuffer[0x35]);
-#define BNO055_OPMODE (currBnoBuffer[0x3D]&(uint8_t)0b1111)
-#define BNO055_SYSERR (currBnoBuffer[0x3A])
-
 uint8_t bnoBuffer0[64], bnoBuffer1[64];
 uint8_t *currBnoBuffer;
 float height = 0;
@@ -95,10 +82,10 @@ bool handle_i2c() {
 
     switch (state++) {
         case 0:
-            {
-                uint8_t reg = 0;
-                HAL_I2C_Master_Transmit_DMA(&hi2c1, 0x28 << 1, &reg, sizeof(reg));
-            }
+        {
+            uint8_t reg = 0;
+            HAL_I2C_Master_Transmit_DMA(&hi2c1, 0x28 << 1, &reg, sizeof(reg));
+        }
             break;
         case 1:
             if(currBnoBuffer == bnoBuffer0) {
@@ -110,14 +97,14 @@ bool handle_i2c() {
             }
             break;
         case 2:
-            {
-                uint8_t reg = 0;
-                HAL_I2C_Master_Transmit_DMA(&hi2c1, 0xC0, &reg, sizeof(reg));
-            }
+        {
+            uint8_t reg = 0;
+            HAL_I2C_Master_Transmit_DMA(&hi2c1, 0xC0, &reg, sizeof(reg));
+        }
             break;
         case 3:
             HAL_I2C_Master_Receive_DMA(&hi2c1, 0xC0, buf, sizeof(buf));
-        //HAL_UART_Transmit_DMA(&huart2, buf, sizeof(buf));
+            //HAL_UART_Transmit_DMA(&huart2, buf, sizeof(buf));
             if(buf[0] & ((0b1) << 3)) {
                 height = ((uint16_t) buf[1] << 8 | buf[2]) + (buf[3] >> 4) / 16.0f;
                 temp = buf[4] + (buf[5] >> 4) / 16.0f;
@@ -167,24 +154,13 @@ int main(void)
   /* USER CODE BEGIN 2 */
     HAL_GPIO_WritePin(LD3_GPIO_Port, LD3_Pin, GPIO_PIN_SET);
 
-    // Timer starten
-    HAL_TIM_Base_Start(&htim1);
-    HAL_TIM_Base_Start(&htim2);
-    HAL_TIM_Base_Start(&htim16);
-
-    HAL_TIM_PWM_Start(&htim1,TIM_CHANNEL_1);
-    HAL_TIM_PWM_Start(&htim1,TIM_CHANNEL_2);
-    HAL_TIM_PWM_Start(&htim1,TIM_CHANNEL_3);
-    HAL_TIM_PWM_Start(&htim2,TIM_CHANNEL_2);
-    HAL_TIM_PWM_Start(&htim16,TIM_CHANNEL_1);
-
     //BNO-055 Konfigurieren
     uint8_t cmd[2];
 
-   /* cmd[0] = 0x3F; // SYS_TRIGGER
-    cmd[1] = 0b1 << 5; //RST_SYS
-    HAL_I2C_Master_Transmit_DMA(&hi2c1, 0x28  << 1, cmd, sizeof(cmd));
-    while (hi2c1.State != HAL_I2C_STATE_READY);*/
+    /* cmd[0] = 0x3F; // SYS_TRIGGER
+     cmd[1] = 0b1 << 5; //RST_SYS
+     HAL_I2C_Master_Transmit_DMA(&hi2c1, 0x28  << 1, cmd, sizeof(cmd));
+     while (hi2c1.State != HAL_I2C_STATE_READY);*/
 
     HAL_Delay(1000);
 
@@ -222,6 +198,18 @@ int main(void)
     cmd[1] = 0xB9;
     HAL_I2C_Master_Transmit_DMA(&hi2c1, 0xC0, cmd, sizeof(cmd));
     HAL_Delay(1000);
+
+    // Timer starten
+    HAL_TIM_Base_Start(&htim1);
+    HAL_TIM_Base_Start(&htim2);
+    HAL_TIM_Base_Start(&htim16);
+
+    HAL_TIM_PWM_Start(&htim1,TIM_CHANNEL_1);
+    HAL_TIM_PWM_Start(&htim1,TIM_CHANNEL_2);
+    HAL_TIM_PWM_Start(&htim1,TIM_CHANNEL_3);
+    HAL_TIM_PWM_Start(&htim2,TIM_CHANNEL_2);
+    HAL_TIM_PWM_Start(&htim16,TIM_CHANNEL_1);
+
     HAL_GPIO_WritePin(LD3_GPIO_Port, LD3_Pin, GPIO_PIN_RESET);
   /* USER CODE END 2 */
 
@@ -237,30 +225,13 @@ int main(void)
 
     rc_lib_transmitter_id = 23;
 
-    controller_t roll_controller, pitch_controller, heading_controller;
-
-    roll_controller.P = 1;
-    pitch_controller.P = 1;
-    heading_controller.P = 1;
-
-    roll_controller.I = pitch_controller.I = heading_controller.I = 0.001;
-    roll_controller.D = pitch_controller.D = heading_controller.D = 0.001;
+    init_all_controller();
 
     while (1) {
   /* USER CODE END WHILE */
 
   /* USER CODE BEGIN 3 */
-        roll_controller.is_value = BNO055_ROLL;
-        pitch_controller.is_value = BNO055_PITCH;
-        heading_controller.is_value = BNO055_HEADING_PM;
-
-        roll_controller.deriv = BNO055_GYRO_Z;
-        heading_controller.deriv = BNO055_GYRO_X;
-        pitch_controller.deriv = BNO055_GYRO_Y;
-
-        heading_controller.target_value = 0;
-
-        float heading_control = update_controller(&heading_controller);
+        /*update_all_controller();
 
         if(handle_i2c()) {
             transmit_package.channel_data[0] = (uint16_t)BNO055_HEADING;
@@ -278,13 +249,30 @@ int main(void)
             transmit_package.channel_data[12] = 0;
             transmit_package.channel_data[13] = 0;
             transmit_package.channel_data[14] = 0;
-            transmit_package.channel_data[15] = (uint16_t)(heading_control+512);
+            transmit_package.channel_data[15] = 0;
 
             uint16_t length = rc_lib_encode(&transmit_package);
             HAL_UART_Transmit_DMA(&huart2, transmit_package.buffer, length);
-        }
-        HAL_Delay(10);
 
+            state_machine();
+        }*/
+
+        //count = (uint16_t)((count + 10)%1000);
+
+        uint8_t compare = (uint8_t)(TIM16->CCR1);
+        HAL_UART_Transmit_DMA(&huart2, &compare, 1);
+
+        /*TIM_OC_InitTypeDef sConfigOC;
+        sConfigOC.OCMode = TIM_OCMODE_PWM1;
+        sConfigOC.Pulse = 1000 + count;
+        sConfigOC.OCPolarity = TIM_OCPOLARITY_HIGH;
+        sConfigOC.OCFastMode = TIM_OCFAST_DISABLE;
+        if (HAL_TIM_PWM_ConfigChannel(&htim2, &sConfigOC, TIM_CHANNEL_2) != HAL_OK)
+        {
+            _Error_Handler(__FILE__, __LINE__);
+        }*/
+
+        HAL_Delay(15);
     }
   /* USER CODE END 3 */
 

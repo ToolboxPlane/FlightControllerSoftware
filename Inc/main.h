@@ -9,7 +9,7 @@
   * inserted by the user or by software development tools
   * are owned by their respective copyright owners.
   *
-  * COPYRIGHT(c) 2017 STMicroelectronics
+  * COPYRIGHT(c) 2018 STMicroelectronics
   *
   * Redistribution and use in source and binary forms, with or without modification,
   * are permitted provided that the following conditions are met:
@@ -42,7 +42,23 @@
 
 /* Includes ------------------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
+#include <stdint.h>
 
+#define BNO055_HEADING (((uint16_t)currBnoBuffer[0x1B] << 8 | currBnoBuffer[0x1A])/16.0f)
+#define BNO055_ROLL (((uint16_t)currBnoBuffer[0x1D] << 8 | currBnoBuffer[0x1C])/16.0f)
+#define BNO055_HEADING_PM (BNO055_HEADING > 180 ? BNO055_HEADING-360 : BNO055_HEADING);
+#define BNO055_PITCH (((uint16_t)currBnoBuffer[0x1F] << 8 | currBnoBuffer[0x1E])/16.0f)
+
+#define BNO055_GYRO_X ((uint16_t)currBnoBuffer[0x19] << 8 | currBnoBuffer[0x18])
+#define BNO055_GYRO_Y ((uint16_t)currBnoBuffer[0x17] << 8 | currBnoBuffer[0x16])
+#define BNO055_GYRO_Z ((uint16_t)currBnoBuffer[0x15] << 8 | currBnoBuffer[0x14])
+
+#define BNO055_TEMP (currBnoBuffer[0x34]);
+#define BNO055_CALIBSTATUS (currBnoBuffer[0x35]);
+#define BNO055_OPMODE (currBnoBuffer[0x3D]&(uint8_t)0b1111)
+#define BNO055_SYSERR (currBnoBuffer[0x3A])
+
+extern uint8_t *currBnoBuffer;
 /* USER CODE END Includes */
 
 /* Private define ------------------------------------------------------------*/
