@@ -37,6 +37,7 @@
   */
 
 /* Includes ------------------------------------------------------------------*/
+#include <stm32l432xx.h>
 #include "main.h"
 #include "stm32l4xx_hal.h"
 #include "dma.h"
@@ -201,14 +202,6 @@ int main(void)
 
     // Timer starten
     HAL_TIM_Base_Start(&htim1);
-    HAL_TIM_Base_Start(&htim2);
-    HAL_TIM_Base_Start(&htim16);
-
-    HAL_TIM_PWM_Start(&htim1,TIM_CHANNEL_1);
-    HAL_TIM_PWM_Start(&htim1,TIM_CHANNEL_2);
-    HAL_TIM_PWM_Start(&htim1,TIM_CHANNEL_3);
-    HAL_TIM_PWM_Start(&htim2,TIM_CHANNEL_2);
-    HAL_TIM_PWM_Start(&htim16,TIM_CHANNEL_1);
 
     HAL_GPIO_WritePin(LD3_GPIO_Port, LD3_Pin, GPIO_PIN_RESET);
   /* USER CODE END 2 */
@@ -231,9 +224,7 @@ int main(void)
   /* USER CODE END WHILE */
 
   /* USER CODE BEGIN 3 */
-        /*update_all_controller();
-
-        if(handle_i2c()) {
+        if(TIM1->CNT > 2000 && TIM1->CNT < 10000 && handle_i2c()) {
             transmit_package.channel_data[0] = (uint16_t)BNO055_HEADING;
             transmit_package.channel_data[1] = 0;(uint16_t)(BNO055_ROLL+180);
             transmit_package.channel_data[2] = 0;//(uint16_t)(BNO055_PITCH+180);
@@ -254,25 +245,15 @@ int main(void)
             uint16_t length = rc_lib_encode(&transmit_package);
             HAL_UART_Transmit_DMA(&huart2, transmit_package.buffer, length);
 
+            update_all_controller();
             state_machine();
-        }*/
+        }
 
-        //count = (uint16_t)((count + 10)%1000);
-
-        uint8_t compare = (uint8_t)(TIM16->CCR1);
-        HAL_UART_Transmit_DMA(&huart2, &compare, 1);
-
-        /*TIM_OC_InitTypeDef sConfigOC;
-        sConfigOC.OCMode = TIM_OCMODE_PWM1;
-        sConfigOC.Pulse = 1000 + count;
-        sConfigOC.OCPolarity = TIM_OCPOLARITY_HIGH;
-        sConfigOC.OCFastMode = TIM_OCFAST_DISABLE;
-        if (HAL_TIM_PWM_ConfigChannel(&htim2, &sConfigOC, TIM_CHANNEL_2) != HAL_OK)
-        {
-            _Error_Handler(__FILE__, __LINE__);
-        }*/
-
-        HAL_Delay(15);
+        HAL_GPIO_WritePin(PPM_MOTOR_GPIO_Port, PPM_MOTOR_Pin, TIM1->CNT <= 1500? GPIO_PIN_SET : GPIO_PIN_RESET);
+        HAL_GPIO_WritePin(PPM_AILERON_L_GPIO_Port, PPM_AILERON_L_Pin,TIM1->CNT <= 1500? GPIO_PIN_SET : GPIO_PIN_RESET);
+        HAL_GPIO_WritePin(PPM_AILERON_R_GPIO_Port, PPM_AILERON_R_Pin,TIM1->CNT <= 1500? GPIO_PIN_SET : GPIO_PIN_RESET);
+        HAL_GPIO_WritePin(PPM_VTAIL_L_GPIO_Port, PPM_VTAIL_L_Pin,TIM1->CNT <= 1500? GPIO_PIN_SET : GPIO_PIN_RESET);
+        HAL_GPIO_WritePin(PPM_VTAIL_R_GPIO_Port, PPM_VTAIL_R_Pin,TIM1->CNT <= 1500? GPIO_PIN_SET : GPIO_PIN_RESET);
     }
   /* USER CODE END 3 */
 
@@ -287,11 +268,11 @@ void SystemClock_Config(void)
   RCC_ClkInitTypeDef RCC_ClkInitStruct;
   RCC_PeriphCLKInitTypeDef PeriphClkInit;
 
-    /**Configure LSE Drive Capability 
+    /**Configure LSE Drive Capability
     */
   __HAL_RCC_LSEDRIVE_CONFIG(RCC_LSEDRIVE_LOW);
 
-    /**Initializes the CPU, AHB and APB busses clocks 
+    /**Initializes the CPU, AHB and APB busses clocks
     */
   RCC_OscInitStruct.OscillatorType = RCC_OSCILLATORTYPE_LSE|RCC_OSCILLATORTYPE_MSI;
   RCC_OscInitStruct.LSEState = RCC_LSE_ON;
@@ -310,7 +291,7 @@ void SystemClock_Config(void)
     _Error_Handler(__FILE__, __LINE__);
   }
 
-    /**Initializes the CPU, AHB and APB busses clocks 
+    /**Initializes the CPU, AHB and APB busses clocks
     */
   RCC_ClkInitStruct.ClockType = RCC_CLOCKTYPE_HCLK|RCC_CLOCKTYPE_SYSCLK
                               |RCC_CLOCKTYPE_PCLK1|RCC_CLOCKTYPE_PCLK2;
@@ -334,14 +315,14 @@ void SystemClock_Config(void)
     _Error_Handler(__FILE__, __LINE__);
   }
 
-    /**Configure the main internal regulator output voltage 
+    /**Configure the main internal regulator output voltage
     */
   if (HAL_PWREx_ControlVoltageScaling(PWR_REGULATOR_VOLTAGE_SCALE1) != HAL_OK)
   {
     _Error_Handler(__FILE__, __LINE__);
   }
 
-    /**Configure the Systick interrupt time 
+    /**Configure the Systick interrupt time
     */
   HAL_SYSTICK_Config(HAL_RCC_GetHCLKFreq()/1000);
 
