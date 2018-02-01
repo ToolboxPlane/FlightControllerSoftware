@@ -1,7 +1,8 @@
 /**
   ******************************************************************************
-  * File Name          : main.hpp
-  * Description        : This file contains the common defines of the application
+  * @file           : main.h
+  * @brief          : Header for main.c file.
+  *                   This file contains the common defines of the application.
   ******************************************************************************
   ** This notice applies to any and all portions of this file
   * that are not between comment pairs USER CODE BEGIN and
@@ -35,12 +36,13 @@
   *
   ******************************************************************************
   */
+
 /* Define to prevent recursive inclusion -------------------------------------*/
-#ifndef __MAIN_H
-#define __MAIN_H
-  /* Includes ------------------------------------------------------------------*/
+#ifndef __MAIN_H__
+#define __MAIN_H__
 
 /* Includes ------------------------------------------------------------------*/
+
 /* USER CODE BEGIN Includes */
 #include <stdint.h>
 
@@ -57,6 +59,9 @@
 #define BNO055_CALIBSTATUS (currBnoBuffer[0x35]);
 #define BNO055_OPMODE (currBnoBuffer[0x3D]&(uint8_t)0b1111)
 #define BNO055_SYSERR (currBnoBuffer[0x3A])
+
+#define MPL_HEIGHT (((uint16_t) currMplBuffer[1] << 8 | currMplBuffer[2]) + (currMplBuffer[3] >> 4) / 16.0f)
+#define MPL_TEMP (currMplBuffer[4] + (currMplBuffer[5] >> 4) / 16.0f)
 
 extern uint8_t *currBnoBuffer;
 /* USER CODE END Includes */
@@ -83,8 +88,6 @@ extern uint8_t *currBnoBuffer;
 #define PPM_VTAIL_R_GPIO_Port GPIOB
 #define PPM_MOTOR_Pin GPIO_PIN_1
 #define PPM_MOTOR_GPIO_Port GPIOB
-#define PIN_D9_Pin GPIO_PIN_8
-#define PIN_D9_GPIO_Port GPIOA
 #define SBUS_TX_Pin GPIO_PIN_9
 #define SBUS_TX_GPIO_Port GPIOA
 #define SBUS_RX_Pin GPIO_PIN_10
@@ -127,13 +130,6 @@ void _Error_Handler(char *, int);
 }
 #endif
 
-/**
-  * @}
-  */ 
+#endif /* __MAIN_H__ */
 
-/**
-  * @}
-*/ 
-
-#endif /* __MAIN_H */
 /************************ (C) COPYRIGHT STMicroelectronics *****END OF FILE****/

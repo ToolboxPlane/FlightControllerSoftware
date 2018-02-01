@@ -1,7 +1,7 @@
 /**
   ******************************************************************************
-  * File Name          : main.c
-  * Description        : Main program body
+  * @file           : main.c
+  * @brief          : Main program body
   ******************************************************************************
   ** This notice applies to any and all portions of this file
   * that are not between comment pairs USER CODE BEGIN and
@@ -35,7 +35,6 @@
   *
   ******************************************************************************
   */
-
 /* Includes ------------------------------------------------------------------*/
 #include <stm32l432xx.h>
 #include "main.h"
@@ -58,8 +57,8 @@
 /* Private variables ---------------------------------------------------------*/
 uint8_t bnoBuffer0[64], bnoBuffer1[64];
 uint8_t *currBnoBuffer;
-float height = 0;
-float temp = 2;
+uint8_t mplBuffer0[6], mplBuffer1[6];
+uint8_t *currMplBuffer;
 
 /* USER CODE END PV */
 
@@ -104,11 +103,12 @@ bool handle_i2c() {
         }
             break;
         case 3:
-            HAL_I2C_Master_Receive_DMA(&hi2c1, 0xC0, buf, sizeof(buf));
-            //HAL_UART_Transmit_DMA(&huart2, buf, sizeof(buf));
-            if(buf[0] & ((0b1) << 3)) {
-                height = ((uint16_t) buf[1] << 8 | buf[2]) + (buf[3] >> 4) / 16.0f;
-                temp = buf[4] + (buf[5] >> 4) / 16.0f;
+            if (currMplBuffer ==  mplBuffer0) {
+                currMplBuffer = mplBuffer1;
+                HAL_I2C_Master_Receive_DMA(&hi2c1, 0xC0, mplBuffer0, sizeof(mplBuffer0));
+            } else {
+                currMplBuffer = mplBuffer0;
+                HAL_I2C_Master_Receive_DMA(&hi2c1, 0xC0, mplBuffer1, sizeof(mplBuffer1));
             }
             break;
         default:
@@ -120,9 +120,13 @@ bool handle_i2c() {
 
 /* USER CODE END 0 */
 
+/**
+  * @brief  The application entry point.
+  *
+  * @retval None
+  */
 int main(void)
 {
-
   /* USER CODE BEGIN 1 */
 
   /* USER CODE END 1 */
@@ -146,12 +150,11 @@ int main(void)
   MX_GPIO_Init();
   MX_DMA_Init();
   MX_I2C1_Init();
-  MX_TIM2_Init();
   MX_USART1_UART_Init();
   MX_TIM1_Init();
-  MX_TIM16_Init();
   MX_USART2_UART_Init();
-
+  MX_TIM2_Init();
+  MX_TIM16_Init();
   /* USER CODE BEGIN 2 */
     HAL_GPIO_WritePin(LD3_GPIO_Port, LD3_Pin, GPIO_PIN_SET);
 
@@ -179,6 +182,7 @@ int main(void)
     while (hi2c1.State != HAL_I2C_STATE_READY);
 
     currBnoBuffer = bnoBuffer0;
+    currMplBuffer = mplBuffer0;
 
     HAL_Delay(20);
 
@@ -202,6 +206,14 @@ int main(void)
 
     // Timer starten
     HAL_TIM_Base_Start(&htim1);
+    HAL_TIM_Base_Start(&htim2);
+    HAL_TIM_Base_Start(&htim16);
+
+    HAL_TIM_PWM_Start(&htim1, TIM_CHANNEL_1);
+    HAL_TIM_PWM_Start(&htim1, TIM_CHANNEL_2);
+    HAL_TIM_PWM_Start(&htim1, TIM_CHANNEL_3);
+    HAL_TIM_PWM_Start(&htim2, TIM_CHANNEL_2);
+    HAL_TIM_PWM_Start(&htim16, TIM_CHANNEL_1);
 
     HAL_GPIO_WritePin(LD3_GPIO_Port, LD3_Pin, GPIO_PIN_RESET);
   /* USER CODE END 2 */
@@ -224,7 +236,7 @@ int main(void)
   /* USER CODE END WHILE */
 
   /* USER CODE BEGIN 3 */
-        if(TIM1->CNT > 2000 && TIM1->CNT < 10000 && handle_i2c()) {
+        if(handle_i2c()) {
             transmit_package.channel_data[0] = (uint16_t)BNO055_HEADING;
             transmit_package.channel_data[1] = 0;(uint16_t)(BNO055_ROLL+180);
             transmit_package.channel_data[2] = 0;//(uint16_t)(BNO055_PITCH+180);
@@ -233,8 +245,8 @@ int main(void)
             transmit_package.channel_data[5] = 0;//(uint16_t)(BNO055_GYRO_Z+512);
             transmit_package.channel_data[6] = BNO055_CALIBSTATUS;
             transmit_package.channel_data[7] = 0;
-            transmit_package.channel_data[8] = (uint16_t)height;
-            transmit_package.channel_data[9] = (uint16_t)temp;
+            transmit_package.channel_data[8] = (uint16_t)MPL_HEIGHT;
+            transmit_package.channel_data[9] = (uint16_t)MPL_TEMP;
             transmit_package.channel_data[10] = 0;
             transmit_package.channel_data[11] = 0;
             transmit_package.channel_data[12] = 0;
@@ -248,19 +260,17 @@ int main(void)
             update_all_controller();
             state_machine();
         }
-
-        HAL_GPIO_WritePin(PPM_MOTOR_GPIO_Port, PPM_MOTOR_Pin, TIM1->CNT <= 1500? GPIO_PIN_SET : GPIO_PIN_RESET);
-        HAL_GPIO_WritePin(PPM_AILERON_L_GPIO_Port, PPM_AILERON_L_Pin,TIM1->CNT <= 1500? GPIO_PIN_SET : GPIO_PIN_RESET);
-        HAL_GPIO_WritePin(PPM_AILERON_R_GPIO_Port, PPM_AILERON_R_Pin,TIM1->CNT <= 1500? GPIO_PIN_SET : GPIO_PIN_RESET);
-        HAL_GPIO_WritePin(PPM_VTAIL_L_GPIO_Port, PPM_VTAIL_L_Pin,TIM1->CNT <= 1500? GPIO_PIN_SET : GPIO_PIN_RESET);
-        HAL_GPIO_WritePin(PPM_VTAIL_R_GPIO_Port, PPM_VTAIL_R_Pin,TIM1->CNT <= 1500? GPIO_PIN_SET : GPIO_PIN_RESET);
+        TIM2->CCR2 = 1500;
+        TIM16->CCR1 = 1500;
     }
   /* USER CODE END 3 */
 
 }
 
-/** System Clock Configuration
-*/
+/**
+  * @brief System Clock Configuration
+  * @retval None
+  */
 void SystemClock_Config(void)
 {
 
@@ -268,11 +278,11 @@ void SystemClock_Config(void)
   RCC_ClkInitTypeDef RCC_ClkInitStruct;
   RCC_PeriphCLKInitTypeDef PeriphClkInit;
 
-    /**Configure LSE Drive Capability
+    /**Configure LSE Drive Capability 
     */
   __HAL_RCC_LSEDRIVE_CONFIG(RCC_LSEDRIVE_LOW);
 
-    /**Initializes the CPU, AHB and APB busses clocks
+    /**Initializes the CPU, AHB and APB busses clocks 
     */
   RCC_OscInitStruct.OscillatorType = RCC_OSCILLATORTYPE_LSE|RCC_OSCILLATORTYPE_MSI;
   RCC_OscInitStruct.LSEState = RCC_LSE_ON;
@@ -291,7 +301,7 @@ void SystemClock_Config(void)
     _Error_Handler(__FILE__, __LINE__);
   }
 
-    /**Initializes the CPU, AHB and APB busses clocks
+    /**Initializes the CPU, AHB and APB busses clocks 
     */
   RCC_ClkInitStruct.ClockType = RCC_CLOCKTYPE_HCLK|RCC_CLOCKTYPE_SYSCLK
                               |RCC_CLOCKTYPE_PCLK1|RCC_CLOCKTYPE_PCLK2;
@@ -315,14 +325,14 @@ void SystemClock_Config(void)
     _Error_Handler(__FILE__, __LINE__);
   }
 
-    /**Configure the main internal regulator output voltage
+    /**Configure the main internal regulator output voltage 
     */
   if (HAL_PWREx_ControlVoltageScaling(PWR_REGULATOR_VOLTAGE_SCALE1) != HAL_OK)
   {
     _Error_Handler(__FILE__, __LINE__);
   }
 
-    /**Configure the Systick interrupt time
+    /**Configure the Systick interrupt time 
     */
   HAL_SYSTICK_Config(HAL_RCC_GetHCLKFreq()/1000);
 
@@ -344,10 +354,11 @@ void SystemClock_Config(void)
 
 /**
   * @brief  This function is executed in case of error occurrence.
-  * @param  None
+  * @param  file: The file name as string.
+  * @param  line: The line in file as a number.
   * @retval None
   */
-void _Error_Handler(char * file, int line)
+void _Error_Handler(char *file, int line)
 {
   /* USER CODE BEGIN Error_Handler_Debug */
     /* User can add his own implementation to report the HAL error return state */
@@ -357,35 +368,32 @@ void _Error_Handler(char * file, int line)
         HAL_GPIO_WritePin(LD3_GPIO_Port, LD3_Pin, GPIO_PIN_RESET);
         HAL_Delay(200);
     }
-  /* USER CODE END Error_Handler_Debug */ 
+  /* USER CODE END Error_Handler_Debug */
 }
 
-#ifdef USE_FULL_ASSERT
-
+#ifdef  USE_FULL_ASSERT
 /**
-   * @brief Reports the name of the source file and the source line number
-   * where the assert_param error has occurred.
-   * @param file: pointer to the source file name
-   * @param line: assert_param error line source number
-   * @retval None
-   */
+  * @brief  Reports the name of the source file and the source line number
+  *         where the assert_param error has occurred.
+  * @param  file: pointer to the source file name
+  * @param  line: assert_param error line source number
+  * @retval None
+  */
 void assert_failed(uint8_t* file, uint32_t line)
-{
+{ 
   /* USER CODE BEGIN 6 */
   /* User can add his own implementation to report the file name and line number,
     ex: printf("Wrong parameters value: file %s on line %d\r\n", file, line) */
   /* USER CODE END 6 */
-
 }
-
-#endif
-
-/**
-  * @}
-  */ 
+#endif /* USE_FULL_ASSERT */
 
 /**
   * @}
-*/ 
+  */
+
+/**
+  * @}
+  */
 
 /************************ (C) COPYRIGHT STMicroelectronics *****END OF FILE****/
