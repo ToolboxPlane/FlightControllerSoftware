@@ -36,7 +36,6 @@
   ******************************************************************************
   */
 /* Includes ------------------------------------------------------------------*/
-#include <stm32l432xx.h>
 #include "main.h"
 #include "stm32l4xx_hal.h"
 #include "dma.h"
@@ -59,6 +58,8 @@ uint8_t bnoBuffer0[64], bnoBuffer1[64];
 uint8_t *currBnoBuffer;
 uint8_t mplBuffer0[6], mplBuffer1[6];
 uint8_t *currMplBuffer;
+
+int16_t servoPosition[5]; ///< Values  between -500 and 500
 
 /* USER CODE END PV */
 
@@ -151,10 +152,10 @@ int main(void)
   MX_DMA_Init();
   MX_I2C1_Init();
   MX_USART1_UART_Init();
-  MX_TIM1_Init();
   MX_USART2_UART_Init();
   MX_TIM2_Init();
   MX_TIM16_Init();
+  MX_TIM1_Init();
   /* USER CODE BEGIN 2 */
     HAL_GPIO_WritePin(LD3_GPIO_Port, LD3_Pin, GPIO_PIN_SET);
 
@@ -209,9 +210,10 @@ int main(void)
     HAL_TIM_Base_Start(&htim2);
     HAL_TIM_Base_Start(&htim16);
 
-    HAL_TIM_PWM_Start(&htim1, TIM_CHANNEL_1);
+    /*HAL_TIM_PWM_Start(&htim1, TIM_CHANNEL_1);
     HAL_TIM_PWM_Start(&htim1, TIM_CHANNEL_2);
-    HAL_TIM_PWM_Start(&htim1, TIM_CHANNEL_3);
+    HAL_TIM_PWM_Start(&htim1, TIM_CHANNEL_3);*/
+    HAL_TIM_Base_Start_IT(&htim1);
     HAL_TIM_PWM_Start(&htim2, TIM_CHANNEL_2);
     HAL_TIM_PWM_Start(&htim16, TIM_CHANNEL_1);
 
@@ -231,6 +233,8 @@ int main(void)
     rc_lib_transmitter_id = 23;
 
     init_all_controller();
+
+    uint16_t sweepState = 0;
 
     while (1) {
   /* USER CODE END WHILE */
@@ -260,8 +264,15 @@ int main(void)
             update_all_controller();
             state_machine();
         }
-        TIM2->CCR2 = 1500;
-        TIM16->CCR1 = 1500;
+
+        sweepState+=1;
+        sweepState %= 1000;
+
+        servoPosition[0] = servoPosition[1] = servoPosition[2] = servoPosition[3] =
+            servoPosition[4] = sweepState - (int16_t)500;
+
+        TIM2->CCR2 = 1500 + servoPosition[AILERON_R];
+        TIM16->CCR1 = 1500 + servoPosition[VTAIL_L];
     }
   /* USER CODE END 3 */
 

@@ -64,6 +64,15 @@
 #define MPL_TEMP (currMplBuffer[4] + (currMplBuffer[5] >> 4) / 16.0f)
 
 extern uint8_t *currBnoBuffer;
+extern int16_t servoPosition[5];
+
+enum Servos {
+    VTAIL_R,
+    VTAIL_L,
+    AILERON_L,
+    AILERON_R,
+    MOTOR
+};
 /* USER CODE END Includes */
 
 /* Private define ------------------------------------------------------------*/
