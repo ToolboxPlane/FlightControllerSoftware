@@ -241,16 +241,16 @@ int main(void)
 
   /* USER CODE BEGIN 3 */
         if(handle_i2c()) {
-            transmit_package.channel_data[0] = (uint16_t)BNO055_HEADING;
-            transmit_package.channel_data[1] = 0;(uint16_t)(BNO055_ROLL+180);
-            transmit_package.channel_data[2] = 0;//(uint16_t)(BNO055_PITCH+180);
-            transmit_package.channel_data[3] = (uint16_t)(BNO055_GYRO_X+512);
-            transmit_package.channel_data[4] = 0;//(uint16_t)(BNO055_GYRO_Y+512);
-            transmit_package.channel_data[5] = 0;//(uint16_t)(BNO055_GYRO_Z+512);
-            transmit_package.channel_data[6] = BNO055_CALIBSTATUS;
+            transmit_package.channel_data[0] = (uint16_t)(BNO055_HEADING);
+            transmit_package.channel_data[1] = (uint16_t)(BNO055_ROLL+180);
+            transmit_package.channel_data[2] = (uint16_t)(BNO055_PITCH+180);
+            transmit_package.channel_data[3] = (uint16_t)17;
+            transmit_package.channel_data[4] = (uint16_t)MPL_HEIGHT;
+            transmit_package.channel_data[5] = BNO055_CALIBSTATUS;
+            transmit_package.channel_data[6] = 0;
             transmit_package.channel_data[7] = 0;
-            transmit_package.channel_data[8] = (uint16_t)MPL_HEIGHT;
-            transmit_package.channel_data[9] = (uint16_t)MPL_TEMP;
+            transmit_package.channel_data[8] = 0;
+            transmit_package.channel_data[9] = 0;
             transmit_package.channel_data[10] = 0;
             transmit_package.channel_data[11] = 0;
             transmit_package.channel_data[12] = 0;
@@ -262,7 +262,6 @@ int main(void)
             HAL_UART_Transmit_DMA(&huart2, transmit_package.buffer, length);
 
             update_all_controller();
-            state_machine();
         }
 
         sweepState+=1;
@@ -271,8 +270,8 @@ int main(void)
         servoPosition[0] = servoPosition[1] = servoPosition[2] = servoPosition[3] =
             servoPosition[4] = sweepState - (int16_t)500;
 
-        TIM2->CCR2 = 1500 + servoPosition[AILERON_R];
-        TIM16->CCR1 = 1500 + servoPosition[VTAIL_L];
+        TIM2->CCR2 = (uint32_t)1500 + servoPosition[AILERON_R];
+        TIM16->CCR1 = (uint32_t)1500 + servoPosition[VTAIL_L];
     }
   /* USER CODE END 3 */
 
