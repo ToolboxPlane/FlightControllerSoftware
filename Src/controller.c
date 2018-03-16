@@ -18,22 +18,33 @@ float update_controller(controller_t* c) {
 void init_all_controller() {
     roll_controller.P = 1;
     pitch_controller.P = 1;
-    heading_controller.P = 1;
 
-    roll_controller.I = pitch_controller.I = heading_controller.I = 0.001;
-    roll_controller.D = pitch_controller.D = heading_controller.D = 0.001;
+    roll_controller.I = pitch_controller.I = 0.001;
+    roll_controller.D = pitch_controller.D = 0.001;
 }
 
 void update_all_controller() {
     roll_controller.is_value = BNO055_ROLL;
     pitch_controller.is_value = BNO055_PITCH;
-    heading_controller.is_value = BNO055_HEADING_PM;
 
     roll_controller.deriv = BNO055_GYRO_Z;
-    heading_controller.deriv = BNO055_GYRO_X;
     pitch_controller.deriv = BNO055_GYRO_Y;
 
     float roll_ctrl_val = update_controller(&roll_controller);
-    float heading_ctrl_val = update_controller(&heading_controller);
     float pitch_ctrl_val = update_controller(&pitch_controller);
+
+    if(roll_ctrl_val < 500) {
+        roll_ctrl_val = 500;
+    } else if(roll_ctrl_val > 500) {
+        roll_ctrl_val = 500;
+    }
+
+    if(pitch_ctrl_val < 500) {
+        pitch_ctrl_val = 500;
+    } else if(pitch_ctrl_val > 500) {
+        pitch_ctrl_val = 500;
+    }
+
+    servoPosition[VTAIL_L] = servoPosition[VTAIL_R] = (int16_t)(pitch_ctrl_val+500);
+    servoPosition[AILERON_L] = servoPosition[AILERON_R] = (int16_t)(roll_ctrl_val+500);
 }

@@ -25,6 +25,6 @@ float update_controller(controller_t* c);
 void init_all_controller();
 void update_all_controller();
 
-extern controller_t roll_controller, pitch_controller, heading_controller;
+extern controller_t roll_controller, pitch_controller;
 
 #endif //FLIGHTCONTROLLER_CONTROLLER_H

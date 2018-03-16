@@ -47,7 +47,6 @@
 /* USER CODE BEGIN Includes */
 #include "rc_lib.h"
 #include "controller.h"
-#include "statemachine.h"
 /* USER CODE END Includes */
 
 /* Private variables ---------------------------------------------------------*/
@@ -229,12 +228,13 @@ int main(void)
     transmit_package.mesh = false;
     transmit_package.channel_count = 16;
     transmit_package.resolution = 1024;
+    transmit_package.routing_length = 0;
 
     rc_lib_transmitter_id = 23;
 
     init_all_controller();
 
-    uint16_t sweepState = 0;
+    int16_t headingTarget = 0;
 
     while (1) {
   /* USER CODE END WHILE */
@@ -264,11 +264,24 @@ int main(void)
             update_all_controller();
         }
 
-        sweepState+=1;
+        /*sweepState+=1;
         sweepState %= 1000;
 
         servoPosition[0] = servoPosition[1] = servoPosition[2] = servoPosition[3] =
-            servoPosition[4] = sweepState - (int16_t)500;
+            servoPosition[4] = sweepState - (int16_t)500;*/
+
+        pitch_controller.target_value = 0;
+        int16_t angleDiff = (int16_t) ((headingTarget - (int16_t)BNO055_HEADING + 360) % 360);
+        if(angleDiff > 180) {
+            angleDiff -= 180;
+        }
+        if(angleDiff < 0) {
+            roll_controller.target_value = -angleDiff > 30 ? 30 : -angleDiff;
+        } else {
+            roll_controller.target_value = angleDiff > 30 ? 30 : angleDiff;
+        }
+
+        update_all_controller();
 
         TIM2->CCR2 = (uint32_t)1500 + servoPosition[AILERON_R];
         TIM16->CCR1 = (uint32_t)1500 + servoPosition[VTAIL_L];
