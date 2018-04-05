@@ -40,6 +40,7 @@
 #include "stm32l4xx_hal.h"
 #include "dma.h"
 #include "i2c.h"
+#include "spi.h"
 #include "tim.h"
 #include "usart.h"
 #include "gpio.h"
@@ -155,8 +156,8 @@ int main(void)
   MX_TIM2_Init();
   MX_TIM16_Init();
   MX_TIM1_Init();
+  MX_SPI3_Init();
   /* USER CODE BEGIN 2 */
-    HAL_GPIO_WritePin(LD3_GPIO_Port, LD3_Pin, GPIO_PIN_SET);
 
     //BNO-055 Konfigurieren
     uint8_t cmd[2];
@@ -209,14 +210,10 @@ int main(void)
     HAL_TIM_Base_Start(&htim2);
     HAL_TIM_Base_Start(&htim16);
 
-    /*HAL_TIM_PWM_Start(&htim1, TIM_CHANNEL_1);
-    HAL_TIM_PWM_Start(&htim1, TIM_CHANNEL_2);
-    HAL_TIM_PWM_Start(&htim1, TIM_CHANNEL_3);*/
     HAL_TIM_Base_Start_IT(&htim1);
     HAL_TIM_PWM_Start(&htim2, TIM_CHANNEL_2);
     HAL_TIM_PWM_Start(&htim16, TIM_CHANNEL_1);
 
-    HAL_GPIO_WritePin(LD3_GPIO_Port, LD3_Pin, GPIO_PIN_RESET);
   /* USER CODE END 2 */
 
   /* Infinite loop */
@@ -257,6 +254,16 @@ int main(void)
             transmit_package.channel_data[13] = 0;
             transmit_package.channel_data[14] = 0;
             transmit_package.channel_data[15] = 0;
+
+            uint8_t buf[] = {1, 2, 3, 0};
+            HAL_GPIO_WritePin(POWER_DST_CS_GPIO_Port, POWER_DST_CS_Pin, GPIO_PIN_RESET);
+            HAL_SPI_TransmitReceive(&hspi3, buf, buf, sizeof(buf), 1000);
+            HAL_GPIO_WritePin(POWER_DST_CS_GPIO_Port, POWER_DST_CS_Pin, GPIO_PIN_SET);
+
+            transmit_package.channel_data[12] = buf[0];
+            transmit_package.channel_data[13] = buf[1];
+            transmit_package.channel_data[14] = buf[2];
+            transmit_package.channel_data[15] = buf[3];
 
             uint16_t length = rc_lib_encode(&transmit_package);
             HAL_UART_Transmit_DMA(&huart2, transmit_package.buffer, length);
@@ -386,10 +393,6 @@ void _Error_Handler(char *file, int line)
   /* USER CODE BEGIN Error_Handler_Debug */
     /* User can add his own implementation to report the HAL error return state */
     while (1) {
-        HAL_GPIO_WritePin(LD3_GPIO_Port, LD3_Pin, GPIO_PIN_SET);
-        HAL_Delay(200);
-        HAL_GPIO_WritePin(LD3_GPIO_Port, LD3_Pin, GPIO_PIN_RESET);
-        HAL_Delay(200);
     }
   /* USER CODE END Error_Handler_Debug */
 }
