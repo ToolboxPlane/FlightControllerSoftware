@@ -214,6 +214,8 @@ int main(void)
     HAL_TIM_PWM_Start(&htim2, TIM_CHANNEL_2);
     HAL_TIM_PWM_Start(&htim16, TIM_CHANNEL_1);
 
+    uint8_t powDstBuf[4];
+
   /* USER CODE END 2 */
 
   /* Infinite loop */
@@ -231,13 +233,19 @@ int main(void)
 
     init_all_controller();
 
-    int16_t headingTarget = 0;
-
     while (1) {
   /* USER CODE END WHILE */
 
   /* USER CODE BEGIN 3 */
         if(handle_i2c()) {
+            powDstBuf[0] = 1;
+            powDstBuf[1] = 2;
+            powDstBuf[2] = 3;
+            powDstBuf[3] = 0;
+            HAL_GPIO_WritePin(POWER_DST_CS_GPIO_Port, POWER_DST_CS_Pin, GPIO_PIN_RESET);
+            HAL_SPI_TransmitReceive(&hspi3, powDstBuf, powDstBuf, sizeof(powDstBuf), 1000);
+            HAL_GPIO_WritePin(POWER_DST_CS_GPIO_Port, POWER_DST_CS_Pin, GPIO_PIN_SET);
+
             transmit_package.channel_data[0] = (uint16_t)(BNO055_HEADING);
             transmit_package.channel_data[1] = (uint16_t)(BNO055_ROLL+180);
             transmit_package.channel_data[2] = (uint16_t)(BNO055_PITCH+180);
@@ -245,53 +253,27 @@ int main(void)
             transmit_package.channel_data[4] = (uint16_t)MPL_HEIGHT;
             transmit_package.channel_data[5] = BNO055_CALIBSTATUS;
             transmit_package.channel_data[6] = 0;
-            transmit_package.channel_data[7] = 0;
-            transmit_package.channel_data[8] = 0;
-            transmit_package.channel_data[9] = 0;
-            transmit_package.channel_data[10] = 0;
-            transmit_package.channel_data[11] = 0;
-            transmit_package.channel_data[12] = 0;
-            transmit_package.channel_data[13] = 0;
-            transmit_package.channel_data[14] = 0;
-            transmit_package.channel_data[15] = 0;
-
-            uint8_t buf[] = {1, 2, 3, 0};
-            HAL_GPIO_WritePin(POWER_DST_CS_GPIO_Port, POWER_DST_CS_Pin, GPIO_PIN_RESET);
-            HAL_SPI_TransmitReceive(&hspi3, buf, buf, sizeof(buf), 1000);
-            HAL_GPIO_WritePin(POWER_DST_CS_GPIO_Port, POWER_DST_CS_Pin, GPIO_PIN_SET);
-
-            transmit_package.channel_data[12] = buf[0];
-            transmit_package.channel_data[13] = buf[1];
-            transmit_package.channel_data[14] = buf[2];
-            transmit_package.channel_data[15] = buf[3];
+            transmit_package.channel_data[7] = (uint16_t) (servoPosition[AILERON_R] + 500);
+            transmit_package.channel_data[8] = (uint16_t) (servoPosition[VTAIL_R] + 500);
+            transmit_package.channel_data[9] = (uint16_t) (servoPosition[MOTOR] + 500);
+            transmit_package.channel_data[10] = (uint16_t) (servoPosition[VTAIL_L] + 500);
+            transmit_package.channel_data[11] = (uint16_t) (servoPosition[AILERON_L] + 500);
+            transmit_package.channel_data[12] = powDstBuf[0];
+            transmit_package.channel_data[13] = powDstBuf[1];
+            transmit_package.channel_data[14] = powDstBuf[2];
+            transmit_package.channel_data[15] = powDstBuf[3];
 
             uint16_t length = rc_lib_encode(&transmit_package);
             HAL_UART_Transmit_DMA(&huart2, transmit_package.buffer, length);
-
-            update_all_controller();
         }
-
-        /*sweepState+=1;
-        sweepState %= 1000;
-
-        servoPosition[0] = servoPosition[1] = servoPosition[2] = servoPosition[3] =
-            servoPosition[4] = sweepState - (int16_t)500;*/
 
         pitch_controller.target_value = 0;
-        int16_t angleDiff = (int16_t) ((headingTarget - (int16_t)BNO055_HEADING + 360) % 360);
-        if(angleDiff > 180) {
-            angleDiff -= 180;
-        }
-        if(angleDiff < 0) {
-            roll_controller.target_value = -angleDiff > 30 ? 30 : -angleDiff;
-        } else {
-            roll_controller.target_value = angleDiff > 30 ? 30 : angleDiff;
-        }
+        roll_controller.target_value = 0;
 
         update_all_controller();
 
-        TIM2->CCR2 = (uint32_t)1500 + servoPosition[AILERON_R];
-        TIM16->CCR1 = (uint32_t)1500 + servoPosition[VTAIL_L];
+        TIM2->CCR2 = (uint32_t)(1500 + servoPosition[AILERON_R]);
+        TIM16->CCR1 = (uint32_t)(1500 + servoPosition[VTAIL_L]);
     }
   /* USER CODE END 3 */
 

@@ -16,8 +16,6 @@ typedef struct controller {
     float i_area, last_is_value;
     float deriv;
     float delta_t;
-
-    bool enabled;
 } controller_t;
 
 float update_controller(controller_t* c);
