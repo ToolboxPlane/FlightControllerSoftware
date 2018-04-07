@@ -51,9 +51,9 @@
 #define BNO055_HEADING_PM (BNO055_HEADING > 180 ? BNO055_HEADING-360 : BNO055_HEADING);
 #define BNO055_PITCH ((int16_t)((uint16_t)currBnoBuffer[0x1F] << 8 | currBnoBuffer[0x1E])/16.0f)
 
-#define BNO055_GYRO_X ((uint16_t)currBnoBuffer[0x19] << 8 | currBnoBuffer[0x18])
-#define BNO055_GYRO_Y ((uint16_t)currBnoBuffer[0x17] << 8 | currBnoBuffer[0x16])
-#define BNO055_GYRO_Z ((uint16_t)currBnoBuffer[0x15] << 8 | currBnoBuffer[0x14])
+#define BNO055_GYRO_X ((int16_t)((uint16_t)currBnoBuffer[0x19] << 8 | currBnoBuffer[0x18]))
+#define BNO055_GYRO_Y ((int16_t)((uint16_t)currBnoBuffer[0x17] << 8 | currBnoBuffer[0x16]))
+#define BNO055_GYRO_Z ((int16_t)((uint16_t)currBnoBuffer[0x15] << 8 | currBnoBuffer[0x14]))
 
 #define BNO055_TEMP (currBnoBuffer[0x34]);
 #define BNO055_CALIBSTATUS (currBnoBuffer[0x35]);

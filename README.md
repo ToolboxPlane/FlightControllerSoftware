@@ -22,6 +22,6 @@ The output package is a 10bit, 16Channel Package with the following data:
 | 6 | Empty |
 | 7 | ... |
 | 12 | PowerDistributionBoard Status |
-| 13 | PowerDistributionBoard VCC Voltage / 128 |
-| 14 | PowerDistributionBoard VCC Current / 256 |
-| 15 | PowerDistributionBoard 5V Current / 32 |
+| 13 | PowerDistributionBoard VCC Voltage / 10 |
+| 14 | PowerDistributionBoard VCC Current / 10 |
+| 15 | PowerDistributionBoard 5V Current |

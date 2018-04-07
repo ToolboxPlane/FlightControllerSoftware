@@ -19,17 +19,16 @@ void init_all_controller() {
     roll_controller.P = 10;
     pitch_controller.P = 10;
 
-    roll_controller.I = pitch_controller.I = 0.0;
-    roll_controller.D = pitch_controller.D = 0.0;
+    roll_controller.I = pitch_controller.I = 0.01;
+    roll_controller.D = pitch_controller.D = 0.2;
 
     roll_controller.i_area = pitch_controller.i_area = 0;
+    roll_controller.delta_t = pitch_controller.delta_t = 1;
 }
 
 void update_all_controller() {
-    int16_t roll = BNO055_ROLL;
-    int16_t pitch = BNO055_PITCH;
-    roll_controller.is_value = roll;
-    pitch_controller.is_value = pitch;
+    roll_controller.is_value = BNO055_ROLL;
+    pitch_controller.is_value = BNO055_PITCH;
 
     roll_controller.deriv = (int16_t)BNO055_GYRO_Z;
     pitch_controller.deriv = (int16_t)BNO055_GYRO_Y;

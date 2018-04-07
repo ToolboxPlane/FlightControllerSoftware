@@ -249,7 +249,7 @@ int main(void)
             transmit_package.channel_data[0] = (uint16_t)(BNO055_HEADING);
             transmit_package.channel_data[1] = (uint16_t)(BNO055_ROLL+180);
             transmit_package.channel_data[2] = (uint16_t)(BNO055_PITCH+180);
-            transmit_package.channel_data[3] = (uint16_t)17;
+            transmit_package.channel_data[3] = (uint16_t)(BNO055_GYRO_Z+500);
             transmit_package.channel_data[4] = (uint16_t)MPL_HEIGHT;
             transmit_package.channel_data[5] = BNO055_CALIBSTATUS;
             transmit_package.channel_data[6] = 0;
@@ -259,9 +259,9 @@ int main(void)
             transmit_package.channel_data[10] = (uint16_t) (servoPosition[VTAIL_L] + 500);
             transmit_package.channel_data[11] = (uint16_t) (servoPosition[AILERON_L] + 500);
             transmit_package.channel_data[12] = powDstBuf[0];
-            transmit_package.channel_data[13] = powDstBuf[1];
-            transmit_package.channel_data[14] = powDstBuf[2];
-            transmit_package.channel_data[15] = powDstBuf[3];
+            transmit_package.channel_data[13] = (uint16_t) ((powDstBuf[1] * 128) / 100);
+            transmit_package.channel_data[14] = (uint16_t) ((powDstBuf[2] * 256) / 100);
+            transmit_package.channel_data[15] = (uint16_t) (powDstBuf[3] * 32);
 
             uint16_t length = rc_lib_encode(&transmit_package);
             HAL_UART_Transmit_DMA(&huart2, transmit_package.buffer, length);
