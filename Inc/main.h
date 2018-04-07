@@ -47,9 +47,9 @@
 #include <stdint.h>
 
 #define BNO055_HEADING (((uint16_t)currBnoBuffer[0x1B] << 8 | currBnoBuffer[0x1A])/16.0f)
-#define BNO055_ROLL (((uint16_t)currBnoBuffer[0x1D] << 8 | currBnoBuffer[0x1C])/16.0f)
+#define BNO055_ROLL ((int16_t)((uint16_t)currBnoBuffer[0x1D] << 8 | currBnoBuffer[0x1C])/16.0f)
 #define BNO055_HEADING_PM (BNO055_HEADING > 180 ? BNO055_HEADING-360 : BNO055_HEADING);
-#define BNO055_PITCH (((uint16_t)currBnoBuffer[0x1F] << 8 | currBnoBuffer[0x1E])/16.0f)
+#define BNO055_PITCH ((int16_t)((uint16_t)currBnoBuffer[0x1F] << 8 | currBnoBuffer[0x1E])/16.0f)
 
 #define BNO055_GYRO_X ((uint16_t)currBnoBuffer[0x19] << 8 | currBnoBuffer[0x18])
 #define BNO055_GYRO_Y ((uint16_t)currBnoBuffer[0x17] << 8 | currBnoBuffer[0x16])

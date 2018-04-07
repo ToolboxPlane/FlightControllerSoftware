@@ -26,8 +26,10 @@ void init_all_controller() {
 }
 
 void update_all_controller() {
-    roll_controller.is_value = (uint16_t)(BNO055_ROLL+180) - 180.0f;
-    pitch_controller.is_value = (uint16_t)(BNO055_PITCH+180) - 180.0f;
+    int16_t roll = BNO055_ROLL;
+    int16_t pitch = BNO055_PITCH;
+    roll_controller.is_value = roll;
+    pitch_controller.is_value = pitch;
 
     roll_controller.deriv = (int16_t)BNO055_GYRO_Z;
     pitch_controller.deriv = (int16_t)BNO055_GYRO_Y;
