@@ -16,19 +16,19 @@ float update_controller(controller_t* c) {
 }
 
 void init_all_controller() {
-    roll_controller.P = 10;
-    pitch_controller.P = 10;
+    roll_controller.P = 11.1;
+    pitch_controller.P = 11.1;
 
-    roll_controller.I = pitch_controller.I = 0.01;
-    roll_controller.D = pitch_controller.D = 0.2;
+    roll_controller.I = pitch_controller.I = 0.0;
+    roll_controller.D = pitch_controller.D = 0.0;
 
     roll_controller.i_area = pitch_controller.i_area = 0;
     roll_controller.delta_t = pitch_controller.delta_t = 1;
 }
 
 void update_all_controller() {
-    roll_controller.is_value = BNO055_ROLL;
-    pitch_controller.is_value = BNO055_PITCH;
+    roll_controller.is_value = BNO055_PITCH; // Remapping because of bno...
+    pitch_controller.is_value = BNO055_ROLL;
 
     roll_controller.deriv = (int16_t)BNO055_GYRO_Z;
     pitch_controller.deriv = (int16_t)BNO055_GYRO_Y;
@@ -48,6 +48,8 @@ void update_all_controller() {
         pitch_ctrl_val = 500;
     }
 
-    servoPosition[VTAIL_L] = servoPosition[VTAIL_R] = (int16_t)(pitch_ctrl_val);
-    servoPosition[AILERON_L] = servoPosition[AILERON_R] = (int16_t)(roll_ctrl_val);
+    servoPosition[VTAIL_L] = (int16_t)(pitch_ctrl_val);
+    servoPosition[VTAIL_R] = (int16_t)(-pitch_ctrl_val);
+    servoPosition[AILERON_L] = (int16_t)(-roll_ctrl_val);
+    servoPosition[AILERON_R] = (int16_t)(-roll_ctrl_val);
 }
