@@ -36,7 +36,6 @@
   ******************************************************************************
   */
 /* Includes ------------------------------------------------------------------*/
-#include <sbus.h>
 #include "main.h"
 #include "stm32l4xx_hal.h"
 #include "dma.h"
@@ -121,6 +120,10 @@ bool handle_i2c() {
     }
     return false;
 }
+// value between 168 and 1808
+int16_t sbusValueToServo(uint16_t sbusValue) {
+    return (int16_t)((sbusValue - 168)/(1808.0-168.0) * 1000) - 500;
+}
 
 
 /* USER CODE END 0 */
@@ -171,8 +174,6 @@ int main(void)
      HAL_I2C_Master_Transmit_DMA(&hi2c1, 0x28  << 1, cmd, sizeof(cmd));
      while (hi2c1.State != HAL_I2C_STATE_READY);*/
 
-    HAL_Delay(1000);
-
     cmd[0] = 0x3B; //UNIT_SEL
     cmd[1] = 0 << 0 | 1 << 1 | 0 << 2
              | 0 << 4 | 0 << 7;
@@ -207,7 +208,6 @@ int main(void)
     cmd[0] = 0x26;
     cmd[1] = 0xB9;
     HAL_I2C_Master_Transmit_DMA(&hi2c1, 0xC0, cmd, sizeof(cmd));
-    HAL_Delay(1000);
 
     // Timer starten
     HAL_TIM_Base_Start(&htim1);
@@ -235,14 +235,9 @@ int main(void)
 
     rc_lib_transmitter_id = 23;
 
-
     init_all_controller();
 
-    servoPosition[MOTOR] = -400;
-
     HAL_UART_Receive_IT(&huart1, sBusReceiveBuffer, sizeof(sBusReceiveBuffer));
-
-    uint8_t throttle;
 
     while (1) {
   /* USER CODE END WHILE */
@@ -275,23 +270,31 @@ int main(void)
             transmit_package.channel_data[15] = (uint16_t) (powDstBuf[3] * 32);
 
             uint16_t length = rc_lib_encode(&transmit_package);
-            //HAL_UART_Transmit_DMA(&huart2, transmit_package.buffer, length);
+            HAL_UART_Transmit_DMA(&huart2, transmit_package.buffer, length);
         }
 
         if (HAL_UART_GetState(&huart1) == HAL_UART_STATE_READY) {
-           // HAL_UART_Transmit_DMA(&huart2, sBusReceiveBuffer, sizeof(sBusReceiveBuffer));
-            if(sbus_parse(sBusReceiveBuffer, sizeof(sBusReceiveBuffer))) {
-                throttle = sbus_latest_data.channel[0]>>3;
-                HAL_UART_Transmit_DMA(&huart2, &throttle, 1);
-            }
+            sbus_parse(sBusReceiveBuffer, sizeof(sBusReceiveBuffer));
             HAL_UART_Receive_IT(&huart1, sBusReceiveBuffer, sizeof(sBusReceiveBuffer));
         }
 
 
-        pitch_controller.target_value = 0;
-        roll_controller.target_value = 0;
-
-        update_all_controller();
+        if(sbus_latest_data.failsave) {
+            pitch_controller.target_value = 0;
+            roll_controller.target_value = 0;
+            servoPosition[MOTOR] = -500;
+            update_all_controller();
+        } else if(sbusValueToServo(sbus_latest_data.channel[10]) > -250) {
+            servoPosition[MOTOR] = sbusValueToServo(sbus_latest_data.channel[0]);
+            servoPosition[AILERON_L] = sbusValueToServo(sbus_latest_data.channel[1]);
+            servoPosition[AILERON_R] = sbusValueToServo(sbus_latest_data.channel[2]);
+            servoPosition[VTAIL_L] = sbusValueToServo(sbus_latest_data.channel[3]);
+            servoPosition[VTAIL_R] = sbusValueToServo(sbus_latest_data.channel[4]);
+        } else {
+            pitch_controller.target_value = 0;
+            roll_controller.target_value = 0;
+            update_all_controller();
+        }
 
         TIM2->CCR2 = (uint32_t)(1500 + servoPosition[AILERON_R]);
         TIM16->CCR1 = (uint32_t)(1500 + servoPosition[VTAIL_L]);

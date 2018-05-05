@@ -5,11 +5,11 @@
 #include <sbus.h>
 #include "sbus.h"
 
-#define SBUS_START_BYTE 0xF0
+#define SBUS_START_BYTE 0x0F
 #define SBUS_END_BYTE 0x00
 
 static sbus_data_t new_data;
-sbus_data_t sbus_latest_data;
+sbus_data_t sbus_latest_data = {{0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0}, true, true};
 
 bool sbus_parse(const uint8_t *data, uint8_t len) {
     static uint8_t byteCount = 0;
@@ -46,7 +46,7 @@ bool sbus_parse(const uint8_t *data, uint8_t len) {
 
                 for(uint8_t b=0; b<8; b++) {
                     uint8_t channelNumber = (startBitNum + b) / 11;
-                    uint8_t bitInChannel = 10 - ((startBitNum + b) % 11);
+                    uint8_t bitInChannel = ((startBitNum + b) % 11);
                     uint8_t bit = (data[c] >> b) & 1;
                     new_data.channel[channelNumber] |= bit << bitInChannel;
                 }

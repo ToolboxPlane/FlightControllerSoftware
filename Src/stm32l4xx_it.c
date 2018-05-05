@@ -135,15 +135,14 @@ void DMA1_Channel7_IRQHandler(void)
 void TIM1_UP_TIM16_IRQHandler(void)
 {
   /* USER CODE BEGIN TIM1_UP_TIM16_IRQn 0 */
+    int32_t count = TIM2->CNT - (int32_t)1500;
+    HAL_GPIO_WritePin(PPM_MOTOR_GPIO_Port, PPM_MOTOR_Pin, servoPosition[MOTOR] > count?GPIO_PIN_SET:GPIO_PIN_RESET);
+    HAL_GPIO_WritePin(PPM_AILERON_L_GPIO_Port, PPM_AILERON_L_Pin, servoPosition[AILERON_L] > count?GPIO_PIN_SET:GPIO_PIN_RESET);
+    HAL_GPIO_WritePin(PPM_VTAIL_R_GPIO_Port, PPM_VTAIL_R_Pin, servoPosition[VTAIL_R] > count?GPIO_PIN_SET:GPIO_PIN_RESET);
   /* USER CODE END TIM1_UP_TIM16_IRQn 0 */
   HAL_TIM_IRQHandler(&htim1);
   HAL_TIM_IRQHandler(&htim16);
   /* USER CODE BEGIN TIM1_UP_TIM16_IRQn 1 */
-   int32_t count = TIM2->CNT - (int32_t)1500;
-   HAL_GPIO_WritePin(PPM_MOTOR_GPIO_Port, PPM_MOTOR_Pin, servoPosition[MOTOR] > count?GPIO_PIN_SET:GPIO_PIN_RESET);
-   HAL_GPIO_WritePin(PPM_AILERON_L_GPIO_Port, PPM_AILERON_L_Pin, servoPosition[AILERON_L] > count?GPIO_PIN_SET:GPIO_PIN_RESET);
-   HAL_GPIO_WritePin(PPM_VTAIL_R_GPIO_Port, PPM_VTAIL_R_Pin, servoPosition[VTAIL_R] > count?GPIO_PIN_SET:GPIO_PIN_RESET);
-
   /* USER CODE END TIM1_UP_TIM16_IRQn 1 */
 }
 
