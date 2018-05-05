@@ -36,6 +36,7 @@
   ******************************************************************************
   */
 /* Includes ------------------------------------------------------------------*/
+#include <sbus.h>
 #include "main.h"
 #include "stm32l4xx_hal.h"
 #include "dma.h"
@@ -48,6 +49,7 @@
 /* USER CODE BEGIN Includes */
 #include "rc_lib.h"
 #include "controller.h"
+#include "sbus.h"
 /* USER CODE END Includes */
 
 /* Private variables ---------------------------------------------------------*/
@@ -58,6 +60,7 @@ uint8_t bnoBuffer0[64], bnoBuffer1[64];
 uint8_t *currBnoBuffer;
 uint8_t mplBuffer0[6], mplBuffer1[6];
 uint8_t *currMplBuffer;
+uint8_t sBusReceiveBuffer[25];
 
 int16_t servoPosition[5]; ///< Values  between -500 and 500
 
@@ -118,6 +121,7 @@ bool handle_i2c() {
     }
     return false;
 }
+
 
 /* USER CODE END 0 */
 
@@ -231,7 +235,14 @@ int main(void)
 
     rc_lib_transmitter_id = 23;
 
+
     init_all_controller();
+
+    servoPosition[MOTOR] = -400;
+
+    HAL_UART_Receive_IT(&huart1, sBusReceiveBuffer, sizeof(sBusReceiveBuffer));
+
+    uint8_t throttle;
 
     while (1) {
   /* USER CODE END WHILE */
@@ -252,7 +263,7 @@ int main(void)
             transmit_package.channel_data[3] = (uint16_t)(BNO055_GYRO_Z+500);
             transmit_package.channel_data[4] = (uint16_t)MPL_HEIGHT;
             transmit_package.channel_data[5] = BNO055_CALIBSTATUS;
-            transmit_package.channel_data[6] = 0;
+            transmit_package.channel_data[6] = sBusReceiveBuffer[3];
             transmit_package.channel_data[7] = (uint16_t) (servoPosition[AILERON_R] + 500);
             transmit_package.channel_data[8] = (uint16_t) (servoPosition[VTAIL_R] + 500);
             transmit_package.channel_data[9] = (uint16_t) (servoPosition[MOTOR] + 500);
@@ -264,8 +275,18 @@ int main(void)
             transmit_package.channel_data[15] = (uint16_t) (powDstBuf[3] * 32);
 
             uint16_t length = rc_lib_encode(&transmit_package);
-            HAL_UART_Transmit_DMA(&huart2, transmit_package.buffer, length);
+            //HAL_UART_Transmit_DMA(&huart2, transmit_package.buffer, length);
         }
+
+        if (HAL_UART_GetState(&huart1) == HAL_UART_STATE_READY) {
+           // HAL_UART_Transmit_DMA(&huart2, sBusReceiveBuffer, sizeof(sBusReceiveBuffer));
+            if(sbus_parse(sBusReceiveBuffer, sizeof(sBusReceiveBuffer))) {
+                throttle = sbus_latest_data.channel[0]>>3;
+                HAL_UART_Transmit_DMA(&huart2, &throttle, 1);
+            }
+            HAL_UART_Receive_IT(&huart1, sBusReceiveBuffer, sizeof(sBusReceiveBuffer));
+        }
+
 
         pitch_controller.target_value = 0;
         roll_controller.target_value = 0;
