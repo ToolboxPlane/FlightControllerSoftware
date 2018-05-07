@@ -36,6 +36,7 @@
   ******************************************************************************
   */
 /* Includes ------------------------------------------------------------------*/
+#include <sbus.h>
 #include "main.h"
 #include "stm32l4xx_hal.h"
 #include "dma.h"
@@ -74,7 +75,6 @@ void SystemClock_Config(void);
 /* USER CODE END PFP */
 
 /* USER CODE BEGIN 0 */
-uint8_t buf[6];
 
 bool handle_i2c() {
     static uint8_t state = 0;
@@ -125,6 +125,27 @@ int16_t sbusValueToServo(uint16_t sbusValue) {
     return (int16_t)((sbusValue - 168)/(1808.0-168.0) * 1000) - 500;
 }
 
+void controller_tick() {
+    if(sbus_latest_data.failsave) {
+        pitch_controller.target_value = 0;
+        roll_controller.target_value = 0;
+        servoPosition[MOTOR] = -500;
+        update_all_controller();
+    } else if(sbusValueToServo(sbus_latest_data.channel[10]) > -250) {
+        servoPosition[MOTOR] = sbusValueToServo(sbus_latest_data.channel[0]);
+        servoPosition[AILERON_L] = sbusValueToServo(sbus_latest_data.channel[1]);
+        servoPosition[AILERON_R] = sbusValueToServo(sbus_latest_data.channel[2]);
+        servoPosition[VTAIL_L] = sbusValueToServo(sbus_latest_data.channel[3]);
+        servoPosition[VTAIL_R] = sbusValueToServo(sbus_latest_data.channel[4]);
+    } else {
+        pitch_controller.target_value = 0;
+        roll_controller.target_value = 0;
+        update_all_controller();
+    }
+
+    TIM2->CCR2 = (uint32_t)(1500 + servoPosition[AILERON_R]);
+    TIM16->CCR1 = (uint32_t)(1500 + servoPosition[VTAIL_L]);
+}
 
 /* USER CODE END 0 */
 
@@ -164,6 +185,7 @@ int main(void)
   MX_TIM16_Init();
   MX_TIM1_Init();
   MX_SPI3_Init();
+  MX_TIM6_Init();
   /* USER CODE BEGIN 2 */
 
     //BNO-055 Konfigurieren
@@ -213,6 +235,7 @@ int main(void)
     HAL_TIM_Base_Start(&htim1);
     HAL_TIM_Base_Start(&htim2);
     HAL_TIM_Base_Start(&htim16);
+    HAL_TIM_Base_Start(&htim6);
 
     HAL_TIM_Base_Start_IT(&htim1);
     HAL_TIM_PWM_Start(&htim2, TIM_CHANNEL_2);
@@ -229,9 +252,15 @@ int main(void)
 
     rc_lib_package_t transmit_package;
     transmit_package.mesh = false;
-    transmit_package.channel_count = 16;
+    transmit_package.channel_count = 32;
     transmit_package.resolution = 1024;
     transmit_package.routing_length = 0;
+
+    rc_lib_package_t sbus_package;
+    sbus_package.mesh = false;
+    sbus_package.channel_count = 16;
+    sbus_package.resolution = 2048;
+    sbus_package.routing_length = 0;
 
     rc_lib_transmitter_id = 23;
 
@@ -258,7 +287,7 @@ int main(void)
             transmit_package.channel_data[3] = (uint16_t)(BNO055_GYRO_Z+500);
             transmit_package.channel_data[4] = (uint16_t)MPL_HEIGHT;
             transmit_package.channel_data[5] = BNO055_CALIBSTATUS;
-            transmit_package.channel_data[6] = sBusReceiveBuffer[3];
+            transmit_package.channel_data[6] = 0;
             transmit_package.channel_data[7] = (uint16_t) (servoPosition[AILERON_R] + 500);
             transmit_package.channel_data[8] = (uint16_t) (servoPosition[VTAIL_R] + 500);
             transmit_package.channel_data[9] = (uint16_t) (servoPosition[MOTOR] + 500);
@@ -274,30 +303,17 @@ int main(void)
         }
 
         if (HAL_UART_GetState(&huart1) == HAL_UART_STATE_READY) {
-            sbus_parse(sBusReceiveBuffer, sizeof(sBusReceiveBuffer));
+            if(sbus_parse(sBusReceiveBuffer, sizeof(sBusReceiveBuffer))){
+                for(uint8_t c=0; c<16; c++) {
+                    sbus_package.channel_data[c] = sbus_latest_data.channel[c];
+                }
+                uint8_t  length = rc_lib_encode(&sbus_package);
+                HAL_UART_Transmit_DMA(&huart2, sbus_package.buffer, length);
+            }
             HAL_UART_Receive_IT(&huart1, sBusReceiveBuffer, sizeof(sBusReceiveBuffer));
         }
 
 
-        if(sbus_latest_data.failsave) {
-            pitch_controller.target_value = 0;
-            roll_controller.target_value = 0;
-            servoPosition[MOTOR] = -500;
-            update_all_controller();
-        } else if(sbusValueToServo(sbus_latest_data.channel[10]) > -250) {
-            servoPosition[MOTOR] = sbusValueToServo(sbus_latest_data.channel[0]);
-            servoPosition[AILERON_L] = sbusValueToServo(sbus_latest_data.channel[1]);
-            servoPosition[AILERON_R] = sbusValueToServo(sbus_latest_data.channel[2]);
-            servoPosition[VTAIL_L] = sbusValueToServo(sbus_latest_data.channel[3]);
-            servoPosition[VTAIL_R] = sbusValueToServo(sbus_latest_data.channel[4]);
-        } else {
-            pitch_controller.target_value = 0;
-            roll_controller.target_value = 0;
-            update_all_controller();
-        }
-
-        TIM2->CCR2 = (uint32_t)(1500 + servoPosition[AILERON_R]);
-        TIM16->CCR1 = (uint32_t)(1500 + servoPosition[VTAIL_L]);
     }
   /* USER CODE END 3 */
 
@@ -402,6 +418,7 @@ void _Error_Handler(char *file, int line)
     }
   /* USER CODE END Error_Handler_Debug */
 }
+
 
 #ifdef  USE_FULL_ASSERT
 /**

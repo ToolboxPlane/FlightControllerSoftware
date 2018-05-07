@@ -123,6 +123,8 @@ enum Servos {
 
 /* USER CODE BEGIN Private defines */
 
+void controller_tick();
+
 /* USER CODE END Private defines */
 
 #ifdef __cplusplus

@@ -3,11 +3,11 @@ cmake-build-debug/
 .cproject
 .mxproject
 .idea/workspace.xml
+.idea/misc.xml
 .project
 mx.scratch
 Src/Backup/
 /build/
 .idea/encodings.xml
 .idea/FlightControllerSoftware.iml
-/Src/Backup/
 /Inc/Backup/
