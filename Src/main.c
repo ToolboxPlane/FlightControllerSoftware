@@ -126,6 +126,7 @@ int16_t sbusValueToServo(uint16_t sbusValue) {
 }
 
 void controller_tick() {
+
     if(sbus_latest_data.failsave) {
         pitch_controller.target_value = 0;
         roll_controller.target_value = 0;
@@ -240,6 +241,7 @@ int main(void)
     HAL_TIM_Base_Start_IT(&htim1);
     HAL_TIM_PWM_Start(&htim2, TIM_CHANNEL_2);
     HAL_TIM_PWM_Start(&htim16, TIM_CHANNEL_1);
+    HAL_TIM_Base_Start_IT(&htim6);
 
     uint8_t powDstBuf[4];
 
@@ -252,7 +254,7 @@ int main(void)
 
     rc_lib_package_t transmit_package;
     transmit_package.mesh = false;
-    transmit_package.channel_count = 32;
+    transmit_package.channel_count = 16;
     transmit_package.resolution = 1024;
     transmit_package.routing_length = 0;
 
@@ -287,7 +289,7 @@ int main(void)
             transmit_package.channel_data[3] = (uint16_t)(BNO055_GYRO_Z+500);
             transmit_package.channel_data[4] = (uint16_t)MPL_HEIGHT;
             transmit_package.channel_data[5] = BNO055_CALIBSTATUS;
-            transmit_package.channel_data[6] = 0;
+            transmit_package.channel_data[6] = sbus_package.channel_data[10]/2;
             transmit_package.channel_data[7] = (uint16_t) (servoPosition[AILERON_R] + 500);
             transmit_package.channel_data[8] = (uint16_t) (servoPosition[VTAIL_R] + 500);
             transmit_package.channel_data[9] = (uint16_t) (servoPosition[MOTOR] + 500);
@@ -307,8 +309,11 @@ int main(void)
                 for(uint8_t c=0; c<16; c++) {
                     sbus_package.channel_data[c] = sbus_latest_data.channel[c];
                 }
+                uint8_t tmp = rc_lib_transmitter_id;
+                rc_lib_transmitter_id = 56;
                 uint8_t  length = rc_lib_encode(&sbus_package);
                 HAL_UART_Transmit_DMA(&huart2, sbus_package.buffer, length);
+                rc_lib_transmitter_id = tmp;
             }
             HAL_UART_Receive_IT(&huart1, sBusReceiveBuffer, sizeof(sBusReceiveBuffer));
         }
