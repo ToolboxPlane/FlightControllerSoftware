@@ -92,11 +92,20 @@ bool handle_i2c() {
             break;
         case 1:
             if(currBnoBuffer == bnoBuffer0) {
-                currBnoBuffer = bnoBuffer1;
-                HAL_I2C_Master_Receive_DMA(&hi2c1, 0x28 << 1, bnoBuffer0, sizeof(bnoBuffer0));
+                // Check if values are possible
+                if(bnoBuffer1[0] == 0xA0 && bnoBuffer1[1] == 0xFB && bnoBuffer1[2] == 0x32 && bnoBuffer1[3] == 0x0F) {
+                    currBnoBuffer = bnoBuffer1;
+                    HAL_I2C_Master_Receive_DMA(&hi2c1, 0x28 << 1, bnoBuffer0, sizeof(bnoBuffer0));
+                } else {
+                    HAL_I2C_Master_Receive_DMA(&hi2c1, 0x28 << 1, bnoBuffer1, sizeof(bnoBuffer1));
+                }
             } else {
-                currBnoBuffer = bnoBuffer0;
-                HAL_I2C_Master_Receive_DMA(&hi2c1, 0x28 << 1, bnoBuffer1, sizeof(bnoBuffer1));
+                if(bnoBuffer0[0] == 0xA0 && bnoBuffer0[1] == 0xFB && bnoBuffer0[2] == 0x32 && bnoBuffer0[3] == 0x0F) {
+                    currBnoBuffer = bnoBuffer0;
+                    HAL_I2C_Master_Receive_DMA(&hi2c1, 0x28 << 1, bnoBuffer1, sizeof(bnoBuffer1));
+                } else {
+                    HAL_I2C_Master_Receive_DMA(&hi2c1, 0x28 << 1, bnoBuffer0, sizeof(bnoBuffer0));
+                }
             }
             break;
         case 2:
