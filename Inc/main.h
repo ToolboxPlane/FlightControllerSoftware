@@ -124,6 +124,7 @@ enum Servos {
 /* USER CODE BEGIN Private defines */
 
 void controller_tick();
+void handle_usart();
 
 /* USER CODE END Private defines */
 

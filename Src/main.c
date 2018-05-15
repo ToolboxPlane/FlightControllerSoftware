@@ -36,7 +36,6 @@
   ******************************************************************************
   */
 /* Includes ------------------------------------------------------------------*/
-#include <sbus.h>
 #include "main.h"
 #include "stm32l4xx_hal.h"
 #include "dma.h"
@@ -157,6 +156,66 @@ void controller_tick() {
     TIM16->CCR1 = (uint32_t)(1500 + servoPosition[VTAIL_L]);
 }
 
+void handle_usart() {
+    static uint8_t send = 0;
+    static rc_lib_package_t transmit_package;
+    transmit_package.mesh = false;
+    transmit_package.channel_count = 16;
+    transmit_package.resolution = 1024;
+
+    static rc_lib_package_t power_package;
+    power_package.mesh = false;
+    power_package.channel_count = 8;
+    power_package.resolution = 256;
+
+
+    send = (send+1) % 2;
+    if(send == 0) {
+        uint8_t powDstBuf[6];
+        powDstBuf[0] = 1;
+        powDstBuf[1] = 2;
+        powDstBuf[2] = 3;
+        powDstBuf[3] = 4;
+        powDstBuf[4] = 5;
+        powDstBuf[5] = 0;
+
+        HAL_GPIO_WritePin(POWER_DST_CS_GPIO_Port, POWER_DST_CS_Pin, GPIO_PIN_RESET);
+        HAL_SPI_TransmitReceive(&hspi3, powDstBuf, powDstBuf, sizeof(powDstBuf), 1000);
+        HAL_GPIO_WritePin(POWER_DST_CS_GPIO_Port, POWER_DST_CS_Pin, GPIO_PIN_SET);
+
+        for (uint8_t c = 0; c < 6; c++) {
+            power_package.channel_data[c] = powDstBuf[c];
+        }
+        power_package.channel_data[6] = power_package.channel_data[7] = 0;
+
+        uint8_t temp = rc_lib_transmitter_id;
+        rc_lib_transmitter_id = 74;
+        uint16_t length = rc_lib_encode(&power_package);
+        rc_lib_transmitter_id = temp;
+        HAL_UART_Transmit_DMA(&huart2, power_package.buffer, length);
+    } else {
+        transmit_package.channel_data[0] = (uint16_t) (BNO055_HEADING);
+        transmit_package.channel_data[1] = (uint16_t) (BNO055_ROLL + 180);
+        transmit_package.channel_data[2] = (uint16_t) (BNO055_PITCH + 180);
+        transmit_package.channel_data[3] = (uint16_t) (BNO055_GYRO_Z + 500);
+        transmit_package.channel_data[4] = (uint16_t) MPL_HEIGHT;
+        transmit_package.channel_data[5] = BNO055_CALIBSTATUS;
+        transmit_package.channel_data[6] = 0;
+        transmit_package.channel_data[7] = (uint16_t) (servoPosition[AILERON_R] + 500);
+        transmit_package.channel_data[8] = (uint16_t) (servoPosition[VTAIL_R] + 500);
+        transmit_package.channel_data[9] = (uint16_t) (servoPosition[MOTOR] + 500);
+        transmit_package.channel_data[10] = (uint16_t) (servoPosition[VTAIL_L] + 500);
+        transmit_package.channel_data[11] = (uint16_t) (servoPosition[AILERON_L] + 500);
+        transmit_package.channel_data[12] = 0;
+        transmit_package.channel_data[13] = 0;
+        transmit_package.channel_data[14] = 0;
+        transmit_package.channel_data[15] = 0;
+
+        uint16_t length = rc_lib_encode(&transmit_package);
+        HAL_UART_Transmit_DMA(&huart2, transmit_package.buffer, length);
+    }
+}
+
 /* USER CODE END 0 */
 
 /**
@@ -196,6 +255,7 @@ int main(void)
   MX_TIM1_Init();
   MX_SPI3_Init();
   MX_TIM6_Init();
+  MX_TIM7_Init();
   /* USER CODE BEGIN 2 */
 
     //BNO-055 Konfigurieren
@@ -246,13 +306,14 @@ int main(void)
     HAL_TIM_Base_Start(&htim2);
     HAL_TIM_Base_Start(&htim16);
     HAL_TIM_Base_Start(&htim6);
+    HAL_TIM_Base_Start(&htim7);
 
-    HAL_TIM_Base_Start_IT(&htim1);
     HAL_TIM_PWM_Start(&htim2, TIM_CHANNEL_2);
     HAL_TIM_PWM_Start(&htim16, TIM_CHANNEL_1);
+    HAL_TIM_Base_Start_IT(&htim1);
     HAL_TIM_Base_Start_IT(&htim6);
+    HAL_TIM_Base_Start_IT(&htim7);
 
-    uint8_t powDstBuf[6];
 
   /* USER CODE END 2 */
 
@@ -261,20 +322,11 @@ int main(void)
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wmissing-noreturn"
 
-    rc_lib_package_t transmit_package;
-    transmit_package.mesh = false;
-    transmit_package.channel_count = 16;
-    transmit_package.resolution = 1024;
 
     rc_lib_package_t sbus_package;
     sbus_package.mesh = false;
     sbus_package.channel_count = 16;
     sbus_package.resolution = 2048;
-
-    rc_lib_package_t power_package;
-    power_package.mesh = false;
-    power_package.channel_count = 8;
-    power_package.resolution = 256;
 
     rc_lib_transmitter_id = 23;
 
@@ -282,59 +334,12 @@ int main(void)
 
     HAL_UART_Receive_IT(&huart1, sBusReceiveBuffer, sizeof(sBusReceiveBuffer));
 
-    uint8_t send = 0;
 
     while (1) {
   /* USER CODE END WHILE */
 
   /* USER CODE BEGIN 3 */
-        if(handle_i2c()) {
-            send = (send+1) % 2;
-            if(send == 0) {
-                powDstBuf[0] = 1;
-                powDstBuf[1] = 2;
-                powDstBuf[2] = 3;
-                powDstBuf[3] = 4;
-                powDstBuf[4] = 5;
-                powDstBuf[5] = 0;
-
-                HAL_GPIO_WritePin(POWER_DST_CS_GPIO_Port, POWER_DST_CS_Pin, GPIO_PIN_RESET);
-                HAL_SPI_TransmitReceive(&hspi3, powDstBuf, powDstBuf, sizeof(powDstBuf), 1000);
-                HAL_GPIO_WritePin(POWER_DST_CS_GPIO_Port, POWER_DST_CS_Pin, GPIO_PIN_SET);
-
-                for (uint8_t c = 0; c < 6; c++) {
-                    power_package.channel_data[c] = powDstBuf[c];
-                }
-                power_package.channel_data[6] = power_package.channel_data[7] = 0;
-
-                uint8_t temp = rc_lib_transmitter_id;
-                rc_lib_transmitter_id = 74;
-                uint16_t length = rc_lib_encode(&power_package);
-                rc_lib_transmitter_id = temp;
-                HAL_UART_Transmit_DMA(&huart2, power_package.buffer, length);
-            } else {
-                transmit_package.channel_data[0] = (uint16_t) (BNO055_HEADING);
-                transmit_package.channel_data[1] = (uint16_t) (BNO055_ROLL + 180);
-                transmit_package.channel_data[2] = (uint16_t) (BNO055_PITCH + 180);
-                transmit_package.channel_data[3] = (uint16_t) (BNO055_GYRO_Z + 500);
-                transmit_package.channel_data[4] = (uint16_t) MPL_HEIGHT;
-                transmit_package.channel_data[5] = BNO055_CALIBSTATUS;
-                transmit_package.channel_data[6] = 0;
-                transmit_package.channel_data[7] = (uint16_t) (servoPosition[AILERON_R] + 500);
-                transmit_package.channel_data[8] = (uint16_t) (servoPosition[VTAIL_R] + 500);
-                transmit_package.channel_data[9] = (uint16_t) (servoPosition[MOTOR] + 500);
-                transmit_package.channel_data[10] = (uint16_t) (servoPosition[VTAIL_L] + 500);
-                transmit_package.channel_data[11] = (uint16_t) (servoPosition[AILERON_L] + 500);
-                transmit_package.channel_data[12] = 0;
-                transmit_package.channel_data[13] = 0;
-                transmit_package.channel_data[14] = 0;
-                transmit_package.channel_data[15] = 0;
-
-                uint16_t length = rc_lib_encode(&transmit_package);
-                HAL_UART_Transmit_DMA(&huart2, transmit_package.buffer, length);
-            }
-            HAL_Delay(100);
-        }
+        handle_i2c();
 
         if (HAL_UART_GetState(&huart1) == HAL_UART_STATE_READY) {
             if(sbus_parse(sBusReceiveBuffer, sizeof(sBusReceiveBuffer))){
@@ -349,8 +354,6 @@ int main(void)
             }
             HAL_UART_Receive_IT(&huart1, sBusReceiveBuffer, sizeof(sBusReceiveBuffer));
         }
-
-
     }
   /* USER CODE END 3 */
 
@@ -455,7 +458,6 @@ void _Error_Handler(char *file, int line)
     }
   /* USER CODE END Error_Handler_Debug */
 }
-
 
 #ifdef  USE_FULL_ASSERT
 /**
