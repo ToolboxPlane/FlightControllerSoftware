@@ -36,6 +36,7 @@
   ******************************************************************************
   */
 /* Includes ------------------------------------------------------------------*/
+#include <math.h>
 #include "main.h"
 #include "stm32l4xx_hal.h"
 #include "adc.h"
@@ -64,7 +65,8 @@ uint8_t sBusReceiveBuffer[25];
 uint8_t flightComputerReceiveBuffer[16];
 
 int16_t servoPosition[5]; ///< Values  between -500 and 500
-uint32_t pressure;
+uint32_t pressureAdc;
+rc_lib_package_t flight_computer_package;
 
 /* USER CODE END PV */
 
@@ -149,8 +151,19 @@ void controller_tick() {
         servoPosition[VTAIL_L] = sbusValueToServo(sbus_latest_data.channel[3]);
         servoPosition[VTAIL_R] = sbusValueToServo(sbus_latest_data.channel[4]);
     } else {
-        pitch_controller.target_value = 0;
-        roll_controller.target_value = 0;
+        pitch_controller.target_value = flight_computer_package.channel_data[1]-180;
+        servoPosition[MOTOR] = flight_computer_package.channel_data[2];
+        int16_t headingTarget = flight_computer_package.channel_data[0];
+        int16_t headingDiff = headingTarget - BNO055_HEADING;
+        headingDiff += 720;
+        headingDiff %= 360;
+        headingDiff -= 360;
+        roll_controller.target_value = headingDiff;
+        if(roll_controller.target_value < -30) {
+            roll_controller.target_value = -30;
+        } else if(roll_controller.target_value > 30) {
+            roll_controller.target_value = 30;
+        }
         update_all_controller();
     }
 
@@ -196,13 +209,17 @@ void handle_usart() {
         rc_lib_transmitter_id = temp;
         HAL_UART_Transmit_DMA(&huart2, power_package.buffer, length);
     } else {
+        float adc_voltage = pressureAdc*5.0f/4096;
+        float pressure = ((adc_voltage/5.0f)-0.2f)/0.2f;
+        float v=sqrtf(2*pressure/1.2041756858f);
+
         transmit_package.channel_data[0] = (uint16_t) (BNO055_HEADING);
         transmit_package.channel_data[1] = (uint16_t) (BNO055_ROLL + 180);
         transmit_package.channel_data[2] = (uint16_t) (BNO055_PITCH + 180);
         transmit_package.channel_data[3] = (uint16_t) (BNO055_GYRO_Z + 500);
         transmit_package.channel_data[4] = (uint16_t) MPL_HEIGHT;
         transmit_package.channel_data[5] = BNO055_CALIBSTATUS;
-        transmit_package.channel_data[6] = 0;
+        transmit_package.channel_data[6] = (uint16_t)(v-328);
         transmit_package.channel_data[7] = (uint16_t) (servoPosition[AILERON_R] + 500);
         transmit_package.channel_data[8] = (uint16_t) (servoPosition[VTAIL_R] + 500);
         transmit_package.channel_data[9] = (uint16_t) (servoPosition[MOTOR] + 500);
@@ -211,7 +228,7 @@ void handle_usart() {
         transmit_package.channel_data[12] = 0;
         transmit_package.channel_data[13] = 0;
         transmit_package.channel_data[14] = 0;
-        transmit_package.channel_data[15] = (uint16_t) (pressure >> 4);
+        transmit_package.channel_data[15] = (uint16_t) (pressureAdc >> 4);
 
         uint16_t length = rc_lib_encode(&transmit_package);
         HAL_UART_Transmit_DMA(&huart2, transmit_package.buffer, length);
@@ -333,7 +350,7 @@ int main(void)
 
     rc_lib_transmitter_id = 23;
 
-    rc_lib_package_t flight_computer_package_receiving, flight_computer_package;
+    rc_lib_package_t flight_computer_package_receiving;
 
     init_all_controller();
 
@@ -372,7 +389,7 @@ int main(void)
             }
         }
 
-        HAL_ADC_Start_DMA(&hadc1, &pressure, sizeof(pressure));
+        HAL_ADC_Start_DMA(&hadc1, &pressureAdc, sizeof(pressureAdc));
     }
   /* USER CODE END 3 */
 
