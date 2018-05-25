@@ -85,8 +85,6 @@ enum Servos {
 #define VCP_TX_GPIO_Port GPIOA
 #define VCP_RX_Pin GPIO_PIN_3
 #define VCP_RX_GPIO_Port GPIOA
-#define PIN_A3_Pin GPIO_PIN_4
-#define PIN_A3_GPIO_Port GPIOA
 #define PIN_A4_Pin GPIO_PIN_5
 #define PIN_A4_GPIO_Port GPIOA
 #define PPM_VTAIL_L_Pin GPIO_PIN_6
@@ -124,6 +122,7 @@ enum Servos {
 /* USER CODE BEGIN Private defines */
 
 void controller_tick();
+void handle_usart();
 
 /* USER CODE END Private defines */
 

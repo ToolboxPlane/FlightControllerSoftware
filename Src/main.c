@@ -36,9 +36,9 @@
   ******************************************************************************
   */
 /* Includes ------------------------------------------------------------------*/
-#include <sbus.h>
 #include "main.h"
 #include "stm32l4xx_hal.h"
+#include "adc.h"
 #include "dma.h"
 #include "i2c.h"
 #include "spi.h"
@@ -61,8 +61,10 @@ uint8_t *currBnoBuffer;
 uint8_t mplBuffer0[6], mplBuffer1[6];
 uint8_t *currMplBuffer;
 uint8_t sBusReceiveBuffer[25];
+uint8_t flightComputerReceiveBuffer[16];
 
 int16_t servoPosition[5]; ///< Values  between -500 and 500
+uint32_t pressure;
 
 /* USER CODE END PV */
 
@@ -92,11 +94,20 @@ bool handle_i2c() {
             break;
         case 1:
             if(currBnoBuffer == bnoBuffer0) {
-                currBnoBuffer = bnoBuffer1;
-                HAL_I2C_Master_Receive_DMA(&hi2c1, 0x28 << 1, bnoBuffer0, sizeof(bnoBuffer0));
+                // Check if values are possible
+                if(bnoBuffer1[0] == 0xA0 && bnoBuffer1[1] == 0xFB && bnoBuffer1[2] == 0x32 && bnoBuffer1[3] == 0x0F) {
+                    currBnoBuffer = bnoBuffer1;
+                    HAL_I2C_Master_Receive_DMA(&hi2c1, 0x28 << 1, bnoBuffer0, sizeof(bnoBuffer0));
+                } else {
+                    HAL_I2C_Master_Receive_DMA(&hi2c1, 0x28 << 1, bnoBuffer1, sizeof(bnoBuffer1));
+                }
             } else {
-                currBnoBuffer = bnoBuffer0;
-                HAL_I2C_Master_Receive_DMA(&hi2c1, 0x28 << 1, bnoBuffer1, sizeof(bnoBuffer1));
+                if(bnoBuffer0[0] == 0xA0 && bnoBuffer0[1] == 0xFB && bnoBuffer0[2] == 0x32 && bnoBuffer0[3] == 0x0F) {
+                    currBnoBuffer = bnoBuffer0;
+                    HAL_I2C_Master_Receive_DMA(&hi2c1, 0x28 << 1, bnoBuffer1, sizeof(bnoBuffer1));
+                } else {
+                    HAL_I2C_Master_Receive_DMA(&hi2c1, 0x28 << 1, bnoBuffer0, sizeof(bnoBuffer0));
+                }
             }
             break;
         case 2:
@@ -126,7 +137,6 @@ int16_t sbusValueToServo(uint16_t sbusValue) {
 }
 
 void controller_tick() {
-
     if(sbus_latest_data.failsave) {
         pitch_controller.target_value = 0;
         roll_controller.target_value = 0;
@@ -146,6 +156,66 @@ void controller_tick() {
 
     TIM2->CCR2 = (uint32_t)(1500 + servoPosition[AILERON_R]);
     TIM16->CCR1 = (uint32_t)(1500 + servoPosition[VTAIL_L]);
+}
+
+void handle_usart() {
+    static uint8_t send = 0;
+    static rc_lib_package_t transmit_package;
+    transmit_package.mesh = false;
+    transmit_package.channel_count = 16;
+    transmit_package.resolution = 1024;
+
+    static rc_lib_package_t power_package;
+    power_package.mesh = false;
+    power_package.channel_count = 8;
+    power_package.resolution = 256;
+
+
+    send = (send+1) % 2;
+    if(send == 0) {
+        uint8_t powDstBuf[6];
+        powDstBuf[0] = 1;
+        powDstBuf[1] = 2;
+        powDstBuf[2] = 3;
+        powDstBuf[3] = 4;
+        powDstBuf[4] = 5;
+        powDstBuf[5] = 0;
+
+        HAL_GPIO_WritePin(POWER_DST_CS_GPIO_Port, POWER_DST_CS_Pin, GPIO_PIN_RESET);
+        HAL_SPI_TransmitReceive(&hspi3, powDstBuf, powDstBuf, sizeof(powDstBuf), 1000);
+        HAL_GPIO_WritePin(POWER_DST_CS_GPIO_Port, POWER_DST_CS_Pin, GPIO_PIN_SET);
+
+        for (uint8_t c = 0; c < 6; c++) {
+            power_package.channel_data[c] = powDstBuf[c];
+        }
+        power_package.channel_data[6] = power_package.channel_data[7] = 0;
+
+        uint8_t temp = rc_lib_transmitter_id;
+        rc_lib_transmitter_id = 74;
+        uint16_t length = rc_lib_encode(&power_package);
+        rc_lib_transmitter_id = temp;
+        HAL_UART_Transmit_DMA(&huart2, power_package.buffer, length);
+    } else {
+        transmit_package.channel_data[0] = (uint16_t) (BNO055_HEADING);
+        transmit_package.channel_data[1] = (uint16_t) (BNO055_ROLL + 180);
+        transmit_package.channel_data[2] = (uint16_t) (BNO055_PITCH + 180);
+        transmit_package.channel_data[3] = (uint16_t) (BNO055_GYRO_Z + 500);
+        transmit_package.channel_data[4] = (uint16_t) MPL_HEIGHT;
+        transmit_package.channel_data[5] = BNO055_CALIBSTATUS;
+        transmit_package.channel_data[6] = 0;
+        transmit_package.channel_data[7] = (uint16_t) (servoPosition[AILERON_R] + 500);
+        transmit_package.channel_data[8] = (uint16_t) (servoPosition[VTAIL_R] + 500);
+        transmit_package.channel_data[9] = (uint16_t) (servoPosition[MOTOR] + 500);
+        transmit_package.channel_data[10] = (uint16_t) (servoPosition[VTAIL_L] + 500);
+        transmit_package.channel_data[11] = (uint16_t) (servoPosition[AILERON_L] + 500);
+        transmit_package.channel_data[12] = 0;
+        transmit_package.channel_data[13] = 0;
+        transmit_package.channel_data[14] = 0;
+        transmit_package.channel_data[15] = (uint16_t) (pressure >> 4);
+
+        uint16_t length = rc_lib_encode(&transmit_package);
+        HAL_UART_Transmit_DMA(&huart2, transmit_package.buffer, length);
+    }
 }
 
 /* USER CODE END 0 */
@@ -187,6 +257,8 @@ int main(void)
   MX_TIM1_Init();
   MX_SPI3_Init();
   MX_TIM6_Init();
+  MX_TIM7_Init();
+  MX_ADC1_Init();
   /* USER CODE BEGIN 2 */
 
     //BNO-055 Konfigurieren
@@ -237,13 +309,14 @@ int main(void)
     HAL_TIM_Base_Start(&htim2);
     HAL_TIM_Base_Start(&htim16);
     HAL_TIM_Base_Start(&htim6);
+    HAL_TIM_Base_Start(&htim7);
 
-    HAL_TIM_Base_Start_IT(&htim1);
     HAL_TIM_PWM_Start(&htim2, TIM_CHANNEL_2);
     HAL_TIM_PWM_Start(&htim16, TIM_CHANNEL_1);
+    HAL_TIM_Base_Start_IT(&htim1);
     HAL_TIM_Base_Start_IT(&htim6);
+    HAL_TIM_Base_Start_IT(&htim7);
 
-    uint8_t powDstBuf[4];
 
   /* USER CODE END 2 */
 
@@ -252,57 +325,27 @@ int main(void)
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wmissing-noreturn"
 
-    rc_lib_package_t transmit_package;
-    transmit_package.mesh = false;
-    transmit_package.channel_count = 16;
-    transmit_package.resolution = 1024;
-    transmit_package.routing_length = 0;
 
     rc_lib_package_t sbus_package;
     sbus_package.mesh = false;
     sbus_package.channel_count = 16;
     sbus_package.resolution = 2048;
-    sbus_package.routing_length = 0;
 
     rc_lib_transmitter_id = 23;
+
+    rc_lib_package_t flight_computer_package_receiving, flight_computer_package;
 
     init_all_controller();
 
     HAL_UART_Receive_IT(&huart1, sBusReceiveBuffer, sizeof(sBusReceiveBuffer));
+    HAL_UART_Receive_IT(&huart2, flightComputerReceiveBuffer, sizeof(flightComputerReceiveBuffer));
+
 
     while (1) {
   /* USER CODE END WHILE */
 
   /* USER CODE BEGIN 3 */
-        if(handle_i2c()) {
-            powDstBuf[0] = 1;
-            powDstBuf[1] = 2;
-            powDstBuf[2] = 3;
-            powDstBuf[3] = 0;
-            HAL_GPIO_WritePin(POWER_DST_CS_GPIO_Port, POWER_DST_CS_Pin, GPIO_PIN_RESET);
-            HAL_SPI_TransmitReceive(&hspi3, powDstBuf, powDstBuf, sizeof(powDstBuf), 1000);
-            HAL_GPIO_WritePin(POWER_DST_CS_GPIO_Port, POWER_DST_CS_Pin, GPIO_PIN_SET);
-
-            transmit_package.channel_data[0] = (uint16_t)(BNO055_HEADING);
-            transmit_package.channel_data[1] = (uint16_t)(BNO055_ROLL+180);
-            transmit_package.channel_data[2] = (uint16_t)(BNO055_PITCH+180);
-            transmit_package.channel_data[3] = (uint16_t)(BNO055_GYRO_Z+500);
-            transmit_package.channel_data[4] = (uint16_t)MPL_HEIGHT;
-            transmit_package.channel_data[5] = BNO055_CALIBSTATUS;
-            transmit_package.channel_data[6] = sbus_package.channel_data[10]/2;
-            transmit_package.channel_data[7] = (uint16_t) (servoPosition[AILERON_R] + 500);
-            transmit_package.channel_data[8] = (uint16_t) (servoPosition[VTAIL_R] + 500);
-            transmit_package.channel_data[9] = (uint16_t) (servoPosition[MOTOR] + 500);
-            transmit_package.channel_data[10] = (uint16_t) (servoPosition[VTAIL_L] + 500);
-            transmit_package.channel_data[11] = (uint16_t) (servoPosition[AILERON_L] + 500);
-            transmit_package.channel_data[12] = powDstBuf[0];
-            transmit_package.channel_data[13] = (uint16_t) ((powDstBuf[1] * 128) / 100);
-            transmit_package.channel_data[14] = (uint16_t) ((powDstBuf[2] * 256) / 100);
-            transmit_package.channel_data[15] = (uint16_t) (powDstBuf[3] * 32);
-
-            uint16_t length = rc_lib_encode(&transmit_package);
-            HAL_UART_Transmit_DMA(&huart2, transmit_package.buffer, length);
-        }
+        handle_i2c();
 
         if (HAL_UART_GetState(&huart1) == HAL_UART_STATE_READY) {
             if(sbus_parse(sBusReceiveBuffer, sizeof(sBusReceiveBuffer))){
@@ -317,8 +360,19 @@ int main(void)
             }
             HAL_UART_Receive_IT(&huart1, sBusReceiveBuffer, sizeof(sBusReceiveBuffer));
         }
+        if(HAL_UART_GetState(&huart2) == HAL_UART_STATE_READY) {
+            for(uint8_t b=0; b< sizeof(flightComputerReceiveBuffer); b++) {
+                if(rc_lib_decode(&flight_computer_package_receiving, flightComputerReceiveBuffer[b])) {
+                    flight_computer_package.resolution = flight_computer_package_receiving.resolution;
+                    flight_computer_package.channel_count = flight_computer_package_receiving.channel_count;
+                    for(uint8_t c=0; c<flight_computer_package.channel_count; c++) {
+                        flight_computer_package.channel_data[c] = flight_computer_package_receiving.channel_data[c];
+                    }
+                }
+            }
+        }
 
-
+        HAL_ADC_Start_DMA(&hadc1, &pressure, sizeof(pressure));
     }
   /* USER CODE END 3 */
 
@@ -373,10 +427,18 @@ void SystemClock_Config(void)
   }
 
   PeriphClkInit.PeriphClockSelection = RCC_PERIPHCLK_USART1|RCC_PERIPHCLK_USART2
-                              |RCC_PERIPHCLK_I2C1;
+                              |RCC_PERIPHCLK_I2C1|RCC_PERIPHCLK_ADC;
   PeriphClkInit.Usart1ClockSelection = RCC_USART1CLKSOURCE_PCLK2;
   PeriphClkInit.Usart2ClockSelection = RCC_USART2CLKSOURCE_PCLK1;
   PeriphClkInit.I2c1ClockSelection = RCC_I2C1CLKSOURCE_PCLK1;
+  PeriphClkInit.AdcClockSelection = RCC_ADCCLKSOURCE_PLLSAI1;
+  PeriphClkInit.PLLSAI1.PLLSAI1Source = RCC_PLLSOURCE_MSI;
+  PeriphClkInit.PLLSAI1.PLLSAI1M = 1;
+  PeriphClkInit.PLLSAI1.PLLSAI1N = 16;
+  PeriphClkInit.PLLSAI1.PLLSAI1P = RCC_PLLP_DIV7;
+  PeriphClkInit.PLLSAI1.PLLSAI1Q = RCC_PLLQ_DIV2;
+  PeriphClkInit.PLLSAI1.PLLSAI1R = RCC_PLLR_DIV2;
+  PeriphClkInit.PLLSAI1.PLLSAI1ClockOut = RCC_PLLSAI1_ADC1CLK;
   if (HAL_RCCEx_PeriphCLKConfig(&PeriphClkInit) != HAL_OK)
   {
     _Error_Handler(__FILE__, __LINE__);
@@ -423,7 +485,6 @@ void _Error_Handler(char *file, int line)
     }
   /* USER CODE END Error_Handler_Debug */
 }
-
 
 #ifdef  USE_FULL_ASSERT
 /**

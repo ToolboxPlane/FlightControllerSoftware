@@ -1,3 +1,4 @@
+#include <math.h>
 #include "controller.h"
 
 controller_t roll_controller, pitch_controller;
@@ -48,8 +49,8 @@ void update_all_controller() {
         pitch_ctrl_val = 500;
     }
 
-    servoPosition[VTAIL_L] = (int16_t)(pitch_ctrl_val);
-    servoPosition[VTAIL_R] = (int16_t)(-pitch_ctrl_val);
+    servoPosition[VTAIL_L] = (int16_t)(-pitch_ctrl_val*sinf((roll_controller.is_value-45)/180.0f*M_PI));
+    servoPosition[VTAIL_R] = (int16_t)(-pitch_ctrl_val*sinf((roll_controller.is_value+45)/180.0f*M_PI));
     servoPosition[AILERON_L] = (int16_t)(-roll_ctrl_val);
     servoPosition[AILERON_R] = (int16_t)(-roll_ctrl_val);
 }
