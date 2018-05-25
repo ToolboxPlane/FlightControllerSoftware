@@ -38,6 +38,7 @@
 /* Includes ------------------------------------------------------------------*/
 #include "main.h"
 #include "stm32l4xx_hal.h"
+#include "adc.h"
 #include "dma.h"
 #include "i2c.h"
 #include "spi.h"
@@ -60,8 +61,10 @@ uint8_t *currBnoBuffer;
 uint8_t mplBuffer0[6], mplBuffer1[6];
 uint8_t *currMplBuffer;
 uint8_t sBusReceiveBuffer[25];
+uint8_t flightComputerReceiveBuffer[16];
 
 int16_t servoPosition[5]; ///< Values  between -500 and 500
+uint32_t pressure;
 
 /* USER CODE END PV */
 
@@ -134,7 +137,6 @@ int16_t sbusValueToServo(uint16_t sbusValue) {
 }
 
 void controller_tick() {
-
     if(sbus_latest_data.failsave) {
         pitch_controller.target_value = 0;
         roll_controller.target_value = 0;
@@ -209,7 +211,7 @@ void handle_usart() {
         transmit_package.channel_data[12] = 0;
         transmit_package.channel_data[13] = 0;
         transmit_package.channel_data[14] = 0;
-        transmit_package.channel_data[15] = 0;
+        transmit_package.channel_data[15] = (uint16_t) (pressure >> 4);
 
         uint16_t length = rc_lib_encode(&transmit_package);
         HAL_UART_Transmit_DMA(&huart2, transmit_package.buffer, length);
@@ -256,6 +258,7 @@ int main(void)
   MX_SPI3_Init();
   MX_TIM6_Init();
   MX_TIM7_Init();
+  MX_ADC1_Init();
   /* USER CODE BEGIN 2 */
 
     //BNO-055 Konfigurieren
@@ -330,9 +333,12 @@ int main(void)
 
     rc_lib_transmitter_id = 23;
 
+    rc_lib_package_t flight_computer_package_receiving, flight_computer_package;
+
     init_all_controller();
 
     HAL_UART_Receive_IT(&huart1, sBusReceiveBuffer, sizeof(sBusReceiveBuffer));
+    HAL_UART_Receive_IT(&huart2, flightComputerReceiveBuffer, sizeof(flightComputerReceiveBuffer));
 
 
     while (1) {
@@ -354,6 +360,19 @@ int main(void)
             }
             HAL_UART_Receive_IT(&huart1, sBusReceiveBuffer, sizeof(sBusReceiveBuffer));
         }
+        if(HAL_UART_GetState(&huart2) == HAL_UART_STATE_READY) {
+            for(uint8_t b=0; b< sizeof(flightComputerReceiveBuffer); b++) {
+                if(rc_lib_decode(&flight_computer_package_receiving, flightComputerReceiveBuffer[b])) {
+                    flight_computer_package.resolution = flight_computer_package_receiving.resolution;
+                    flight_computer_package.channel_count = flight_computer_package_receiving.channel_count;
+                    for(uint8_t c=0; c<flight_computer_package.channel_count; c++) {
+                        flight_computer_package.channel_data[c] = flight_computer_package_receiving.channel_data[c];
+                    }
+                }
+            }
+        }
+
+        HAL_ADC_Start_DMA(&hadc1, &pressure, sizeof(pressure));
     }
   /* USER CODE END 3 */
 
@@ -408,10 +427,18 @@ void SystemClock_Config(void)
   }
 
   PeriphClkInit.PeriphClockSelection = RCC_PERIPHCLK_USART1|RCC_PERIPHCLK_USART2
-                              |RCC_PERIPHCLK_I2C1;
+                              |RCC_PERIPHCLK_I2C1|RCC_PERIPHCLK_ADC;
   PeriphClkInit.Usart1ClockSelection = RCC_USART1CLKSOURCE_PCLK2;
   PeriphClkInit.Usart2ClockSelection = RCC_USART2CLKSOURCE_PCLK1;
   PeriphClkInit.I2c1ClockSelection = RCC_I2C1CLKSOURCE_PCLK1;
+  PeriphClkInit.AdcClockSelection = RCC_ADCCLKSOURCE_PLLSAI1;
+  PeriphClkInit.PLLSAI1.PLLSAI1Source = RCC_PLLSOURCE_MSI;
+  PeriphClkInit.PLLSAI1.PLLSAI1M = 1;
+  PeriphClkInit.PLLSAI1.PLLSAI1N = 16;
+  PeriphClkInit.PLLSAI1.PLLSAI1P = RCC_PLLP_DIV7;
+  PeriphClkInit.PLLSAI1.PLLSAI1Q = RCC_PLLQ_DIV2;
+  PeriphClkInit.PLLSAI1.PLLSAI1R = RCC_PLLR_DIV2;
+  PeriphClkInit.PLLSAI1.PLLSAI1ClockOut = RCC_PLLSAI1_ADC1CLK;
   if (HAL_RCCEx_PeriphCLKConfig(&PeriphClkInit) != HAL_OK)
   {
     _Error_Handler(__FILE__, __LINE__);
