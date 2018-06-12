@@ -36,7 +36,7 @@
   ******************************************************************************
   */
 /* Includes ------------------------------------------------------------------*/
-#include <math.h>
+#include <stm32l432xx.h>
 #include "main.h"
 #include "stm32l4xx_hal.h"
 #include "adc.h"
@@ -65,7 +65,8 @@ uint8_t sBusReceiveBuffer[25];
 uint8_t flightComputerReceiveBuffer[16];
 
 int16_t servoPosition[5]; ///< Values  between -500 and 500
-uint32_t pressureAdc;
+uint32_t new_adc_reading_pressure;
+uint32_t adc_reading_pressure;
 rc_lib_package_t flight_computer_package;
 
 /* USER CODE END PV */
@@ -135,7 +136,7 @@ bool handle_i2c() {
 }
 // value between 168 and 1808
 int16_t sbusValueToServo(uint16_t sbusValue) {
-    return (int16_t)((sbusValue - 168)/(1808.0-168.0) * 1000) - 500;
+    return (int16_t)((sbusValue - 168)/(1811.0-168.0) * 1000) - 500;
 }
 
 void controller_tick() {
@@ -167,6 +168,9 @@ void controller_tick() {
         update_all_controller();
     }
 
+    TIM1->CCR1 = (uint32_t)(1500 + servoPosition[AILERON_L]);
+    TIM1->CCR2 = (uint32_t)(1500 + servoPosition[VTAIL_R]);
+    TIM1->CCR3 = (uint32_t)(1500 + servoPosition[MOTOR]);
     TIM2->CCR2 = (uint32_t)(1500 + servoPosition[AILERON_R]);
     TIM16->CCR1 = (uint32_t)(1500 + servoPosition[VTAIL_L]);
 }
@@ -209,17 +213,16 @@ void handle_usart() {
         rc_lib_transmitter_id = temp;
         HAL_UART_Transmit_DMA(&huart2, power_package.buffer, length);
     } else {
-        float adc_voltage = pressureAdc*5.0f/4096;
-        float pressure = ((adc_voltage/5.0f)-0.2f)/0.2f;
-        float v=sqrtf(2*pressure/1.2041756858f);
+        volatile float adc_voltage = adc_reading_pressure*5.24f/4096.0f - 0.99f;
+        volatile float airspeed = sqrtf(2*(adc_voltage)/1.2041756858f*1000);
 
         transmit_package.channel_data[0] = (uint16_t) (BNO055_HEADING);
-        transmit_package.channel_data[1] = (uint16_t) (BNO055_ROLL + 180);
-        transmit_package.channel_data[2] = (uint16_t) (BNO055_PITCH + 180);
+        transmit_package.channel_data[1] = (uint16_t) (BNO055_PITCH + 180);
+        transmit_package.channel_data[2] = (uint16_t) (BNO055_ROLL+ 180);
         transmit_package.channel_data[3] = (uint16_t) (BNO055_GYRO_Z + 500);
         transmit_package.channel_data[4] = (uint16_t) MPL_HEIGHT;
         transmit_package.channel_data[5] = BNO055_CALIBSTATUS;
-        transmit_package.channel_data[6] = (uint16_t)(v-328);
+        transmit_package.channel_data[6] = (uint16_t)(airspeed);
         transmit_package.channel_data[7] = (uint16_t) (servoPosition[AILERON_R] + 500);
         transmit_package.channel_data[8] = (uint16_t) (servoPosition[VTAIL_R] + 500);
         transmit_package.channel_data[9] = (uint16_t) (servoPosition[MOTOR] + 500);
@@ -228,7 +231,7 @@ void handle_usart() {
         transmit_package.channel_data[12] = 0;
         transmit_package.channel_data[13] = 0;
         transmit_package.channel_data[14] = 0;
-        transmit_package.channel_data[15] = (uint16_t) (pressureAdc >> 4);
+        transmit_package.channel_data[15] = 0;
 
         uint16_t length = rc_lib_encode(&transmit_package);
         HAL_UART_Transmit_DMA(&huart2, transmit_package.buffer, length);
@@ -328,9 +331,16 @@ int main(void)
     HAL_TIM_Base_Start(&htim6);
     HAL_TIM_Base_Start(&htim7);
 
+    HAL_TIM_PWM_Start(&htim1, TIM_CHANNEL_1);
+    HAL_TIM_PWM_Start(&htim1, TIM_CHANNEL_2);
+    HAL_TIM_PWM_Start(&htim1, TIM_CHANNEL_3);
     HAL_TIM_PWM_Start(&htim2, TIM_CHANNEL_2);
     HAL_TIM_PWM_Start(&htim16, TIM_CHANNEL_1);
-    HAL_TIM_Base_Start_IT(&htim1);
+
+    HAL_TIMEx_PWMN_Start(&htim1, TIM_CHANNEL_1);
+    HAL_TIMEx_PWMN_Start(&htim1, TIM_CHANNEL_2);
+    HAL_TIMEx_PWMN_Start(&htim1, TIM_CHANNEL_3);
+
     HAL_TIM_Base_Start_IT(&htim6);
     HAL_TIM_Base_Start_IT(&htim7);
 
@@ -362,7 +372,6 @@ int main(void)
   /* USER CODE END WHILE */
 
   /* USER CODE BEGIN 3 */
-        handle_i2c();
 
         if (HAL_UART_GetState(&huart1) == HAL_UART_STATE_READY) {
             if(sbus_parse(sBusReceiveBuffer, sizeof(sBusReceiveBuffer))){
@@ -376,8 +385,7 @@ int main(void)
                 rc_lib_transmitter_id = tmp;
             }
             HAL_UART_Receive_IT(&huart1, sBusReceiveBuffer, sizeof(sBusReceiveBuffer));
-        }
-        if(HAL_UART_GetState(&huart2) == HAL_UART_STATE_READY) {
+        } else if(HAL_UART_GetState(&huart2) == HAL_UART_STATE_READY) {
             for(uint8_t b=0; b< sizeof(flightComputerReceiveBuffer); b++) {
                 if(rc_lib_decode(&flight_computer_package_receiving, flightComputerReceiveBuffer[b])) {
                     flight_computer_package.resolution = flight_computer_package_receiving.resolution;
@@ -388,8 +396,11 @@ int main(void)
                 }
             }
         }
+        handle_i2c();
 
-        HAL_ADC_Start_DMA(&hadc1, &pressureAdc, sizeof(pressureAdc));
+        HAL_ADC_Stop_DMA(&hadc1);
+        adc_reading_pressure = new_adc_reading_pressure;
+        HAL_ADC_Start_DMA(&hadc1, &new_adc_reading_pressure, sizeof(new_adc_reading_pressure));
     }
   /* USER CODE END 3 */
 
