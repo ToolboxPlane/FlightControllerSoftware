@@ -3,40 +3,9 @@
   * @file           : main.c
   * @brief          : Main program body
   ******************************************************************************
-  ** This notice applies to any and all portions of this file
-  * that are not between comment pairs USER CODE BEGIN and
-  * USER CODE END. Other portions of this file, whether 
-  * inserted by the user or by software development tools
-  * are owned by their respective copyright owners.
-  *
-  * COPYRIGHT(c) 2018 STMicroelectronics
-  *
-  * Redistribution and use in source and binary forms, with or without modification,
-  * are permitted provided that the following conditions are met:
-  *   1. Redistributions of source code must retain the above copyright notice,
-  *      this list of conditions and the following disclaimer.
-  *   2. Redistributions in binary form must reproduce the above copyright notice,
-  *      this list of conditions and the following disclaimer in the documentation
-  *      and/or other materials provided with the distribution.
-  *   3. Neither the name of STMicroelectronics nor the names of its contributors
-  *      may be used to endorse or promote products derived from this software
-  *      without specific prior written permission.
-  *
-  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
-  * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
-  * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
-  * DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE
-  * FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
-  * DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
-  * SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER
-  * CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
-  * OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
-  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
-  *
   ******************************************************************************
   */
 /* Includes ------------------------------------------------------------------*/
-#include <stm32l432xx.h>
 #include "main.h"
 #include "stm32l4xx_hal.h"
 #include "adc.h"
@@ -134,7 +103,7 @@ bool handle_i2c() {
     }
     return false;
 }
-// value between 168 and 1808
+
 int16_t sbusValueToServo(uint16_t sbusValue) {
     return (int16_t)((sbusValue - 168)/(1811.0-168.0) * 1000) - 500;
 }
@@ -145,12 +114,17 @@ void controller_tick() {
         roll_controller.target_value = 0;
         servoPosition[MOTOR] = -500;
         update_all_controller();
-    } else if(sbusValueToServo(sbus_latest_data.channel[10]) > -250) {
+    } else if(sbusValueToServo(sbus_latest_data.channel[10]) < -250) { // Manual
         servoPosition[MOTOR] = sbusValueToServo(sbus_latest_data.channel[0]);
         servoPosition[AILERON_L] = sbusValueToServo(sbus_latest_data.channel[1]);
         servoPosition[AILERON_R] = sbusValueToServo(sbus_latest_data.channel[2]);
         servoPosition[VTAIL_L] = sbusValueToServo(sbus_latest_data.channel[3]);
         servoPosition[VTAIL_R] = sbusValueToServo(sbus_latest_data.channel[4]);
+    } else if(sbusValueToServo(sbus_latest_data.channel[10]) < 250) { // Level
+        pitch_controller.target_value = 0;
+        roll_controller.target_value = 0;
+        servoPosition[MOTOR] = sbusValueToServo(sbus_latest_data.channel[0]);
+        update_all_controller();
     } else {
         pitch_controller.target_value = flight_computer_package.channel_data[1]-180;
         servoPosition[MOTOR] = flight_computer_package.channel_data[2];
@@ -168,9 +142,9 @@ void controller_tick() {
         update_all_controller();
     }
 
-    TIM1->CCR1 = (uint32_t)(1500 + servoPosition[AILERON_L]);
-    TIM1->CCR2 = (uint32_t)(1500 + servoPosition[VTAIL_R]);
-    TIM1->CCR3 = (uint32_t)(1500 + servoPosition[MOTOR]);
+    TIM1->CCR1 = (uint32_t)(18500 - servoPosition[AILERON_L]);
+    TIM1->CCR2 = (uint32_t)(18500 - servoPosition[VTAIL_R]);
+    TIM1->CCR3 = (uint32_t)(18500 - servoPosition[MOTOR]);
     TIM2->CCR2 = (uint32_t)(1500 + servoPosition[AILERON_R]);
     TIM16->CCR1 = (uint32_t)(1500 + servoPosition[VTAIL_L]);
 }
@@ -364,8 +338,8 @@ int main(void)
 
     init_all_controller();
 
-    HAL_UART_Receive_IT(&huart1, sBusReceiveBuffer, sizeof(sBusReceiveBuffer));
-    HAL_UART_Receive_IT(&huart2, flightComputerReceiveBuffer, sizeof(flightComputerReceiveBuffer));
+    HAL_UART_Receive_DMA(&huart1, sBusReceiveBuffer, sizeof(sBusReceiveBuffer));
+    HAL_UART_Receive_DMA(&huart2, flightComputerReceiveBuffer, sizeof(flightComputerReceiveBuffer));
 
 
     while (1) {
@@ -384,7 +358,7 @@ int main(void)
                 HAL_UART_Transmit_DMA(&huart2, sbus_package.buffer, length);
                 rc_lib_transmitter_id = tmp;
             }
-            HAL_UART_Receive_IT(&huart1, sBusReceiveBuffer, sizeof(sBusReceiveBuffer));
+            HAL_UART_Receive_DMA(&huart1, sBusReceiveBuffer, sizeof(sBusReceiveBuffer));
         } else if(HAL_UART_GetState(&huart2) == HAL_UART_STATE_READY) {
             for(uint8_t b=0; b< sizeof(flightComputerReceiveBuffer); b++) {
                 if(rc_lib_decode(&flight_computer_package_receiving, flightComputerReceiveBuffer[b])) {
