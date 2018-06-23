@@ -20,8 +20,14 @@ The output package is a 10 bit, 16 Channel Package with the following data:
 | 3 | Ultrasonic-Height |
 | 4 | Barometer-Height |
 | 5 | BNO-055 Calibration Status |
-| 6 | Empty |
-| 7 | ... |
+| 6 | Airspeed |
+| 7 | Servo-Aileron-Right |
+| 8 | Servo-VTail-Right |
+| 9 | Motor |
+| 10 | Servo-VTail-Left |
+| 11 | Servo-Aileron-Left |
+| 12 | Empty |
+| 13 | ... |
 
 ### SBus Output (Transmitter ID 56)
 The package is a 11 bit, 16 Channel Package, with the same information as the sbus packagethe same information as the sbus package.

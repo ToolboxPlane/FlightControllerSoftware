@@ -193,7 +193,7 @@ void handle_usart() {
         transmit_package.channel_data[0] = (uint16_t) (BNO055_HEADING);
         transmit_package.channel_data[1] = (uint16_t) (BNO055_PITCH + 180);
         transmit_package.channel_data[2] = (uint16_t) (BNO055_ROLL+ 180);
-        transmit_package.channel_data[3] = (uint16_t) (BNO055_GYRO_Z + 500);
+        transmit_package.channel_data[3] = (uint16_t) (0);
         transmit_package.channel_data[4] = (uint16_t) MPL_HEIGHT;
         transmit_package.channel_data[5] = BNO055_CALIBSTATUS;
         transmit_package.channel_data[6] = (uint16_t)(airspeed);
