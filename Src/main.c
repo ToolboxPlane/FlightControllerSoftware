@@ -3,40 +3,9 @@
   * @file           : main.c
   * @brief          : Main program body
   ******************************************************************************
-  ** This notice applies to any and all portions of this file
-  * that are not between comment pairs USER CODE BEGIN and
-  * USER CODE END. Other portions of this file, whether 
-  * inserted by the user or by software development tools
-  * are owned by their respective copyright owners.
-  *
-  * COPYRIGHT(c) 2018 STMicroelectronics
-  *
-  * Redistribution and use in source and binary forms, with or without modification,
-  * are permitted provided that the following conditions are met:
-  *   1. Redistributions of source code must retain the above copyright notice,
-  *      this list of conditions and the following disclaimer.
-  *   2. Redistributions in binary form must reproduce the above copyright notice,
-  *      this list of conditions and the following disclaimer in the documentation
-  *      and/or other materials provided with the distribution.
-  *   3. Neither the name of STMicroelectronics nor the names of its contributors
-  *      may be used to endorse or promote products derived from this software
-  *      without specific prior written permission.
-  *
-  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
-  * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
-  * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
-  * DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE
-  * FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
-  * DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
-  * SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER
-  * CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
-  * OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
-  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
-  *
   ******************************************************************************
   */
 /* Includes ------------------------------------------------------------------*/
-#include <math.h>
 #include "main.h"
 #include "stm32l4xx_hal.h"
 #include "adc.h"
@@ -65,7 +34,8 @@ uint8_t sBusReceiveBuffer[25];
 uint8_t flightComputerReceiveBuffer[16];
 
 int16_t servoPosition[5]; ///< Values  between -500 and 500
-uint32_t pressureAdc;
+uint32_t new_adc_reading_pressure;
+uint32_t adc_reading_pressure;
 rc_lib_package_t flight_computer_package;
 
 /* USER CODE END PV */
@@ -133,9 +103,9 @@ bool handle_i2c() {
     }
     return false;
 }
-// value between 168 and 1808
+
 int16_t sbusValueToServo(uint16_t sbusValue) {
-    return (int16_t)((sbusValue - 168)/(1808.0-168.0) * 1000) - 500;
+    return (int16_t)((sbusValue - 168)/(1811.0-168.0) * 1000) - 500;
 }
 
 void controller_tick() {
@@ -144,12 +114,17 @@ void controller_tick() {
         roll_controller.target_value = 0;
         servoPosition[MOTOR] = -500;
         update_all_controller();
-    } else if(sbusValueToServo(sbus_latest_data.channel[10]) > -250) {
+    } else if(sbusValueToServo(sbus_latest_data.channel[10]) < -250) { // Manual
         servoPosition[MOTOR] = sbusValueToServo(sbus_latest_data.channel[0]);
         servoPosition[AILERON_L] = sbusValueToServo(sbus_latest_data.channel[1]);
         servoPosition[AILERON_R] = sbusValueToServo(sbus_latest_data.channel[2]);
         servoPosition[VTAIL_L] = sbusValueToServo(sbus_latest_data.channel[3]);
         servoPosition[VTAIL_R] = sbusValueToServo(sbus_latest_data.channel[4]);
+    } else if(sbusValueToServo(sbus_latest_data.channel[10]) < 250) { // Level
+        pitch_controller.target_value = 0;
+        roll_controller.target_value = 0;
+        servoPosition[MOTOR] = sbusValueToServo(sbus_latest_data.channel[0]);
+        update_all_controller();
     } else {
         pitch_controller.target_value = flight_computer_package.channel_data[1]-180;
         servoPosition[MOTOR] = flight_computer_package.channel_data[2];
@@ -167,6 +142,9 @@ void controller_tick() {
         update_all_controller();
     }
 
+    TIM1->CCR1 = (uint32_t)(18500 - servoPosition[AILERON_L]);
+    TIM1->CCR2 = (uint32_t)(18500 - servoPosition[VTAIL_R]);
+    TIM1->CCR3 = (uint32_t)(18500 - servoPosition[MOTOR]);
     TIM2->CCR2 = (uint32_t)(1500 + servoPosition[AILERON_R]);
     TIM16->CCR1 = (uint32_t)(1500 + servoPosition[VTAIL_L]);
 }
@@ -209,17 +187,16 @@ void handle_usart() {
         rc_lib_transmitter_id = temp;
         HAL_UART_Transmit_DMA(&huart2, power_package.buffer, length);
     } else {
-        float adc_voltage = pressureAdc*5.0f/4096;
-        float pressure = ((adc_voltage/5.0f)-0.2f)/0.2f;
-        float v=sqrtf(2*pressure/1.2041756858f);
+        volatile float adc_voltage = adc_reading_pressure*5.24f/4096.0f - 0.99f;
+        volatile float airspeed = sqrtf(2*(adc_voltage)/1.2041756858f*1000);
 
         transmit_package.channel_data[0] = (uint16_t) (BNO055_HEADING);
-        transmit_package.channel_data[1] = (uint16_t) (BNO055_ROLL + 180);
-        transmit_package.channel_data[2] = (uint16_t) (BNO055_PITCH + 180);
+        transmit_package.channel_data[1] = (uint16_t) (BNO055_PITCH + 180);
+        transmit_package.channel_data[2] = (uint16_t) (BNO055_ROLL+ 180);
         transmit_package.channel_data[3] = (uint16_t) (BNO055_GYRO_Z + 500);
         transmit_package.channel_data[4] = (uint16_t) MPL_HEIGHT;
         transmit_package.channel_data[5] = BNO055_CALIBSTATUS;
-        transmit_package.channel_data[6] = (uint16_t)(v-328);
+        transmit_package.channel_data[6] = (uint16_t)(airspeed);
         transmit_package.channel_data[7] = (uint16_t) (servoPosition[AILERON_R] + 500);
         transmit_package.channel_data[8] = (uint16_t) (servoPosition[VTAIL_R] + 500);
         transmit_package.channel_data[9] = (uint16_t) (servoPosition[MOTOR] + 500);
@@ -228,7 +205,7 @@ void handle_usart() {
         transmit_package.channel_data[12] = 0;
         transmit_package.channel_data[13] = 0;
         transmit_package.channel_data[14] = 0;
-        transmit_package.channel_data[15] = (uint16_t) (pressureAdc >> 4);
+        transmit_package.channel_data[15] = 0;
 
         uint16_t length = rc_lib_encode(&transmit_package);
         HAL_UART_Transmit_DMA(&huart2, transmit_package.buffer, length);
@@ -328,9 +305,16 @@ int main(void)
     HAL_TIM_Base_Start(&htim6);
     HAL_TIM_Base_Start(&htim7);
 
+    HAL_TIM_PWM_Start(&htim1, TIM_CHANNEL_1);
+    HAL_TIM_PWM_Start(&htim1, TIM_CHANNEL_2);
+    HAL_TIM_PWM_Start(&htim1, TIM_CHANNEL_3);
     HAL_TIM_PWM_Start(&htim2, TIM_CHANNEL_2);
     HAL_TIM_PWM_Start(&htim16, TIM_CHANNEL_1);
-    HAL_TIM_Base_Start_IT(&htim1);
+
+    HAL_TIMEx_PWMN_Start(&htim1, TIM_CHANNEL_1);
+    HAL_TIMEx_PWMN_Start(&htim1, TIM_CHANNEL_2);
+    HAL_TIMEx_PWMN_Start(&htim1, TIM_CHANNEL_3);
+
     HAL_TIM_Base_Start_IT(&htim6);
     HAL_TIM_Base_Start_IT(&htim7);
 
@@ -354,15 +338,14 @@ int main(void)
 
     init_all_controller();
 
-    HAL_UART_Receive_IT(&huart1, sBusReceiveBuffer, sizeof(sBusReceiveBuffer));
-    HAL_UART_Receive_IT(&huart2, flightComputerReceiveBuffer, sizeof(flightComputerReceiveBuffer));
+    HAL_UART_Receive_DMA(&huart1, sBusReceiveBuffer, sizeof(sBusReceiveBuffer));
+    HAL_UART_Receive_DMA(&huart2, flightComputerReceiveBuffer, sizeof(flightComputerReceiveBuffer));
 
 
     while (1) {
   /* USER CODE END WHILE */
 
   /* USER CODE BEGIN 3 */
-        handle_i2c();
 
         if (HAL_UART_GetState(&huart1) == HAL_UART_STATE_READY) {
             if(sbus_parse(sBusReceiveBuffer, sizeof(sBusReceiveBuffer))){
@@ -375,9 +358,8 @@ int main(void)
                 HAL_UART_Transmit_DMA(&huart2, sbus_package.buffer, length);
                 rc_lib_transmitter_id = tmp;
             }
-            HAL_UART_Receive_IT(&huart1, sBusReceiveBuffer, sizeof(sBusReceiveBuffer));
-        }
-        if(HAL_UART_GetState(&huart2) == HAL_UART_STATE_READY) {
+            HAL_UART_Receive_DMA(&huart1, sBusReceiveBuffer, sizeof(sBusReceiveBuffer));
+        } else if(HAL_UART_GetState(&huart2) == HAL_UART_STATE_READY) {
             for(uint8_t b=0; b< sizeof(flightComputerReceiveBuffer); b++) {
                 if(rc_lib_decode(&flight_computer_package_receiving, flightComputerReceiveBuffer[b])) {
                     flight_computer_package.resolution = flight_computer_package_receiving.resolution;
@@ -388,8 +370,11 @@ int main(void)
                 }
             }
         }
+        handle_i2c();
 
-        HAL_ADC_Start_DMA(&hadc1, &pressureAdc, sizeof(pressureAdc));
+        HAL_ADC_Stop_DMA(&hadc1);
+        adc_reading_pressure = new_adc_reading_pressure;
+        HAL_ADC_Start_DMA(&hadc1, &new_adc_reading_pressure, sizeof(new_adc_reading_pressure));
     }
   /* USER CODE END 3 */
 

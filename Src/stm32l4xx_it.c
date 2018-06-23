@@ -43,11 +43,11 @@ extern DMA_HandleTypeDef hdma_adc1;
 extern DMA_HandleTypeDef hdma_i2c1_rx;
 extern DMA_HandleTypeDef hdma_i2c1_tx;
 extern I2C_HandleTypeDef hi2c1;
-extern TIM_HandleTypeDef htim1;
 extern TIM_HandleTypeDef htim6;
 extern TIM_HandleTypeDef htim7;
-extern TIM_HandleTypeDef htim16;
+extern DMA_HandleTypeDef hdma_usart1_rx;
 extern DMA_HandleTypeDef hdma_usart2_tx;
+extern DMA_HandleTypeDef hdma_usart2_rx;
 extern UART_HandleTypeDef huart1;
 extern UART_HandleTypeDef huart2;
 
@@ -118,6 +118,34 @@ void DMA1_Channel1_IRQHandler(void)
 }
 
 /**
+* @brief This function handles DMA1 channel5 global interrupt.
+*/
+void DMA1_Channel5_IRQHandler(void)
+{
+  /* USER CODE BEGIN DMA1_Channel5_IRQn 0 */
+
+  /* USER CODE END DMA1_Channel5_IRQn 0 */
+  HAL_DMA_IRQHandler(&hdma_usart1_rx);
+  /* USER CODE BEGIN DMA1_Channel5_IRQn 1 */
+
+  /* USER CODE END DMA1_Channel5_IRQn 1 */
+}
+
+/**
+* @brief This function handles DMA1 channel6 global interrupt.
+*/
+void DMA1_Channel6_IRQHandler(void)
+{
+  /* USER CODE BEGIN DMA1_Channel6_IRQn 0 */
+
+  /* USER CODE END DMA1_Channel6_IRQn 0 */
+  HAL_DMA_IRQHandler(&hdma_usart2_rx);
+  /* USER CODE BEGIN DMA1_Channel6_IRQn 1 */
+
+  /* USER CODE END DMA1_Channel6_IRQn 1 */
+}
+
+/**
 * @brief This function handles DMA1 channel7 global interrupt.
 */
 void DMA1_Channel7_IRQHandler(void)
@@ -129,23 +157,6 @@ void DMA1_Channel7_IRQHandler(void)
   /* USER CODE BEGIN DMA1_Channel7_IRQn 1 */
 
   /* USER CODE END DMA1_Channel7_IRQn 1 */
-}
-
-/**
-* @brief This function handles TIM1 update interrupt and TIM16 global interrupt.
-*/
-void TIM1_UP_TIM16_IRQHandler(void)
-{
-  /* USER CODE BEGIN TIM1_UP_TIM16_IRQn 0 */
-    int32_t count = TIM2->CNT - (int32_t)1500;
-    HAL_GPIO_WritePin(PPM_MOTOR_GPIO_Port, PPM_MOTOR_Pin, servoPosition[MOTOR] > count?GPIO_PIN_SET:GPIO_PIN_RESET);
-    HAL_GPIO_WritePin(PPM_AILERON_L_GPIO_Port, PPM_AILERON_L_Pin, servoPosition[AILERON_L] > count?GPIO_PIN_SET:GPIO_PIN_RESET);
-    HAL_GPIO_WritePin(PPM_VTAIL_R_GPIO_Port, PPM_VTAIL_R_Pin, servoPosition[VTAIL_R] > count?GPIO_PIN_SET:GPIO_PIN_RESET);
-  /* USER CODE END TIM1_UP_TIM16_IRQn 0 */
-  HAL_TIM_IRQHandler(&htim1);
-  HAL_TIM_IRQHandler(&htim16);
-  /* USER CODE BEGIN TIM1_UP_TIM16_IRQn 1 */
-  /* USER CODE END TIM1_UP_TIM16_IRQn 1 */
 }
 
 /**
