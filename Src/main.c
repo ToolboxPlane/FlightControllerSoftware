@@ -121,8 +121,8 @@ void controller_tick() {
         servoPosition[VTAIL_L] = sbusValueToServo(sbus_latest_data.channel[3]);
         servoPosition[VTAIL_R] = sbusValueToServo(sbus_latest_data.channel[4]);
     } else if(sbusValueToServo(sbus_latest_data.channel[10]) < 250) { // Level
-        pitch_controller.target_value = 0;
-        roll_controller.target_value = 0;
+        pitch_controller.target_value = -sbusValueToServo(sbus_latest_data.channel[7])/9;
+        roll_controller.target_value = sbusValueToServo(sbus_latest_data.channel[8])/6;
         servoPosition[MOTOR] = sbusValueToServo(sbus_latest_data.channel[0]);
         update_all_controller();
     } else {
