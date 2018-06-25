@@ -18,8 +18,7 @@ float update_controller(controller_t* c) {
 
 void init_all_controller() {
     roll_controller.P = 12.0;
-    pitch_controller.P = 2
-            0.0;
+    pitch_controller.P = 20.0;
 
     pitch_controller.I = 0.0;
     roll_controller.I = 0.0;

@@ -25,6 +25,10 @@
 #define BNO055_GYRO_Y ((int16_t)((uint16_t)currBnoBuffer[0x17] << 8 | currBnoBuffer[0x16]))
 #define BNO055_GYRO_Z ((int16_t)((uint16_t)currBnoBuffer[0x15] << 8 | currBnoBuffer[0x14]))
 
+#define BNO055_ACC_X ((int16_t)((uint16_t)currBnoBuffer[0x09] << 8 | currBnoBuffer[0x08]))
+#define BNO055_ACC_Y ((int16_t)((uint16_t)currBnoBuffer[0x0B] << 8 | currBnoBuffer[0x0A]))
+#define BNO055_ACC_Z ((int16_t)((uint16_t)currBnoBuffer[0x0D] << 8 | currBnoBuffer[0x0C]))
+
 #define BNO055_TEMP (currBnoBuffer[0x34]);
 #define BNO055_CALIBSTATUS (currBnoBuffer[0x35]);
 #define BNO055_OPMODE (currBnoBuffer[0x3D]&(uint8_t)0b1111)

@@ -19,15 +19,17 @@ The output package is a 10 bit, 16 Channel Package with the following data:
 | 2 | Pitch + 180 |
 | 3 | Ultrasonic-Height |
 | 4 | Barometer-Height |
-| 5 | BNO-055 Calibration Status |
-| 6 | Airspeed |
-| 7 | Servo-Aileron-Right |
-| 8 | Servo-VTail-Right |
-| 9 | Motor |
-| 10 | Servo-VTail-Left |
-| 11 | Servo-Aileron-Left |
-| 12 | Empty |
-| 13 | ... |
+| 5 | Airspeed |
+| 6 | Acceleration-Forward |
+| 7 | Acceleration-Sideward |
+| 8 | Acceleration-UpDown |
+| 9 | Empty |
+| 10 | Empty |
+| 11 | Servo-Aileron-Right |
+| 12 | Servo-VTail-Right |
+| 13 | Motor |
+| 14 | Servo-VTail-Left |
+| 15 | Servo-Aileron-Left |
 
 ### SBus Output (Transmitter ID 56)
 The package is a 11 bit, 16 Channel Package, with the same information as the sbus packagethe same information as the sbus package.

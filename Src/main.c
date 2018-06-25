@@ -126,19 +126,9 @@ void controller_tick() {
         servoPosition[MOTOR] = sbusValueToServo(sbus_latest_data.channel[0]);
         update_all_controller();
     } else {
+        servoPosition[MOTOR] = flight_computer_package.channel_data[0];
         pitch_controller.target_value = flight_computer_package.channel_data[1]-180;
-        servoPosition[MOTOR] = flight_computer_package.channel_data[2];
-        int16_t headingTarget = flight_computer_package.channel_data[0];
-        int16_t headingDiff = headingTarget - BNO055_HEADING;
-        headingDiff += 720;
-        headingDiff %= 360;
-        headingDiff -= 360;
-        roll_controller.target_value = headingDiff;
-        if(roll_controller.target_value < -30) {
-            roll_controller.target_value = -30;
-        } else if(roll_controller.target_value > 30) {
-            roll_controller.target_value = 30;
-        }
+        roll_controller.target_value = flight_computer_package.channel_data[2]-180;
         update_all_controller();
     }
 
@@ -193,19 +183,19 @@ void handle_usart() {
         transmit_package.channel_data[0] = (uint16_t) (BNO055_HEADING);
         transmit_package.channel_data[1] = (uint16_t) (BNO055_PITCH + 180);
         transmit_package.channel_data[2] = (uint16_t) (BNO055_ROLL+ 180);
-        transmit_package.channel_data[3] = (uint16_t) (0);
+        transmit_package.channel_data[3] = (uint16_t) (0); // Distance to Ground
         transmit_package.channel_data[4] = (uint16_t) MPL_HEIGHT;
-        transmit_package.channel_data[5] = BNO055_CALIBSTATUS;
-        transmit_package.channel_data[6] = (uint16_t)(airspeed);
-        transmit_package.channel_data[7] = (uint16_t) (servoPosition[AILERON_R] + 500);
-        transmit_package.channel_data[8] = (uint16_t) (servoPosition[VTAIL_R] + 500);
-        transmit_package.channel_data[9] = (uint16_t) (servoPosition[MOTOR] + 500);
-        transmit_package.channel_data[10] = (uint16_t) (servoPosition[VTAIL_L] + 500);
-        transmit_package.channel_data[11] = (uint16_t) (servoPosition[AILERON_L] + 500);
-        transmit_package.channel_data[12] = 0;
-        transmit_package.channel_data[13] = 0;
-        transmit_package.channel_data[14] = 0;
-        transmit_package.channel_data[15] = 0;
+        transmit_package.channel_data[5] = (uint16_t)(airspeed);
+        transmit_package.channel_data[6] = (uint16_t) (BNO055_ACC_Y + 500);
+        transmit_package.channel_data[7] = (uint16_t) (BNO055_ACC_X + 500);
+        transmit_package.channel_data[8] = (uint16_t) (BNO055_ACC_Z + 500);
+        transmit_package.channel_data[9] = 0;
+        transmit_package.channel_data[10] = 0;
+        transmit_package.channel_data[11] = (uint16_t) (servoPosition[AILERON_R] + 500);
+        transmit_package.channel_data[12] = (uint16_t) (servoPosition[VTAIL_R] + 500);
+        transmit_package.channel_data[13] = (uint16_t) (servoPosition[MOTOR] + 500);
+        transmit_package.channel_data[14] = (uint16_t) (servoPosition[VTAIL_L] + 500);
+        transmit_package.channel_data[15] = (uint16_t) (servoPosition[AILERON_L] + 500);
 
         uint16_t length = rc_lib_encode(&transmit_package);
         HAL_UART_Transmit_DMA(&huart2, transmit_package.buffer, length);
