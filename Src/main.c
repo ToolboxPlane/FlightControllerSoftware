@@ -186,9 +186,9 @@ void handle_usart() {
         transmit_package.channel_data[3] = (uint16_t) (0); // Distance to Ground
         transmit_package.channel_data[4] = (uint16_t) MPL_HEIGHT;
         transmit_package.channel_data[5] = (uint16_t)(airspeed);
-        transmit_package.channel_data[6] = (uint16_t) (BNO055_ACC_X + 500);
-        transmit_package.channel_data[7] = (uint16_t) (BNO055_ACC_Y + 500);
-        transmit_package.channel_data[8] = (uint16_t) (BNO055_ACC_Z + 500);
+        transmit_package.channel_data[6] = (uint16_t) (-BNO055_ACC_X + 500);
+        transmit_package.channel_data[7] = (uint16_t) (-BNO055_ACC_Y + 500);
+        transmit_package.channel_data[8] = (uint16_t) (-BNO055_ACC_Z + 500);
         transmit_package.channel_data[9] = 0;
         transmit_package.channel_data[10] = 0;
         transmit_package.channel_data[11] = (uint16_t) (servoPosition[AILERON_R] + 500);
