@@ -181,13 +181,13 @@ void handle_usart() {
         volatile float airspeed = sqrtf(2*(adc_voltage)/1.2041756858f*1000);
 
         transmit_package.channel_data[0] = (uint16_t) (BNO055_HEADING);
-        transmit_package.channel_data[1] = (uint16_t) (BNO055_PITCH + 180);
-        transmit_package.channel_data[2] = (uint16_t) (BNO055_ROLL+ 180);
+        transmit_package.channel_data[1] = (uint16_t) (180 + BNO055_PITCH);
+        transmit_package.channel_data[2] = (uint16_t) (180 - BNO055_ROLL);
         transmit_package.channel_data[3] = (uint16_t) (0); // Distance to Ground
         transmit_package.channel_data[4] = (uint16_t) MPL_HEIGHT;
         transmit_package.channel_data[5] = (uint16_t)(airspeed);
-        transmit_package.channel_data[6] = (uint16_t) (BNO055_ACC_Y + 500);
-        transmit_package.channel_data[7] = (uint16_t) (BNO055_ACC_X + 500);
+        transmit_package.channel_data[6] = (uint16_t) (BNO055_ACC_X + 500);
+        transmit_package.channel_data[7] = (uint16_t) (BNO055_ACC_Y + 500);
         transmit_package.channel_data[8] = (uint16_t) (BNO055_ACC_Z + 500);
         transmit_package.channel_data[9] = 0;
         transmit_package.channel_data[10] = 0;

@@ -36,8 +36,8 @@ bool sbus_parse(const uint8_t *data, uint8_t len) {
                 byteCount = 0;
                 break;
             case 23: // Flags
-                new_data.failsave = (data[c] >> 4) & 1;
-                new_data.frame_lost = (data[c] >> 5) & 1;
+                new_data.failsave = (data[c] >> 3) & 1;
+                new_data.frame_lost = (data[c] >> 2) & 1;
                 byteCount =  24;
                 break;
             default: // Data
