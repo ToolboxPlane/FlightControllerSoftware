@@ -23,10 +23,11 @@ void init_all_controller() {
     pitch_controller.I = 0.0;
     roll_controller.I = 0.0;
 
-    roll_controller.D = pitch_controller.D = 0.0;
+    roll_controller.D = 0.0;
+    pitch_controller.D = 0.0;
 
     roll_controller.i_area = pitch_controller.i_area = 0;
-    roll_controller.delta_t = pitch_controller.delta_t = 1;
+    roll_controller.delta_t = pitch_controller.delta_t = 0;
 }
 
 void update_all_controller() {

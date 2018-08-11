@@ -31,7 +31,7 @@ uint8_t *currBnoBuffer;
 uint8_t mplBuffer0[6], mplBuffer1[6];
 uint8_t *currMplBuffer;
 uint8_t sBusReceiveBuffer[25];
-uint8_t flightComputerReceiveBuffer[16];
+uint8_t flightComputerReceiveBuffer[20];
 
 int16_t servoPosition[5]; ///< Values  between -500 and 500
 uint32_t new_adc_reading_pressure;
@@ -127,7 +127,7 @@ void controller_tick() {
         update_all_controller();
     } else {
         servoPosition[MOTOR] = flight_computer_package.channel_data[0];
-        pitch_controller.target_value = flight_computer_package.channel_data[1]-180;
+        pitch_controller.target_value = -(flight_computer_package.channel_data[1]-180);
         roll_controller.target_value = flight_computer_package.channel_data[2]-180;
         update_all_controller();
     }
@@ -154,7 +154,7 @@ void handle_usart() {
 
     send = (send+1) % 2;
     if(send == 0) {
-        uint8_t powDstBuf[6];
+        uint8_t powDstBuf[8];
         powDstBuf[0] = 1;
         powDstBuf[1] = 2;
         powDstBuf[2] = 3;
@@ -169,7 +169,6 @@ void handle_usart() {
         for (uint8_t c = 0; c < 6; c++) {
             power_package.channel_data[c] = powDstBuf[c];
         }
-        power_package.channel_data[6] = power_package.channel_data[7] = 0;
 
         uint8_t temp = rc_lib_transmitter_id;
         rc_lib_transmitter_id = 74;
@@ -349,8 +348,9 @@ int main(void)
                 rc_lib_transmitter_id = tmp;
             }
             HAL_UART_Receive_DMA(&huart1, sBusReceiveBuffer, sizeof(sBusReceiveBuffer));
-        } else if(HAL_UART_GetState(&huart2) == HAL_UART_STATE_READY) {
-            for(uint8_t b=0; b< sizeof(flightComputerReceiveBuffer); b++) {
+        }
+        if(HAL_UART_GetState(&huart2) == HAL_UART_STATE_READY) {
+            for(uint8_t b = 0; b < sizeof(flightComputerReceiveBuffer); b++) {
                 if(rc_lib_decode(&flight_computer_package_receiving, flightComputerReceiveBuffer[b])) {
                     flight_computer_package.resolution = flight_computer_package_receiving.resolution;
                     flight_computer_package.channel_count = flight_computer_package_receiving.channel_count;
@@ -359,7 +359,9 @@ int main(void)
                     }
                 }
             }
+            HAL_UART_Receive_DMA(&huart2, flightComputerReceiveBuffer, sizeof(flightComputerReceiveBuffer));
         }
+
         handle_i2c();
 
         HAL_ADC_Stop_DMA(&hadc1);
