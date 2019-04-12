@@ -1,11 +1,29 @@
 # FlightController
-## Compile
+## Building and deploy
+### Compile
+To compile the firmware run:
 ```
-cd cmake-build-debug && make
+cmake . && make
 ```
-## Flash
+To compile the tests run the same commands in the test directory 
+#### WTF? Two independet cmake-projects?
+You may ask why is there a second, independet cmake project for the tests (and you have the best right to do so). 
+Well i do not like the solution either but it seems like cmake is not able to have two targets with different compilers. 
+So if you find a better solution for doing this (no i won't use Makefiles or Bazel or Scons or Gradle or whatever...) please write an issue and i will fix this immediatly.
+
+### Flash
 ```
-cd cmake-build-debug && st-flash --reset write FlightController.bin 0x8000000
+TODO
+```
+
+### Fuses
+```
+TODO
+```
+
+#### Flash
+```
+TODO
 ```
 
 ## Package format
@@ -33,7 +51,3 @@ The output package is a 10 bit, 16 Channel Package with the following data:
 
 ### SBus Output (Transmitter ID 56)
 The package is a 11 bit, 16 Channel Package, with the same information as the sbus packagethe same information as the sbus package.
-
-### PowerDistributionBoard Output (Transmitter ID 74)
-The package is a 8 bit, 8 Channel Package, the information in each channel corresponds to the response
-to the command with the respective channel number.
