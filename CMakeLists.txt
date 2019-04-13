@@ -1,5 +1,5 @@
 CMAKE_MINIMUM_REQUIRED(VERSION 3.9)
-project(FlightComputer)
+project(FlightController)
 
 set(AVRSTRIP avr-strip)
 set(OBJCOPY avr-objcopy)
