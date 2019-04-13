@@ -12,18 +12,20 @@ Well i do not like the solution either but it seems like cmake is not able to ha
 So if you find a better solution for doing this (no i won't use Makefiles or Bazel or Scons or Gradle or whatever...) please write an issue and i will fix this immediatly.
 
 ### Flash
-```
-TODO
+```bash
+avrdude -p m2560 -B 10 -c avrisp2 -U flash:w:FlightController.hex:i
 ```
 
 ### Fuses
-```
-TODO
-```
+| Fusebyte | Value |
+|--- | --- |
+| Low | 0xEF |
+| High | 0xC1 |
+| Extended | 0xFE |
 
 #### Flash
-```
-TODO
+```bash
+avrdude -p m2560 -B 10 -c avrisp2 -U lfuse:w:0xef:m -U hfuse:w:0xc1:m -U efuse:w:0xfe:m
 ```
 
 ## Package format
