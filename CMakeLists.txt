@@ -6,7 +6,7 @@ set(OBJCOPY avr-objcopy)
 set(CMAKE_C_COMPILER avr-gcc)
 set(CMAKE_CXX_COMPILER avr-g++)
 
-set(CWARN "-Wall -Wextra -Wpedantic -Wstrict-prototypes")
+set(CWARN "-Wall -Wextra -Wstrict-prototypes")
 set(CTUNING "-funsigned-char -funsigned-bitfields -fpack-struct -fshort-enums")
 set(COPT "-O3")
 set(CMCU "-mmcu=atmega2560")
