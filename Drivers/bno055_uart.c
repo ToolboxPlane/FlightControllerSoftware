@@ -9,8 +9,6 @@
 #include <stdint.h>
 #include <stdbool.h>
 
-#define BUF_SIZE 32
-
 typedef enum {
     read_success = 0x00,
     write_success = 0x01,
@@ -93,4 +91,7 @@ bool bno055_read_register(uint8_t reg, uint8_t *data, uint8_t len) {
 
 void bno055_init(void) {
     //uart2_init(115200, &uart_callback);
+    // Potentially remap, see page 24
+    // Select the right units, see page 30
+    //Write 0000 1011 to OPR_MODE (switch to NDOF_FMC_OFF)
 }
