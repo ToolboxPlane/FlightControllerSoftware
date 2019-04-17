@@ -9,9 +9,10 @@
 #define FLIGHTCONTROLLER_COMMUNICATION_H
 
 #include "../state.h"
-#include "../control.h"
+#include "../out_state.h"
+#include "../setpoint.h"
 
-void communication_init(void);
-void communication_send_status(const state_t *state, const control_t *control); //@TODO arg
+void communication_init(void (*setpoint_callback)(setpoint_t), void (*failsave_callback)(void));
+void communication_send_status(const state_t *state, const out_state_t *out_state);
 
 #endif //FLIGHTCONTROLLER_COMMUNICATION_H

@@ -59,3 +59,8 @@ The output package is a 10 bit, 16 Channel Package with the following data:
 
 ### SBus Output (Transmitter ID 56)
 The package is a 11 bit, 16 Channel Package, with the same information as the sbus packagethe same information as the sbus package.
+
+## What are all these different structs?
+ * `state`: The current state of the airplane as measured by the BNO055
+ * `out_state`: The (desired) state of the outputs (servos and motors)
+ * `setpoint`: The setpoint sent by the flightcomputer (power, pitch, roll)
