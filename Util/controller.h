@@ -20,12 +20,8 @@ typedef struct controller {
     float delta_t;
 } controller_t;
 
-float update_controller(controller_t* c);
-
 void init_all_controller(void);
 void update_all_controller(const state_t *state, const setpoint_t *setpoint,
         out_state_t *out_state);
-
-extern controller_t roll_controller, pitch_controller;
 
 #endif //FLIGHTCONTROLLER_CONTROLLER_H
