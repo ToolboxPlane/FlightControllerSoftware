@@ -64,7 +64,7 @@ void communication_init(void (*setpoint_callback)(setpoint_t), void (*failsave_c
     rc_lib_error_count = 0;
 
     uart_init(0, 9600, &usb_callback);
-    //uart2_init(98000, &sbus_callback);
+    uart_init(2, 98000, &sbus_callback);
 }
 
 void communication_send_status(const state_t *state, const out_state_t *out_state) {
