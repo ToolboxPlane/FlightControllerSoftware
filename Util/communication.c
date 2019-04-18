@@ -15,6 +15,7 @@
 
 static void (*_setpoint_callback)(setpoint_t) = 0;
 static void (*_failsave_callback)(void) = 0;
+volatile static bool failsave = false;
 
 void usb_callback(uint8_t data) {
     static rc_lib_package_t pkg;
@@ -26,15 +27,20 @@ void usb_callback(uint8_t data) {
                 .roll = pkg.channel_data[2] - 180
             };
 
-            (*_setpoint_callback)(setpoint);
+            if (_setpoint_callback != 0) {
+                (*_setpoint_callback)(setpoint);
+            }
         }
     }
 }
 
 void sbus_callback(uint8_t data) {
     if (sbus_parse(&data, 1)) {
+        failsave = sbus_latest_data.failsave;
         if (sbus_latest_data.failsave) {
-            (*_failsave_callback)();
+            if (_failsave_callback != 0) {
+                (*_failsave_callback)();
+            }
         } else {
             rc_lib_package_t pkg;
             pkg.channel_count = 16;
@@ -87,5 +93,9 @@ void communication_send_status(const state_t *state, const out_state_t *out_stat
     rc_lib_transmitter_id = FC_TRANSMITTER_ID;
     uint8_t len = rc_lib_encode(&pkg);
     uart0_send_buf(pkg.buffer, len);
+}
+
+bool communication_is_failsave(void) {
+    return failsave;
 }
 

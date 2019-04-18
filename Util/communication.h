@@ -8,6 +8,7 @@
 #ifndef FLIGHTCONTROLLER_COMMUNICATION_H
 #define FLIGHTCONTROLLER_COMMUNICATION_H
 
+#include <stdbool.h>
 #include "../state.h"
 #include "../out_state.h"
 #include "../setpoint.h"
@@ -25,5 +26,11 @@ void communication_init(void (*setpoint_callback)(setpoint_t), void (*failsave_c
  * @param out_state the state of the actors
  */
 void communication_send_status(const state_t *state, const out_state_t *out_state);
+
+/**
+ * Get the sbus failsave data.
+ * @return true if last sbus package had the failsave bit set
+ */
+bool communication_is_failsave(void);
 
 #endif //FLIGHTCONTROLLER_COMMUNICATION_H
