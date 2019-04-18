@@ -33,6 +33,7 @@ void failsave() {
 void timer_tick() {
     out_state_t out_state;
     controller_update(&curr_state, &curr_setpoint, &out_state);
+    out_state.motor = curr_setpoint.power;
     communication_send_status(&curr_state, &out_state);
 }
 
@@ -40,9 +41,9 @@ int main(void) {
     cli();
     output_init();
     input_init();
-    controller_init();
+    controller_init(4);
     communication_init(&setpoint_update, &failsave);
-    // Runs at 244.14Hz, the BNO055 provides data at 100Hz, the output can be updated at 50Hz
+    // Runs at 244.14Hz (4.096ms), the BNO055 provides data at 100Hz, the output can be updated at 50Hz
     timer0_init(prescaler_256, &timer_tick);
     sei();
 
