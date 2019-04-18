@@ -16,7 +16,7 @@ float update_controller(controller_t* c) {
     return p_val + i_val + d_val;
 }
 
-void init_all_controller() {
+void controller_init() {
     roll_controller.P = 12.0;
     pitch_controller.P = 20.0;
 
@@ -30,8 +30,8 @@ void init_all_controller() {
     roll_controller.delta_t = pitch_controller.delta_t = 0;
 }
 
-void update_all_controller(const state_t *state, const setpoint_t *setpoint,
-        out_state_t *out_state) {
+void controller_update(const state_t *state, const setpoint_t *setpoint,
+                       out_state_t *out_state) {
     roll_controller.is_value = state->roll; // Remapping because of bno...
     pitch_controller.is_value = state->pitch;
 

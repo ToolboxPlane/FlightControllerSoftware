@@ -21,7 +21,8 @@ set(CMAKE_C_STANDARD 11)
 
 set(SOURCES_HAL HAL/uart.c HAL/pwm16bit.c HAL/timer8bit.c)
 set(SOURCES_DRIVER Drivers/sbus.c Drivers/rc_lib/rc_lib.c Drivers/bno055_uart.c)
-set(SOURCES main.c Util/controller.c ${SOURCES_HAL} ${SOURCES_DRIVER} Util/communication.c)
+set(SOURCES main.c ${SOURCES_HAL} ${SOURCES_DRIVER}
+        Util/communication.c Util/controller.c Util/output.c)
 
 add_executable(${PROJECT_NAME} ${SOURCES})
 set_target_properties(${PROJECT_NAME} PROPERTIES OUTPUT_NAME "${PROJECT_NAME}.elf")

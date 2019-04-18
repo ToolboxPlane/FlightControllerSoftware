@@ -52,7 +52,7 @@ void sbus_callback(uint8_t data) {
 
             rc_lib_transmitter_id = SBUS_TRANSMITTER_ID;
             uint8_t len = rc_lib_encode(&pkg);
-            uart0_send_buf(pkg.buffer, len);
+            uart_send_buf(0, pkg.buffer, len);
         }
     }
 }
@@ -63,7 +63,7 @@ void communication_init(void (*setpoint_callback)(setpoint_t), void (*failsave_c
     rc_lib_global_package_uid = 0;
     rc_lib_error_count = 0;
 
-    uart0_init(9600, &usb_callback);
+    uart_init(0, 9600, &usb_callback);
     //uart2_init(98000, &sbus_callback);
 }
 
@@ -92,7 +92,7 @@ void communication_send_status(const state_t *state, const out_state_t *out_stat
 
     rc_lib_transmitter_id = FC_TRANSMITTER_ID;
     uint8_t len = rc_lib_encode(&pkg);
-    uart0_send_buf(pkg.buffer, len);
+    uart_send_buf(0, pkg.buffer, len);
 }
 
 bool communication_is_failsave(void) {
