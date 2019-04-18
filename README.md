@@ -43,9 +43,9 @@ The output package is a 10 bit, 16 Channel Package with the following data:
 | 0 | Heading (value between 0 and 360) |
 | 1 | Roll + 180 |
 | 2 | Pitch + 180 |
-| 3 | Ultrasonic-Height |
-| 4 | Barometer-Height |
-| 5 | Airspeed |
+| 3 | Empty |
+| 4 | Empty |
+| 5 | Empty |
 | 6 | Acceleration-Forward + 500 |
 | 7 | Acceleration-Sideward +500 |
 | 8 | Acceleration-UpDown + 500 |

@@ -15,7 +15,7 @@
 
 static void (*_setpoint_callback)(setpoint_t) = 0;
 static void (*_failsave_callback)(void) = 0;
-volatile static bool failsave = false;
+static volatile bool failsave = false;
 
 void usb_callback(uint8_t data) {
     static rc_lib_package_t pkg;
@@ -76,9 +76,9 @@ void communication_send_status(const state_t *state, const out_state_t *out_stat
     pkg.channel_data[0] = state->heading;
     pkg.channel_data[1] = state->roll + 180;
     pkg.channel_data[2] = state->pitch + 180;
-    pkg.channel_data[3] = state->ultrasonic_height;
-    pkg.channel_data[4] = state->baro_height;
-    pkg.channel_data[5] = state->airspeed;
+    pkg.channel_data[3] = 0;
+    pkg.channel_data[4] = 0;
+    pkg.channel_data[5] = 0;
     pkg.channel_data[6] = state->acc_forward + 500;
     pkg.channel_data[7] = state->acc_side + 500;
     pkg.channel_data[8] = state->acc_updown + 500;
