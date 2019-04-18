@@ -11,16 +11,29 @@
 #include "HAL/timer8bit.h"
 #include "Util/input.h"
 
-void setpoint_update(setpoint_t setpoint) {
+state_t curr_state;
+setpoint_t curr_setpoint;
 
+void setpoint_update(setpoint_t setpoint) {
+    if (!communication_is_failsave()) {
+        curr_setpoint = setpoint;
+    } else {
+        curr_setpoint.roll = 0;
+        curr_setpoint.pitch = 0;
+        curr_setpoint.power = 0;
+    }
 }
 
 void failsave() {
-
+    curr_setpoint.roll = 0;
+    curr_setpoint.pitch = 0;
+    curr_setpoint.power = 0;
 }
 
 void timer_tick() {
-
+    out_state_t out_state;
+    controller_update(&curr_state, &curr_setpoint, &out_state);
+    communication_send_status(&curr_state, &out_state);
 }
 
 int main(void) {
@@ -33,10 +46,8 @@ int main(void) {
     timer0_init(prescaler_256, &timer_tick);
     sei();
 
-    state_t state;
-
     while (true) {
-        input_get_state(&state);
+        input_get_state(&curr_state);
         wdt_reset();
     }
 }
