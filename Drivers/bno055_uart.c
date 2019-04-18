@@ -76,6 +76,7 @@ bool bno055_write_register(uint8_t reg, const uint8_t *data, uint8_t len) {
     for (uint8_t c = 0; c<len; c++) {
         buf[c + 4] = data[c];
     }
+    transaction_finished = false;
     //uart2_send_buf(buf, len+4);
     while (!transaction_finished);
     return response == write_success;
@@ -84,6 +85,7 @@ bool bno055_write_register(uint8_t reg, const uint8_t *data, uint8_t len) {
 bool bno055_read_register(uint8_t reg, uint8_t *data, uint8_t len) {
     receive_buf = data;
     uint8_t buf[4] = {0xAA, 0x01, reg, len};
+    transaction_finished = false;
     //uart2_send_buf(buf, 4);
     while (!transaction_finished);
     return response == read_success;
