@@ -47,11 +47,11 @@ void timer_tick() {
         controller_update(&curr_state, &curr_setpoint, &out_state);
         out_state.motor = curr_setpoint.power;
     } else {
-        out_state.motor = sbus_latest_data.channel[0] + 1000;
-        out_state.aileron_l = sbus_latest_data.channel[1] + 1000;
-        out_state.aileron_r = sbus_latest_data.channel[2] + 1000;
-        out_state.vtail_l = sbus_latest_data.channel[3] + 1000;
-        out_state.vtail_r = sbus_latest_data.channel[4] + 1000;
+        out_state.motor = sbus_latest_data.channel[0];
+        out_state.aileron_l = sbus_latest_data.channel[1] - 500;
+        out_state.aileron_r = sbus_latest_data.channel[2] - 500;
+        out_state.vtail_l = sbus_latest_data.channel[3] - 500;
+        out_state.vtail_r = sbus_latest_data.channel[4] - 500;
     }
     output_set(&out_state);
     communication_send_status(&curr_state, &out_state);

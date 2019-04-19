@@ -64,3 +64,7 @@ The package is a 11 bit, 16 Channel Package, with the same information as the sb
  * `state`: The current state of the airplane as measured by the BNO055
  * `out_state`: The (desired) state of the outputs (servos and motors)
  * `setpoint`: The setpoint sent by the flightcomputer (power, pitch, roll)
+ 
+## Coordinate system
+All coordinates form a right-handed trihedron. The x axis points forward, the y axis to the left side 
+and the z axis upward.

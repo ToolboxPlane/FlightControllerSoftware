@@ -21,11 +21,11 @@ void output_init(void) {
 }
 
 void output_set(const out_state_t *out_state) {
-    pwm_set_out_a(0, 2 * (1000 + out_state->aileron_r));
-    pwm_set_out_b(0, 2 * (1000 + out_state->vtail_r));
+    pwm_set_out_a(0, 2 * (1500 + out_state->aileron_r));
+    pwm_set_out_b(0, 2 * (1500 + out_state->vtail_r));
     pwm_set_out_c(0, 2 * (1000 + out_state->motor));
-    pwm_set_out_a(1, 2 * (1000 + out_state->vtail_l));
-    pwm_set_out_b(1, 2 * (1000 + out_state->aileron_l));
+    pwm_set_out_a(1, 2 * (1500 + out_state->vtail_l));
+    pwm_set_out_b(1, 2 * (1500 + out_state->aileron_l));
 }
 
 void output_led(uint8_t led, bool state) {
