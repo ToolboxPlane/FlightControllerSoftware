@@ -34,7 +34,7 @@ void usb_callback(uint8_t data) {
     }
 }
 
-void sbus_callback(uint8_t data) {
+void sbus_receive(uint8_t data) {
     if (sbus_parse(&data, 1)) {
         if (!sbus_latest_data.failsave) {
             rc_lib_package_t pkg;
@@ -59,8 +59,8 @@ void communication_init(void (*setpoint_callback)(setpoint_t), void (*sbus_callb
     rc_lib_global_package_uid = 0;
     rc_lib_error_count = 0;
 
-    uart_init(0, 9600, &usb_callback);
-    uart_init(2, 98000, &sbus_callback);
+    uart_init(0, 115200, &usb_callback);
+    uart_init(2, 98000, &sbus_receive);
 }
 
 void communication_send_status(const state_t *state, const out_state_t *out_state) {
