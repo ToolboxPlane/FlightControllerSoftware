@@ -12,13 +12,14 @@
 #include "../state.h"
 #include "../out_state.h"
 #include "../setpoint.h"
+#include "../Drivers/sbus.h"
 
 /**
  * Initialize the communication, this enables uart0 (usb) and uart2 (sbus)
  * @param setpoint_callback a function that gets called for every new package from the flightcomputer
- * @param failsave_callback a function that gets called on failsave
+ * @param sbus_callback a function that gets called for every new package from the sbus receiver
  */
-void communication_init(void (*setpoint_callback)(setpoint_t), void (*failsave_callback)(void));
+void communication_init(void (*setpoint_callback)(setpoint_t), void (*sbus_callback)(sbus_data_t));
 
 /**
  * Send the current state to the flightcomputer

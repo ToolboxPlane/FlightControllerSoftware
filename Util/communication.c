@@ -14,7 +14,7 @@
 #define SBUS_TRANSMITTER_ID 56
 
 static void (*_setpoint_callback)(setpoint_t) = 0;
-static void (*_failsave_callback)(void) = 0;
+static void (*_sbus_callback)(sbus_data_t) = 0;
 static volatile bool failsave = false;
 
 void usb_callback(uint8_t data) {
@@ -36,17 +36,12 @@ void usb_callback(uint8_t data) {
 
 void sbus_callback(uint8_t data) {
     if (sbus_parse(&data, 1)) {
-        failsave = sbus_latest_data.failsave;
-        if (sbus_latest_data.failsave) {
-            if (_failsave_callback != 0) {
-                (*_failsave_callback)();
-            }
-        } else {
+        if (!sbus_latest_data.failsave) {
             rc_lib_package_t pkg;
             pkg.channel_count = 16;
             pkg.resolution = 10;
             pkg.mesh = false;
-            for (uint8_t c=0; c<16; c++) {
+            for (uint8_t c = 0; c < 16; c++) {
                 pkg.channel_data[c] = sbus_latest_data.channel[c];
             }
 
@@ -54,12 +49,13 @@ void sbus_callback(uint8_t data) {
             uint8_t len = rc_lib_encode(&pkg);
             uart_send_buf(0, pkg.buffer, len);
         }
+        (*_sbus_callback)(sbus_latest_data);
     }
 }
 
-void communication_init(void (*setpoint_callback)(setpoint_t), void (*failsave_callback)(void)) {
+void communication_init(void (*setpoint_callback)(setpoint_t), void (*sbus_callback)(sbus_data_t)) {
     _setpoint_callback = setpoint_callback;
-    _failsave_callback = failsave_callback;
+    _sbus_callback = sbus_callback;
     rc_lib_global_package_uid = 0;
     rc_lib_error_count = 0;
 

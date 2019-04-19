@@ -14,26 +14,46 @@
 state_t curr_state;
 setpoint_t curr_setpoint;
 
+typedef enum {
+    failsave, remote, flightcomputer
+} setpoint_source_t;
+
+setpoint_source_t setpoint_source;
+
 void setpoint_update(setpoint_t setpoint) {
-    if (!communication_is_failsave()) {
-        curr_setpoint = setpoint;
-    } else {
+    if (setpoint_source == flightcomputer) {
         curr_setpoint.roll = 0;
         curr_setpoint.pitch = 0;
         curr_setpoint.power = 0;
     }
 }
 
-void failsave() {
-    curr_setpoint.roll = 0;
-    curr_setpoint.pitch = 0;
-    curr_setpoint.power = 0;
+void sbus_event(sbus_data_t sbus_data) {
+    if (sbus_data.failsave) {
+        curr_setpoint.roll = 0;
+        curr_setpoint.pitch = 0;
+        curr_setpoint.power = 0;
+        setpoint_source = failsave;
+    } else if (sbus_data.channel[11] > 600) { //@TODO check value
+        setpoint_source = remote;
+    } else {
+        setpoint_source = flightcomputer;
+    }
 }
 
 void timer_tick() {
     out_state_t out_state;
-    controller_update(&curr_state, &curr_setpoint, &out_state);
-    out_state.motor = curr_setpoint.power;
+    if (setpoint_source != remote) {
+        controller_update(&curr_state, &curr_setpoint, &out_state);
+        out_state.motor = curr_setpoint.power;
+    } else {
+        out_state.motor = sbus_latest_data.channel[0] + 1000;
+        out_state.aileron_l = sbus_latest_data.channel[1] + 1000;
+        out_state.aileron_r = sbus_latest_data.channel[2] + 1000;
+        out_state.vtail_l = sbus_latest_data.channel[3] + 1000;
+        out_state.vtail_r = sbus_latest_data.channel[4] + 1000;
+    }
+    output_set(&out_state);
     communication_send_status(&curr_state, &out_state);
 }
 
@@ -42,7 +62,7 @@ int main(void) {
     output_init();
     input_init();
     controller_init(4);
-    communication_init(&setpoint_update, &failsave);
+    communication_init(&setpoint_update, &sbus_event);
     // Runs at 244.14Hz (4.096ms), the BNO055 provides data at 100Hz, the output can be updated at 50Hz
     timer0_init(prescaler_256, &timer_tick);
     sei();
