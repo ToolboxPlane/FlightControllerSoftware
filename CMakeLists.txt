@@ -1,4 +1,4 @@
-CMAKE_MINIMUM_REQUIRED(VERSION 3.9)
+cmake_minimum_required(VERSION 3.9)
 project(FlightController)
 
 set(AVRSTRIP avr-strip)

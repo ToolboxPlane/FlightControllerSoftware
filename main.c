@@ -65,11 +65,12 @@ int main(void) {
     communication_init(&setpoint_update, &sbus_event);
     // Runs at 244.14Hz (4.096ms), the BNO055 provides data at 100Hz, the output can be updated at 50Hz
     timer0_init(prescaler_256, &timer_tick);
+    wdt_enable(WDTO_120MS);
     sei();
 
     while (true) {
-        input_get_state(&curr_state);
         wdt_reset();
+        input_get_state(&curr_state);
     }
 }
 
