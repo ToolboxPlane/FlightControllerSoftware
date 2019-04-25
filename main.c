@@ -26,6 +26,7 @@ void setpoint_update(setpoint_t setpoint) {
         curr_setpoint.pitch = 0;
         curr_setpoint.power = 0;
     }
+    output_led(3, toggle);
 }
 
 void sbus_event(sbus_data_t sbus_data) {
@@ -34,11 +35,17 @@ void sbus_event(sbus_data_t sbus_data) {
         curr_setpoint.pitch = 0;
         curr_setpoint.power = 0;
         setpoint_source = failsave;
+        output_led(7, off);
     } else if (sbus_data.channel[11] > 600) { //@TODO check value
         setpoint_source = remote;
+        output_led(7, on);
+        output_led(6, off);
     } else {
         setpoint_source = flightcomputer;
+        output_led(7, on);
+        output_led(6, on);
     }
+    output_led(5, toggle);
 }
 
 void timer_tick() {
@@ -55,11 +62,24 @@ void timer_tick() {
     }
     output_set(&out_state);
     communication_send_status(&curr_state, &out_state);
+    output_led(4, toggle);
 }
 
 int main(void) {
     cli();
     output_init();
+    output_led(0, on);
+    if (!(MCUSR & 0b01000)) { // Watchdog
+        output_led(1, on);
+    } else {
+        output_led(1, off);
+    }
+    if (!(MCUSR & 0b00100)) { // Brownout
+        output_led(2, on);
+    } else {
+        output_led(2, off);
+    }
+
     input_init();
     controller_init(4);
     communication_init(&setpoint_update, &sbus_event);
@@ -71,6 +91,7 @@ int main(void) {
     while (true) {
         wdt_reset();
         input_get_state(&curr_state);
+        output_led(0, toggle);
     }
 }
 

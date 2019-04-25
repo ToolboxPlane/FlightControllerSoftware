@@ -34,6 +34,18 @@ JTAG and OCD. The brownout detection level is set to 1.8V.
 avrdude -p m2560 -B 10 -c avrisp2 -U lfuse:w:0xef:m -U hfuse:w:0xc1:m -U efuse:w:0xfe:m
 ```
 
+## LEDs
+| LED-Number | Meaning |
+| --- | --- |
+| 0 | Alive (blinks regularly) |
+| 1 | Not Watchdog |
+| 2 | Not Brownout |
+| 3 | USB-RX (Toggle on package receive) |
+| 4 | USB-TX (Toggle on package send) |
+| 5 | SBUS-RX (Toggle on package receive) |
+| 6 | Use Flightcomputer as a setpoint source |
+| 7 | Not Failsave |
+
 ## Package format
 ### FlightController Output (Transmitter ID 23)
 The output package is a 10 bit, 16 Channel Package with the following data:

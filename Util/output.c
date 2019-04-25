@@ -28,10 +28,18 @@ void output_set(const out_state_t *out_state) {
     pwm_set_out_b(1, 2 * (1500 + out_state->aileron_l));
 }
 
-void output_led(uint8_t led, bool state) {
-    if (state) {
-        PORTL |= (1 << led);
-    } else {
-        PORTL &= ~(1 << led);
+void output_led(uint8_t led, led_t state) {
+    switch (state) {
+        case on:
+            PORTL |= (1 << led);
+            break;
+        case off:
+            PORTL &= ~(1 << led);
+            break;
+        case toggle:
+            PORTL ^= (1 << led);
+            break;
+        default:
+            break;
     }
 }
