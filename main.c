@@ -13,6 +13,7 @@
 
 state_t curr_state;
 setpoint_t curr_setpoint;
+uint8_t usbTimout = 0, sbusTimeout = 0;
 
 typedef enum {
     failsave, remote, flightcomputer
@@ -27,6 +28,7 @@ void setpoint_update(setpoint_t setpoint) {
         curr_setpoint.power = 0;
     }
     output_led(3, toggle);
+    usbTimout = 0;
 }
 
 void sbus_event(sbus_data_t sbus_data) {
@@ -46,6 +48,7 @@ void sbus_event(sbus_data_t sbus_data) {
         output_led(6, on);
     }
     output_led(5, toggle);
+    sbusTimeout = 0;
 }
 
 void timer_tick() {
@@ -63,6 +66,20 @@ void timer_tick() {
     output_set(&out_state);
     communication_send_status(&curr_state, &out_state);
     output_led(4, toggle);
+
+    // Timeout equals 500ms
+    if (++usbTimout >= 125) {
+        usbTimout = 125;
+        setpoint_source = remote;
+        output_led(7, on);
+        output_led(6, off);
+    }
+    if (++sbusTimeout >= 125) {
+        sbusTimeout = 125;
+        setpoint_source = failsave;
+        output_led(7, on);
+        output_led(6, on);
+    }
 }
 
 int main(void) {
