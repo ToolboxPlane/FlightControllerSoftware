@@ -35,6 +35,12 @@ avrdude -p m2560 -B 10 -c avrisp2 -U lfuse:w:0xef:m -U hfuse:w:0xc1:m -U efuse:w
 ```
 
 ## LEDs
+Under normal use all leds should be either on or blinking.
+By inverting most states one can be sure that all leds are working.
+
+If only a single led is off for a certain time, there is a some kind of problem
+(with the small exception of the sbus-override).
+
 | LED-Number | Meaning |
 | --- | --- |
 | 0 | Alive (blinks regularly) |
