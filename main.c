@@ -37,15 +37,10 @@ void sbus_event(sbus_data_t sbus_data) {
         curr_setpoint.pitch = 0;
         curr_setpoint.power = 0;
         setpoint_source = failsave;
-        output_led(7, off);
     } else if (sbus_data.channel[11] > 600) { //@TODO check value
         setpoint_source = remote;
-        output_led(7, on);
-        output_led(6, off);
     } else {
         setpoint_source = flightcomputer;
-        output_led(7, on);
-        output_led(6, on);
     }
     output_led(5, toggle);
     sbusTimeout = 0;
@@ -71,14 +66,27 @@ void timer_tick() {
     if (++usbTimout >= 125) {
         usbTimout = 125;
         setpoint_source = remote;
-        output_led(7, on);
-        output_led(6, off);
     }
     if (++sbusTimeout >= 125) {
         sbusTimeout = 125;
         setpoint_source = failsave;
-        output_led(7, on);
-        output_led(6, on);
+    }
+
+    switch (setpoint_source) {
+        case failsave:
+            output_led(6, off);
+            output_led(7, off);
+            break;
+        case remote:
+            output_led(6, off);
+            output_led(7, on);
+            break;
+        case flightcomputer:
+            output_led(6, on);
+            output_led(7, on);
+            break;
+        default:
+            break;
     }
 }
 
@@ -86,28 +94,21 @@ int main(void) {
     cli();
     output_init();
     output_led(0, on);
-    if (!(MCUSR & 0b01000)) { // Watchdog
-        output_led(1, on);
-    } else {
-        output_led(1, off);
-    }
-    if (!(MCUSR & 0b00100)) { // Brownout
-        output_led(2, on);
-    } else {
-        output_led(2, off);
-    }
+    output_led(1, MCUSR & (1 << WDRF) ? off : on); // Watchdog
+    output_led(2, MCUSR & (1 << BORF) ? off : on); // Brownout
+    MCUSR = 0;
 
-    input_init();
-    controller_init(4);
+    //input_init();
+    controller_init(16);
     communication_init(&setpoint_update, &sbus_event);
-    // Runs at 244.14Hz (4.096ms), the BNO055 provides data at 100Hz, the output can be updated at 50Hz
-    timer0_init(prescaler_256, &timer_tick);
+    // Runs at 16.384ms interval, the BNO055 provides data at 100Hz, the output can be updated at 50Hz
+    timer0_init(prescaler_1024, &timer_tick);
     wdt_enable(WDTO_120MS);
     sei();
 
     while (true) {
         wdt_reset();
-        input_get_state(&curr_state);
+        //input_get_state(&curr_state);
         output_led(0, toggle);
     }
 }

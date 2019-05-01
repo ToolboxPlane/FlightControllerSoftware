@@ -53,6 +53,7 @@ If only a single led is off for a certain time, there is a some kind of problem
 | 7 | Not Failsave |
 
 ## Package format
+The UART-Baud Rate is 38400.
 ### FlightController Output (Transmitter ID 23)
 The output package is a 10 bit, 16 Channel Package with the following data:
 
