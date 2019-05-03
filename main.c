@@ -4,6 +4,7 @@
 #include <stdbool.h>
 #include <avr/interrupt.h>
 #include <avr/wdt.h>
+#include <avr/delay.h>
 
 #include "Util/communication.h"
 #include "Util/controller.h"
@@ -47,6 +48,7 @@ void sbus_event(sbus_data_t sbus_data) {
 }
 
 void timer_tick() {
+    PORTB |= (1 << 5);
     out_state_t out_state;
     if (setpoint_source != remote) {
         controller_update(&curr_state, &curr_setpoint, &out_state);
@@ -88,6 +90,7 @@ void timer_tick() {
         default:
             break;
     }
+    PORTB &= ~(1 << 5);
 }
 
 int main(void) {
@@ -110,6 +113,7 @@ int main(void) {
         wdt_reset();
         //input_get_state(&curr_state);
         output_led(0, toggle);
+        _delay_ms(100);
     }
 }
 

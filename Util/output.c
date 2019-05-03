@@ -14,9 +14,13 @@ void output_init(void) {
      * This combination of prescaler and max value yields a frequency of 50Hz.
      * Each LSB corresponds to 0.5us
      */
-    pwm_init(1, prescaler_8, 40000);
-    pwm_init(3, prescaler_8, 40000);
+    //pwm_init(1, prescaler_8, 40000);
+    //pwm_init(3, prescaler_8, 40000);
+    //pwm_init(4, prescaler_8, 40000);
 
+    DDRB |= 0b11100000;
+    DDRE |= 0b00111000;
+    DDRH |= 0b00111000;
     DDRL = 0xFF; // All as outputs
 }
 

@@ -1,4 +1,4 @@
-#include <math.h>
+#include "math.h"
 #include "controller.h"
 
 controller_t roll_controller, pitch_controller;
@@ -56,8 +56,8 @@ void controller_update(const state_t *state, const setpoint_t *setpoint,
         pitch_ctrl_val = 500;
     }
 
-    out_state->vtail_l = (int16_t)(-pitch_ctrl_val*sinf((roll_controller.is_value-45)/180.0f*M_PI));
-    out_state->vtail_r = (int16_t)(-pitch_ctrl_val*sinf((roll_controller.is_value+45)/180.0f*M_PI));
+    out_state->vtail_l = (int16_t)(-pitch_ctrl_val*sinus(roll_controller.is_value-45));
+    out_state->vtail_r = (int16_t)(-pitch_ctrl_val*sinus(roll_controller.is_value+45));
     out_state->aileron_l = (int16_t)(-roll_ctrl_val);
     out_state->aileron_r = (int16_t)(-roll_ctrl_val);
 }

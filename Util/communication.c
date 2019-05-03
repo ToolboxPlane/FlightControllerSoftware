@@ -5,6 +5,7 @@
  * @brief communication @TODO
  */
 
+#include <avr/io.h>
 #include "communication.h"
 #include "../HAL/uart.h"
 #include "../Drivers/sbus.h"
