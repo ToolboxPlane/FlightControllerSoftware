@@ -101,19 +101,19 @@ int main(void) {
     output_led(2, MCUSR & (1 << BORF) ? off : on); // Brownout
     MCUSR = 0;
 
-    //input_init();
-    controller_init(16);
     communication_init(&setpoint_update, &sbus_event);
+    controller_init(16);
     // Runs at 16.384ms interval, the BNO055 provides data at 100Hz, the output can be updated at 50Hz
     timer0_init(prescaler_1024, &timer_tick);
     wdt_enable(WDTO_120MS);
+
+    //input_init();
     sei();
 
     while (true) {
         wdt_reset();
         //input_get_state(&curr_state);
         output_led(0, toggle);
-        _delay_ms(100);
     }
 }
 

@@ -6,6 +6,7 @@
  */
 
 #include "bno055_uart.h"
+#include "../HAL/uart.h"
 #include <stdint.h>
 #include <stdbool.h>
 
@@ -131,9 +132,9 @@ typedef enum {
 #define MAG_RADIUS_LSB_ADDR 0x69
 #define MAG_RADIUS_MSB_ADDR 0x6A
 
-bool transaction_finished = false;
-uint8_t *receive_buf;
-bno055_response_t response;
+volatile bool transaction_finished = false;
+volatile uint8_t *receive_buf;
+volatile bno055_response_t response;
 
 void uart_callback(uint8_t data) {
     static uint8_t byte_in_message = 0;
@@ -156,6 +157,7 @@ void uart_callback(uint8_t data) {
             if (acknowledge_or_failure) {
                 response = data;
                 byte_in_message = 0;
+                transaction_finished = true;
             } else {
                 response = read_success;
                 still_to_read = data;
@@ -185,7 +187,7 @@ bool bno055_write_register(uint8_t reg, const uint8_t *data, uint8_t len) {
         buf[c + 4] = data[c];
     }
     transaction_finished = false;
-    //uart2_send_buf(buf, len+4);
+    uart_send_buf(1, buf, len+4);
     while (!transaction_finished);
     return response == write_success;
 }
@@ -194,7 +196,7 @@ bool bno055_read_register(uint8_t reg, uint8_t *data, uint8_t len) {
     receive_buf = data;
     uint8_t buf[4] = {0xAA, 0x01, reg, len};
     transaction_finished = false;
-    //uart2_send_buf(buf, 4);
+    uart_send_buf(1, buf, 4);
     while (!transaction_finished);
     return response == read_success;
 }
@@ -210,7 +212,7 @@ bool bno055_write_byte(uint8_t reg, uint8_t byte) {
 }
 
 void bno055_init(void) {
-    //uart2_init(115200, &uart_callback);
+    uart_init(1, 115200, &uart_callback);
     /*
      * Units:
      *  * Acceleration: m/s^2
@@ -219,7 +221,7 @@ void bno055_init(void) {
      *  * Temperature: Celsius
      *  * Data output format: Android //@TODO don't know if right
      */
-    bno055_write_byte(BNO055_UNIT_SEL_ADDR, 0b0000000);
+    //bno055_write_byte(BNO055_UNIT_SEL_ADDR, 0b0000000);
     bno055_write_byte(BNO055_OPR_MODE_ADDR, 0b0001011); // Switch to NDOF-FMC-OFF Mode
 }
 
