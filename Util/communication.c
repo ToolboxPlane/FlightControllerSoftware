@@ -83,7 +83,7 @@ void communication_send_status(const state_t *state, const out_state_t *out_stat
     pkg.channel_data[10] = 0;
     pkg.channel_data[11] = out_state->aileron_r + 500;
     pkg.channel_data[12] = out_state->vtail_r + 500;
-    pkg.channel_data[13] = out_state->motor + 500;
+    pkg.channel_data[13] = out_state->motor;
     pkg.channel_data[14] = out_state->vtail_l + 500;
     pkg.channel_data[15] = out_state->aileron_l + 500;
 

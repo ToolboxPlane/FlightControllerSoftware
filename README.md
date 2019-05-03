@@ -72,7 +72,7 @@ The output package is a 10 bit, 16 Channel Package with the following data:
 | 10 | Empty |
 | 11 | Servo-Aileron-Right +500 |
 | 12 | Servo-VTail-Right +500 |
-| 13 | Motor + 500 |
+| 13 | Motor |
 | 14 | Servo-VTail-Left + 500 |
 | 15 | Servo-Aileron-Left + 500|
 

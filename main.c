@@ -12,15 +12,15 @@
 #include "HAL/timer8bit.h"
 #include "Util/input.h"
 
-state_t curr_state;
-setpoint_t curr_setpoint;
-uint8_t usbTimout = 0, sbusTimeout = 0;
+volatile state_t curr_state;
+volatile setpoint_t curr_setpoint;
+volatile uint8_t usbTimout = 0, sbusTimeout = 0;
 
 typedef enum {
     failsave, remote, flightcomputer
 } setpoint_source_t;
 
-setpoint_source_t setpoint_source;
+volatile setpoint_source_t setpoint_source;
 
 void setpoint_update(setpoint_t setpoint) {
     if (setpoint_source == flightcomputer) {
@@ -34,9 +34,6 @@ void setpoint_update(setpoint_t setpoint) {
 
 void sbus_event(sbus_data_t sbus_data) {
     if (sbus_data.failsave) {
-        curr_setpoint.roll = 0;
-        curr_setpoint.pitch = 0;
-        curr_setpoint.power = 0;
         setpoint_source = failsave;
     } else if (sbus_data.channel[11] > 600) { //@TODO check value
         setpoint_source = remote;
@@ -48,11 +45,25 @@ void sbus_event(sbus_data_t sbus_data) {
 }
 
 void timer_tick() {
-    PORTB |= (1 << 5);
+    // Timeout equals 500ms
+    if (++sbusTimeout >= 31) {
+        sbusTimeout = 31;
+        setpoint_source = failsave;
+    } else if (++usbTimout >= 31) {
+        usbTimout = 31;
+        setpoint_source = remote;
+    }
+
     out_state_t out_state;
-    if (setpoint_source != remote) {
+    if (setpoint_source == flightcomputer) {
         controller_update(&curr_state, &curr_setpoint, &out_state);
         out_state.motor = curr_setpoint.power;
+    } else if (setpoint_source == failsave) {
+        out_state.motor = 0;
+        out_state.aileron_l = 0;
+        out_state.aileron_r = 0;
+        out_state.vtail_l = 0;
+        out_state.vtail_r = 0;
     } else {
         out_state.motor = sbus_latest_data.channel[0];
         out_state.aileron_l = sbus_latest_data.channel[1] - 500;
@@ -63,16 +74,6 @@ void timer_tick() {
     output_set(&out_state);
     communication_send_status(&curr_state, &out_state);
     output_led(4, toggle);
-
-    // Timeout equals 500ms
-    if (++usbTimout >= 125) {
-        usbTimout = 125;
-        setpoint_source = remote;
-    }
-    if (++sbusTimeout >= 125) {
-        sbusTimeout = 125;
-        setpoint_source = failsave;
-    }
 
     switch (setpoint_source) {
         case failsave:
@@ -90,7 +91,6 @@ void timer_tick() {
         default:
             break;
     }
-    PORTB &= ~(1 << 5);
 }
 
 int main(void) {
