@@ -17,15 +17,15 @@
 static void (*_setpoint_callback)(setpoint_t) = 0;
 static void (*_sbus_callback)(sbus_data_t) = 0;
 static volatile bool failsave = false;
+static volatile rc_lib_package_t usb_rx_pkg;
 
 void usb_callback(uint8_t data) {
-    static rc_lib_package_t pkg;
-    if (rc_lib_decode(&pkg, data)) {
+    if (rc_lib_decode(&usb_rx_pkg, data)) {
         if (_setpoint_callback != 0) {
             setpoint_t setpoint = {
-                .power = pkg.channel_data[0],
-                .pitch = pkg.channel_data[1] - 180,
-                .roll = pkg.channel_data[2] - 180
+                .power = usb_rx_pkg.channel_data[0],
+                .pitch = usb_rx_pkg.channel_data[1] - 180,
+                .roll = usb_rx_pkg.channel_data[2] - 180
             };
 
             if (_setpoint_callback != 0) {
@@ -39,9 +39,8 @@ void sbus_receive(uint8_t data) {
     if (sbus_parse(&data, 1)) {
         if (!sbus_latest_data.failsave) {
             rc_lib_package_t pkg;
-            pkg.channel_count = 16;
-            pkg.resolution = 1024;
-            pkg.mesh = false;
+            rc_lib_init_tx(&pkg, 1024, 16);
+
             for (uint8_t c = 0; c < 16; c++) {
                 pkg.channel_data[c] = sbus_latest_data.channel[c];
             }
@@ -57,18 +56,17 @@ void sbus_receive(uint8_t data) {
 void communication_init(void (*setpoint_callback)(setpoint_t), void (*sbus_callback)(sbus_data_t)) {
     _setpoint_callback = setpoint_callback;
     _sbus_callback = sbus_callback;
+    rc_lib_init_rx(&usb_rx_pkg);
     rc_lib_global_package_uid = 0;
     rc_lib_error_count = 0;
 
-    uart_init(0, 38400, &usb_callback);
+    uart_init(0, 115200, &usb_callback);
     uart_init(2, 98000, &sbus_receive);
 }
 
 void communication_send_status(const state_t *state, const out_state_t *out_state) {
     rc_lib_package_t pkg;
-    pkg.channel_count = 16;
-    pkg.resolution = 1024;
-    pkg.mesh = false;
+    rc_lib_init_tx(&pkg, 1024, 16);
 
     pkg.channel_data[0] = state->heading;
     pkg.channel_data[1] = state->roll + 180;
