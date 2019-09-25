@@ -11,6 +11,6 @@
 #define FLIGHTCONTROLLER_INPUT_H
 
 void input_init(void);
-void input_get_state(state_t *state);
+void input_get_state(volatile state_t *state);
 
 #endif //FLIGHTCONTROLLER_INPUT_H

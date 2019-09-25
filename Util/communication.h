@@ -26,7 +26,7 @@ void communication_init(void (*setpoint_callback)(setpoint_t), void (*sbus_callb
  * @param state the state of the airplane
  * @param out_state the state of the actors
  */
-void communication_send_status(const state_t *state, const out_state_t *out_state);
+void communication_send_status(volatile const state_t *state, volatile const out_state_t *out_state);
 
 /**
  * Get the sbus failsave data.

@@ -12,6 +12,8 @@
 
 void bno055_init(void);
 
+void bno055_reset(void);
+
 int16_t bno055_acc_x(void);
 int16_t bno055_acc_y(void);
 int16_t bno055_acc_z(void);

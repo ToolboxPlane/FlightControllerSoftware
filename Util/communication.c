@@ -64,7 +64,7 @@ void communication_init(void (*setpoint_callback)(setpoint_t), void (*sbus_callb
     uart_init(2, 98000, &sbus_receive);
 }
 
-void communication_send_status(const state_t *state, const out_state_t *out_state) {
+void communication_send_status(volatile const state_t *state, volatile const out_state_t *out_state) {
     rc_lib_package_t pkg;
     rc_lib_init_tx(&pkg, 1024, 16);
 

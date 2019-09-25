@@ -11,9 +11,11 @@
 #include "Util/output.h"
 #include "HAL/timer8bit.h"
 #include "Util/input.h"
+#include "Drivers/bno055_uart.h"
 
 volatile state_t curr_state;
 volatile setpoint_t curr_setpoint;
+volatile out_state_t out_state;
 volatile uint8_t usbTimout = 0, sbusTimeout = 0;
 
 typedef enum {
@@ -54,7 +56,6 @@ void timer_tick() {
         setpoint_source = remote;
     }
 
-    out_state_t out_state;
     if (setpoint_source == flightcomputer) {
         controller_update(&curr_state, &curr_setpoint, &out_state);
         out_state.motor = curr_setpoint.power;
@@ -72,7 +73,6 @@ void timer_tick() {
         out_state.vtail_r = sbus_latest_data.channel[4] - 500;
     }
     output_set(&out_state);
-    communication_send_status(&curr_state, &out_state);
     output_led(4, toggle);
 
     switch (setpoint_source) {
@@ -92,6 +92,8 @@ void timer_tick() {
             break;
     }
 }
+uint8_t bno055_read_byte(uint8_t reg) ;
+uint8_t bno055_write_byte(uint8_t reg, uint8_t byte) ;
 
 int main(void) {
     cli();
@@ -105,15 +107,21 @@ int main(void) {
     controller_init(16);
     // Runs at 16.384ms interval, the BNO055 provides data at 100Hz, the output can be updated at 50Hz
     timer0_init(prescaler_1024, &timer_tick);
-    wdt_enable(WDTO_120MS);
-
-    //input_init();
     sei();
+
+    wdt_enable(WDTO_8S);
+
+    input_init();
+    _delay_ms(100);
 
     while (true) {
         wdt_reset();
         //input_get_state(&curr_state);
+        //communication_send_status(&curr_state, &out_state);
+        _delay_ms(100);
+        bno055_read_byte(0x3A);
         output_led(0, toggle);
+        _delay_ms(100);
     }
 }
 

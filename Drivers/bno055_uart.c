@@ -9,6 +9,9 @@
 #include "../HAL/uart.h"
 #include <stdint.h>
 #include <stdbool.h>
+#include <avr/delay.h>
+
+#define UART_ID 1
 
 typedef enum {
     read_success = 0x00,
@@ -136,10 +139,11 @@ volatile bool transaction_finished = false;
 volatile uint8_t *receive_buf;
 volatile bno055_response_t response;
 
-void uart_callback(uint8_t data) {
+void bno_uart_callback(uint8_t data) {
     static uint8_t byte_in_message = 0;
     static bool acknowledge_or_failure = false;
     static uint8_t still_to_read = 0;
+    uart_send_byte(0, data);
 
     switch (byte_in_message) {
         case 0: // Header
@@ -151,6 +155,8 @@ void uart_callback(uint8_t data) {
                 byte_in_message = 1;
             } else {
                 byte_in_message = 0;
+                response = bus_over_run_error;
+                transaction_finished = true;
             }
             break;
         case 1:
@@ -173,7 +179,6 @@ void uart_callback(uint8_t data) {
                 transaction_finished = true;
             }
             break;
-
     }
 }
 
@@ -187,7 +192,7 @@ bool bno055_write_register(uint8_t reg, const uint8_t *data, uint8_t len) {
         buf[c + 4] = data[c];
     }
     transaction_finished = false;
-    uart_send_buf(1, buf, len+4);
+    uart_send_buf(UART_ID, buf, len+4);
     while (!transaction_finished);
     return response == write_success;
 }
@@ -196,7 +201,7 @@ bool bno055_read_register(uint8_t reg, uint8_t *data, uint8_t len) {
     receive_buf = data;
     uint8_t buf[4] = {0xAA, 0x01, reg, len};
     transaction_finished = false;
-    uart_send_buf(1, buf, 4);
+    uart_send_buf(UART_ID, buf, 4);
     while (!transaction_finished);
     return response == read_success;
 }
@@ -211,8 +216,16 @@ bool bno055_write_byte(uint8_t reg, uint8_t byte) {
     return bno055_write_register(reg, &byte, 1);
 }
 
+uint8_t bno055_read_byte(uint8_t reg) {
+    uint8_t byte;
+    bno055_read_register(reg, &byte, 1);
+    return byte;
+}
+
 void bno055_init(void) {
-    uart_init(1, 115200, &uart_callback);
+    uart_init(UART_ID, 115200, &bno_uart_callback);
+    bno055_write_byte(BNO055_OPR_MODE_ADDR, 0b0000000); // Switch to Config Mode
+    _delay_ms(500);
     /*
      * Units:
      *  * Acceleration: m/s^2
@@ -221,8 +234,10 @@ void bno055_init(void) {
      *  * Temperature: Celsius
      *  * Data output format: Android //@TODO don't know if right
      */
-    //bno055_write_byte(BNO055_UNIT_SEL_ADDR, 0b0000000);
-    bno055_write_byte(BNO055_OPR_MODE_ADDR, 0b0001011); // Switch to NDOF-FMC-OFF Mode
+    bno055_write_byte(BNO055_UNIT_SEL_ADDR, 0b0000000);
+    _delay_ms(500);
+    //bno055_write_byte(BNO055_OPR_MODE_ADDR, 0b0001011); // Switch to NDOF-FMC-OFF Mode
+    _delay_ms(500);
 }
 
 int16_t bno055_acc_x(void) {
@@ -301,4 +316,8 @@ uint8_t bno055_calib_stat(void) {
     uint8_t res;
     bno055_read_register(BNO055_CALIB_STAT_ADDR, &res, 1);
     return res;
+}
+
+void bno055_reset(void) {
+    bno055_write_byte(BNO055_SYS_TRIGGER_ADDR, 1 << 5);
 }
