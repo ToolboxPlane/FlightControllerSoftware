@@ -321,3 +321,11 @@ uint8_t bno055_calib_stat(void) {
 void bno055_reset(void) {
     bno055_write_byte(BNO055_SYS_TRIGGER_ADDR, 1 << 5);
 }
+
+uint8_t bno055_status(void) {
+    return bno055_read_byte(0x39);
+}
+
+uint8_t bno055_error(void) {
+    return bno055_read_byte(0x3A);
+}
