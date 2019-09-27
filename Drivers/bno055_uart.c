@@ -323,9 +323,9 @@ void bno055_reset(void) {
 }
 
 uint8_t bno055_status(void) {
-    return bno055_read_byte(0x39);
+    return bno055_read_byte(BNO055_SYS_STAT_ADDR);
 }
 
 uint8_t bno055_error(void) {
-    return bno055_read_byte(0x3A);
+    return bno055_read_byte(BNO055_SYS_ERR_ADDR);
 }
