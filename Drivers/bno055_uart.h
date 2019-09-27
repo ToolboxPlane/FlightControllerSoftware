@@ -10,32 +10,38 @@
 
 #include <stdint.h>
 
-#define BNO055_STATUS_SYSTEM_IDLE 0
-#define BNO055_STATUS_SYSTEM_ERROR 1
-#define BNO055_STATUS_INITIALIZING_PERIPHERALS 2
-#define BNO055_STATUS_SYSTEM_INITIALIZATION 3
-#define BNO055_STATUS_EXECUTING_SELFTEST 4
-#define BNO055_STATUS_SENSOR_FUSION_ALGORITHM_RUNNING 5
-#define BNO055_STATUS_SYSTEM_RUNNING_WITHOUT_FUSION_ALGORITHM 6
+typedef enum {
+    system_idle = 0x0,
+    system_error = 0x1,
+    initializing_peripherals = 0x2,
+    system_initialization = 0x3,
+    executing_selftest = 0x4,
+    sensor_fusion_algorithm_running = 0x5,
+    system_running_without_fusion_algorithm = 0x6,
+    unknown_status,
+} bno055_status_t;
 
-#define BNO055_ERROR_NO_ERROR 0
-#define BNO055_ERROR_PERIPHERAL_INITIALIZATION_ERROR 1
-#define BNO055_ERROR_SYSTEM_INITIALIZATION_ERROR 2
-#define BNO055_ERROR_SELF_TEST_RESULT_FAILED 3
-#define BNO055_ERROR_REGISTER_MAP_VALUE_OUT_OF_RANGE 4
-#define BNO055_ERROR_REGISTER_MAP_ADDRESS_OUT_OF_RANGE 5
-#define BNO055_ERROR_REGISTER_MAP_WRITE_ERROR 6
-#define BNO055_ERROR_BNO_LOW_POWER_MODE_NOT_AVAILABLE_FOR_SELECTED_OPERATION_MODE 7
-#define BNO055_ERROR_ACCELEROMETER_POWER_MODE_NOT_AVAILABLE 8
-#define BNO055_ERROR_FUSION_ALGORITHM_CONFIGURATION_ERROR 9
-#define BNO055_ERROR_SENSOR_CONFIGURATION_ERROR 0xA
+typedef enum {
+    no_error = 0x0,
+    peripheral_initialization_error = 0x1,
+    system_initialization_error = 0x2,
+    self_test_result_failed = 0x3,
+    register_map_value_out_of_range = 0x4,
+    register_map_address_out_of_range = 0x5,
+    register_map_write_error = 0x6,
+    bno_low_power_mode_not_available_for_selected_operation_mode = 0x7,
+    accelerometer_power_mode_not_available = 0x8,
+    fusion_algorithm_configuration_error = 0x9,
+    sensor_configuration_error = 0xa,
+    unknown_error
+} bno055_error_t;
 
 void bno055_init(void);
 
 void bno055_reset(void);
 
-uint8_t bno055_status(void);
-uint8_t bno055_error(void);
+bno055_status_t bno055_status(void);
+bno055_error_t bno055_error(void);
 
 int16_t bno055_acc_x(void);
 int16_t bno055_acc_y(void);

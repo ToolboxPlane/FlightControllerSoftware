@@ -12,6 +12,7 @@
 #include "HAL/timer8bit.h"
 #include "Util/input.h"
 #include "Drivers/bno055_uart.h"
+#include "HAL/uart.h"
 
 volatile state_t curr_state;
 volatile setpoint_t curr_setpoint;
@@ -92,8 +93,10 @@ void timer_tick() {
             break;
     }
 }
-uint8_t bno055_read_byte(uint8_t reg) ;
-uint8_t bno055_write_byte(uint8_t reg, uint8_t byte) ;
+
+uint8_t bno055_read_byte(uint8_t reg);
+
+uint8_t bno055_write_byte(uint8_t reg, uint8_t byte);
 
 int main(void) {
     cli();
@@ -106,7 +109,7 @@ int main(void) {
     communication_init(&setpoint_update, &sbus_event);
     controller_init(16);
     // Runs at 16.384ms interval, the BNO055 provides data at 100Hz, the output can be updated at 50Hz
-    timer0_init(prescaler_1024, &timer_tick);
+    //timer0_init(prescaler_1024, &timer_tick);
     sei();
 
     wdt_enable(WDTO_8S);
@@ -116,10 +119,17 @@ int main(void) {
 
     while (true) {
         wdt_reset();
-        //input_get_state(&curr_state);
-        //communication_send_status(&curr_state, &out_state);
-        _delay_ms(100);
-        bno055_read_byte(0x3A);
+        bno055_status_t status = bno055_read_byte(0x39);
+        bno055_error_t error = bno055_read_byte(0x3A);
+        uint8_t buf[] = {'S', status, 'E', error};
+        uart_send_buf(0, buf, sizeof(buf));
+
+        if (status == system_error) {
+            output_led(7, on);
+        } else {
+            output_led(7, off);
+        }
+
         output_led(0, toggle);
         _delay_ms(100);
     }

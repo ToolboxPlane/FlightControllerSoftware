@@ -47,7 +47,7 @@ void sbus_receive(uint8_t data) {
 
             rc_lib_transmitter_id = SBUS_TRANSMITTER_ID;
             uint8_t len = rc_lib_encode(&pkg);
-            uart_send_buf(0, pkg.buffer, len);
+            //uart_send_buf(0, pkg.buffer, len);
         }
         (*_sbus_callback)(sbus_latest_data);
     }
@@ -87,7 +87,7 @@ void communication_send_status(volatile const state_t *state, volatile const out
 
     rc_lib_transmitter_id = FC_TRANSMITTER_ID;
     uint8_t len = rc_lib_encode(&pkg);
-    uart_send_buf(0, pkg.buffer, len);
+    //uart_send_buf(0, pkg.buffer, len);
 }
 
 bool communication_is_failsave(void) {
