@@ -1,0 +1,6 @@
+[submodule "Drivers/rc_lib"]
+	path = Drivers/rc_lib
+	url = git@github.com:ToolboxPlane/RadioControlProtocolC.git
+[submodule "HAL"]
+	path = HAL
+	url = git@github.com:ToolboxPlane/AvrHAL.git
