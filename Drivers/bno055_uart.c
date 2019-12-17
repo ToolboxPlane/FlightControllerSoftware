@@ -9,7 +9,7 @@
 #include "../HAL/uart.h"
 #include <stdint.h>
 #include <stdbool.h>
-#include <avr/delay.h>
+#include <util/delay.h>
 
 #define UART_ID 1
 
@@ -135,6 +135,8 @@ typedef enum {
 #define MAG_RADIUS_LSB_ADDR 0x69
 #define MAG_RADIUS_MSB_ADDR 0x6A
 
+#define TIMEOUT 1000
+
 volatile bool transaction_finished = false;
 volatile uint8_t *receive_buf;
 volatile bno055_response_t response;
@@ -192,7 +194,14 @@ bool bno055_write_register(uint8_t reg, const uint8_t *data, uint8_t len) {
     }
     transaction_finished = false;
     uart_send_buf(UART_ID, buf, len+4);
-    while (!transaction_finished);
+    uint16_t timeout_count = 0;
+    while (!transaction_finished) {
+        ++timeout_count;
+        _delay_us(10);
+        if (timeout_count > TIMEOUT) {
+            return false;
+        }
+    }
     return response == write_success;
 }
 
@@ -201,14 +210,24 @@ bool bno055_read_register(uint8_t reg, uint8_t *data, uint8_t len) {
     uint8_t buf[4] = {0xAA, 0x01, reg, len};
     transaction_finished = false;
     uart_send_buf(UART_ID, buf, 4);
-    while (!transaction_finished);
+    uint16_t timeout_count = 0;
+    while (!transaction_finished) {
+        ++timeout_count;
+        _delay_us(10);
+        if (timeout_count > TIMEOUT) {
+            return false;
+        }
+    }
     return response == read_success;
 }
 
 uint16_t bno055_read_word(uint8_t reg) {
     uint8_t buf[2];
-    bno055_read_register(reg, buf, 2);
-    return buf[1] << 8u | buf[0];
+    if (!bno055_read_register(reg, buf, 2)) {
+        return 0;
+    } else {
+        return buf[1] << 8u | buf[0];
+    }
 }
 
 bool bno055_write_byte(uint8_t reg, uint8_t byte) {
@@ -217,8 +236,11 @@ bool bno055_write_byte(uint8_t reg, uint8_t byte) {
 
 uint8_t bno055_read_byte(uint8_t reg) {
     uint8_t byte;
-    bno055_read_register(reg, &byte, 1);
-    return byte;
+    if (!bno055_read_register(reg, &byte, 1)) {
+        return 0;
+    } else {
+        return byte;
+    }
 }
 
 void bno055_init(void) {

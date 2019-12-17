@@ -47,7 +47,7 @@ void sbus_receive(uint8_t data) {
 
             rc_lib_transmitter_id = SBUS_TRANSMITTER_ID;
             uint8_t len = rc_lib_encode(&pkg);
-            //uart_send_buf(0, pkg.buffer, len);
+            uart_send_buf(0, pkg.buffer, len);
         }
         (*_sbus_callback)(sbus_latest_data);
     }
@@ -68,15 +68,15 @@ void communication_send_status(volatile const state_t *state, volatile const out
     rc_lib_package_t pkg;
     rc_lib_init_tx(&pkg, 1024, 16);
 
-    pkg.channel_data[0] = state->heading;
-    pkg.channel_data[1] = state->roll + 180;
-    pkg.channel_data[2] = state->pitch + 180;
-    pkg.channel_data[3] = state->bno_state;
-    pkg.channel_data[4] = state->bno_error;
-    pkg.channel_data[5] = state->bno_calib;
-    pkg.channel_data[6] = state->acc_forward + 500;
-    pkg.channel_data[7] = state->acc_side + 500;
-    pkg.channel_data[8] = state->acc_updown + 500;
+    pkg.channel_data[0] = state->bno_state;
+    pkg.channel_data[1] = state->roll + 500;
+    pkg.channel_data[2] = state->pitch + 500;
+    pkg.channel_data[3] = state->heading + 500;
+    pkg.channel_data[4] = state->roll_deriv + 500;
+    pkg.channel_data[5] = state->pitch_deriv + 500;
+    pkg.channel_data[6] = state->heading_deriv + 500;
+    pkg.channel_data[7] = 0;
+    pkg.channel_data[8] = 0;
     pkg.channel_data[9] = 0;
     pkg.channel_data[10] = 0;
     pkg.channel_data[11] = out_state->aileron_r + 500;

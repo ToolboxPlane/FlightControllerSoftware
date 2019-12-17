@@ -47,7 +47,7 @@ If only a single led is off for a longer time, there is a some kind of problem
 | 1 | Not Watchdog |
 | 2 | Not Brownout |
 | 3 | USB-RX (Toggle on package receive) |
-| 4 | USB-TX (Toggle on package send) |
+| 4 | Timer active  |
 | 5 | SBUS-RX (Toggle on package receive) |
 | 6 | Use Flightcomputer as a setpoint source |
 | 7 | Not Failsave |
@@ -57,17 +57,20 @@ The UART-Baud Rate is 38400.
 ### FlightController Output (Transmitter ID 23)
 The output package is a 10 bit, 16 Channel Package with the following data:
 
+The axis are according to DIN-9300.
+
 | Channel | Data |
 | --- | --- |
-| 0 | Heading (value between 0 and 360) |
-| 1 | Roll + 180 |
-| 2 | Pitch + 180 |
-| 3 | Empty |
-| 4 | Empty |
-| 5 | Empty |
-| 6 | Acceleration-Forward + 500 |
-| 7 | Acceleration-Sideward +500 |
-| 8 | Acceleration-UpDown + 500 |
+| 0 | BNO055 State |
+| 1 | Roll + 500|
+| 2 | Pitch + 500 |
+| 3 | Yaw + 500 |
+| 3 | d/dt Roll + 500 |
+| 4 | d/dt Pitch + 500 |
+| 5 | d/dt Heading + 500 |
+| 6 | Empty |
+| 7 | Empty |
+| 8 | Empty |
 | 9 | Empty |
 | 10 | Empty |
 | 11 | Servo-Aileron-Right +500 |
@@ -83,7 +86,3 @@ The package is a 11 bit, 16 Channel Package, with the same information as the sb
  * `state`: The current state of the airplane as measured by the BNO055
  * `out_state`: The (desired) state of the outputs (servos and motors)
  * `setpoint`: The setpoint sent by the flightcomputer (power, pitch, roll)
- 
-## Coordinate system
-All coordinates form a right-handed trihedron. The x axis points forward, the y axis to the left side 
-and the z axis upward.

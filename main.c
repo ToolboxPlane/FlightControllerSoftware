@@ -105,7 +105,7 @@ int main(void) {
     communication_init(&setpoint_update, &sbus_event);
     controller_init(16);
     // Runs at 16.384ms interval, the BNO055 provides data at 100Hz, the output can be updated at 50Hz
-    //timer0_init(prescaler_1024, &timer_tick);
+    timer0_init(prescaler_1024, &timer_tick);
     sei();
 
     wdt_enable(WDTO_8S);
@@ -113,12 +113,17 @@ int main(void) {
     input_init();
     _delay_ms(100);
 
+    uint8_t mux = 0;
+
     while (true) {
         wdt_reset();
         input_get_state(&curr_state);
-        communication_send_status(&curr_state, &out_state);
+        if (++mux >= 10) {
+            communication_send_status(&curr_state, &out_state);
+            mux = 0;
+        }
         output_led(0, toggle);
-        _delay_ms(100);
+        _delay_ms(10);
     }
 }
 
