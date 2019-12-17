@@ -32,4 +32,9 @@ void input_get_state(volatile state_t *state) {
     _delay_ms(1);
     state->acc_updown = bno055_linear_acc_z();
     _delay_ms(1);
+    state->bno_state = bno055_status();
+    _delay_ms(1);
+    state->bno_error = bno055_error();
+    _delay_ms(1);
+    state->bno_calib = bno055_calib_stat();
 }

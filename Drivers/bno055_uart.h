@@ -42,6 +42,7 @@ void bno055_reset(void);
 
 bno055_status_t bno055_status(void);
 bno055_error_t bno055_error(void);
+uint8_t bno055_calib_stat(void);
 
 int16_t bno055_acc_x(void);
 int16_t bno055_acc_y(void);
@@ -67,6 +68,5 @@ int16_t bno055_grv_x(void);
 int16_t bno055_grv_y(void);
 int16_t bno055_grv_z(void);
 
-uint8_t bno055_calib_stat(void);
 
 #endif //FLIGHTCONTROLLER_BNO055_UART_H

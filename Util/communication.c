@@ -71,9 +71,9 @@ void communication_send_status(volatile const state_t *state, volatile const out
     pkg.channel_data[0] = state->heading;
     pkg.channel_data[1] = state->roll + 180;
     pkg.channel_data[2] = state->pitch + 180;
-    pkg.channel_data[3] = 0;
-    pkg.channel_data[4] = 0;
-    pkg.channel_data[5] = 0;
+    pkg.channel_data[3] = state->bno_state;
+    pkg.channel_data[4] = state->bno_error;
+    pkg.channel_data[5] = state->bno_calib;
     pkg.channel_data[6] = state->acc_forward + 500;
     pkg.channel_data[7] = state->acc_side + 500;
     pkg.channel_data[8] = state->acc_updown + 500;
@@ -87,7 +87,7 @@ void communication_send_status(volatile const state_t *state, volatile const out
 
     rc_lib_transmitter_id = FC_TRANSMITTER_ID;
     uint8_t len = rc_lib_encode(&pkg);
-    //uart_send_buf(0, pkg.buffer, len);
+    uart_send_buf(0, pkg.buffer, len);
 }
 
 bool communication_is_failsave(void) {

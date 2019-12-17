@@ -143,7 +143,6 @@ void bno_uart_callback(uint8_t data) {
     static uint8_t byte_in_message = 0;
     static bool acknowledge_or_failure = false;
     static uint8_t still_to_read = 0;
-    uart_send_byte(0, data);
 
     switch (byte_in_message) {
         case 0: // Header
@@ -206,10 +205,10 @@ bool bno055_read_register(uint8_t reg, uint8_t *data, uint8_t len) {
     return response == read_success;
 }
 
-bool bno055_read_word(uint8_t reg) {
+uint16_t bno055_read_word(uint8_t reg) {
     uint8_t buf[2];
     bno055_read_register(reg, buf, 2);
-    return buf[1] << 8 | buf[0];
+    return buf[1] << 8u | buf[0];
 }
 
 bool bno055_write_byte(uint8_t reg, uint8_t byte) {
@@ -236,7 +235,7 @@ void bno055_init(void) {
      */
     bno055_write_byte(BNO055_UNIT_SEL_ADDR, 0b0000000);
     _delay_ms(500);
-    //bno055_write_byte(BNO055_OPR_MODE_ADDR, 0b0001011); // Switch to NDOF-FMC-OFF Mode
+    bno055_write_byte(BNO055_OPR_MODE_ADDR, 0b0001011); // Switch to NDOF-FMC-OFF Mode
     _delay_ms(500);
 }
 
