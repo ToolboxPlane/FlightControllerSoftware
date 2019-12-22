@@ -223,11 +223,8 @@ bool bno055_read_register(uint8_t reg, uint8_t *data, uint8_t len) {
 
 uint16_t bno055_read_word(uint8_t reg) {
     uint8_t buf[2];
-    if (!bno055_read_register(reg, buf, 2)) {
-        return 0;
-    } else {
-        return buf[1] << 8u | buf[0];
-    }
+    while (!bno055_read_register(reg, buf, 2));
+    return buf[1] << 8u | buf[0];
 }
 
 bool bno055_write_byte(uint8_t reg, uint8_t byte) {
@@ -236,11 +233,8 @@ bool bno055_write_byte(uint8_t reg, uint8_t byte) {
 
 uint8_t bno055_read_byte(uint8_t reg) {
     uint8_t byte;
-    if (!bno055_read_register(reg, &byte, 1)) {
-        return 0;
-    } else {
-        return byte;
-    }
+    while (!bno055_read_register(reg, &byte, 1));
+    return byte;
 }
 
 void bno055_init(void) {
