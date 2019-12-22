@@ -297,16 +297,16 @@ int16_t bno055_gyr_z(void) {
     return bno055_read_word(BNO055_GYRO_DATA_Z_LSB_ADDR);
 }
 
-int16_t bno055_eul_x(void) {
-    return bno055_read_word(BNO055_EULER_X_LSB_ADDR) / 16;
+int16_t bno055_eul_x_2(void) {
+    return bno055_read_word(BNO055_EULER_X_LSB_ADDR) / 8;
 }
 
-int16_t bno055_eul_y(void) {
-    return bno055_read_word(BNO055_EULER_Y_LSB_ADDR) / 16;
+int16_t bno055_eul_y_2(void) {
+    return bno055_read_word(BNO055_EULER_Y_LSB_ADDR) / 8;
 }
 
-int16_t bno055_eul_z(void) {
-    return bno055_read_word(BNO055_EULER_Z_LSB_ADDR) / 16;
+int16_t bno055_eul_z_2(void) {
+    return bno055_read_word(BNO055_EULER_Z_LSB_ADDR) / 8;
 }
 
 int16_t bno055_linear_acc_x(void) {

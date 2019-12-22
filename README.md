@@ -62,9 +62,9 @@ The axis are according to DIN-9300.
 | Channel | Data |
 | --- | --- |
 | 0 | BNO055 State |
-| 1 | Roll + 500|
-| 2 | Pitch + 500 |
-| 3 | Yaw + 500 |
+| 1 | Roll * 2 + 500|
+| 2 | Pitch * 2+ 500 |
+| 3 | Yaw * 2 + 500 |
 | 3 | d/dt Roll + 500 |
 | 4 | d/dt Pitch + 500 |
 | 5 | d/dt Heading + 500 |

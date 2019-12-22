@@ -32,8 +32,8 @@ void controller_init(uint16_t delta_t) {
 
 void controller_update(const state_t *state, const setpoint_t *setpoint,
                        out_state_t *out_state) {
-    roll_controller.is_value = state->roll; // Remapping because of bno...
-    pitch_controller.is_value = state->pitch;
+    roll_controller.is_value = state->roll / 2;
+    pitch_controller.is_value = state->pitch / 2;
 
     roll_controller.deriv = state->roll_deriv;
     pitch_controller.deriv = state->pitch_deriv;
