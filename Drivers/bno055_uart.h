@@ -56,9 +56,9 @@ int16_t bno055_gyr_x(void);
 int16_t bno055_gyr_y(void);
 int16_t bno055_gyr_z(void);
 
-int16_t bno055_eul_x(void);
-int16_t bno055_eul_y(void);
-int16_t bno055_eul_z(void);
+int16_t bno055_eul_x_2(void);
+int16_t bno055_eul_y_2(void);
+int16_t bno055_eul_z_2(void);
 
 int16_t bno055_linear_acc_x(void);
 int16_t bno055_linear_acc_y(void);
