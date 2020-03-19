@@ -68,11 +68,11 @@ The axis are according to DIN-9300.
 | 8 | Empty |
 | 9 | Empty |
 | 10 | Empty |
-| 11 | Servo-Aileron-Right +500 |
-| 12 | Servo-VTail-Right +500 |
+| 11 | Empty |
+| 12 | Empty |
 | 13 | Motor |
-| 14 | Servo-VTail-Left + 500 |
-| 15 | Servo-Aileron-Left + 500|
+| 14 | Servo-Elevon-Left + 500 |
+| 15 | Servo-Elevon-Right + 500|
 
 ### SBus Output (Transmitter ID 56)
 The package is a 11 bit, 16 Channel Package, with the same information as the sbus package.

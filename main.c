@@ -62,16 +62,12 @@ void timer_tick() {
         out_state.motor = curr_setpoint.power;
     } else if (setpoint_source == failsave) {
         out_state.motor = 0;
-        out_state.aileron_l = 0;
-        out_state.aileron_r = 0;
-        out_state.vtail_l = 0;
-        out_state.vtail_r = 0;
+        out_state.elevon_l = 0;
+        out_state.elevon_r = 0;
     } else {
         out_state.motor = sbus_latest_data.channel[0];
-        out_state.aileron_l = sbus_latest_data.channel[1] - 500;
-        out_state.aileron_r = sbus_latest_data.channel[2] - 500;
-        out_state.vtail_l = sbus_latest_data.channel[3] - 500;
-        out_state.vtail_r = sbus_latest_data.channel[4] - 500;
+        out_state.elevon_l = sbus_latest_data.channel[1] - 500;
+        out_state.elevon_r = sbus_latest_data.channel[2] - 500;
     }
     output_set(&out_state);
     output_led(4, toggle);

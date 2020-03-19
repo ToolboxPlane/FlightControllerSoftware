@@ -36,8 +36,10 @@ void usb_callback(uint8_t data) {
 }
 
 void sbus_receive(uint8_t data) {
+    static uint8_t mux = 0;
     if (sbus_parse(&data, 1)) {
-        if (!sbus_latest_data.failsave) {
+        if (!sbus_latest_data.failsave && ++mux >= 10) {
+            mux = 0;
             rc_lib_package_t pkg;
             rc_lib_init_tx(&pkg, 1024, 16);
 
@@ -79,11 +81,11 @@ void communication_send_status(volatile const state_t *state, volatile const out
     pkg.channel_data[8] = 0;
     pkg.channel_data[9] = 0;
     pkg.channel_data[10] = 0;
-    pkg.channel_data[11] = out_state->aileron_r + 500;
-    pkg.channel_data[12] = out_state->vtail_r + 500;
+    pkg.channel_data[11] = 0;
+    pkg.channel_data[12] = 0;
     pkg.channel_data[13] = out_state->motor;
-    pkg.channel_data[14] = out_state->vtail_l + 500;
-    pkg.channel_data[15] = out_state->aileron_l + 500;
+    pkg.channel_data[14] = out_state->elevon_l + 500;
+    pkg.channel_data[15] = out_state->elevon_r + 500;
 
     rc_lib_transmitter_id = FC_TRANSMITTER_ID;
     uint8_t len = rc_lib_encode(&pkg);
