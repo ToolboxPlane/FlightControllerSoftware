@@ -41,7 +41,7 @@ void sbus_receive(uint8_t data) {
         if (!sbus_latest_data.failsave && ++mux >= 10) {
             mux = 0;
             rc_lib_package_t pkg;
-            rc_lib_init_tx(&pkg, 1024, 16);
+            rc_lib_init_tx(&pkg, 2048, 16);
 
             for (uint8_t c = 0; c < 16; c++) {
                 pkg.channel_data[c] = sbus_latest_data.channel[c];
@@ -62,8 +62,8 @@ void communication_init(void (*setpoint_callback)(setpoint_t), void (*sbus_callb
     rc_lib_global_package_uid = 0;
     rc_lib_error_count = 0;
 
-    uart_init(0, 115200, &usb_callback);
-    uart_init(2, 98000, &sbus_receive);
+    uart_init(0, 115200, NONE, 1, &usb_callback);
+    uart_init(2, 100000, EVEN, 2, &sbus_receive);
 }
 
 void communication_send_status(volatile const state_t *state, volatile const out_state_t *out_state) {

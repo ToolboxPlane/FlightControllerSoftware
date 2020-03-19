@@ -7,7 +7,7 @@
 
 #include "math.h"
 
-static const float Sinus[91] = {
+static const float SIN_LUT[91] = {
         0.00000000,
         0.01745241,
         0.03489950,
@@ -111,13 +111,13 @@ float sinus(int16_t x)
     }
 
     if(x < 90) {
-        return Sinus[x];
+        return SIN_LUT[x];
     } else if(x < 180) {
-        return Sinus[180 - x];
+        return SIN_LUT[180 - x];
     } else if(x < 270) {
-        return -Sinus[x - 180];
+        return -SIN_LUT[x - 180];
     } else {
-        return -Sinus[360 - x];
+        return -SIN_LUT[360 - x];
     }
 }
 
