@@ -64,9 +64,9 @@ The axis are according to DIN-9300.
 | 4 | d/dt Roll + 500 |
 | 5 | d/dt Pitch + 500 |
 | 6 | d/dt Heading + 500 |
-| 7 | Empty |
-| 8 | Empty |
-| 9 | Empty |
+| 7 | Acceleration-X + 500 |
+| 8 | Acceleration-Y + 500 |
+| 9 | Acceleration-Z + 500 |
 | 10 | Empty |
 | 11 | Empty |
 | 12 | Empty |

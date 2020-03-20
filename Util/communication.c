@@ -5,7 +5,6 @@
  * @brief communication @TODO
  */
 
-#include <avr/io.h>
 #include "communication.h"
 #include "../HAL/uart.h"
 #include "../Drivers/sbus.h"
@@ -77,9 +76,9 @@ void communication_send_status(volatile const state_t *state, volatile const out
     pkg.channel_data[4] = state->roll_deriv + 500;
     pkg.channel_data[5] = state->pitch_deriv + 500;
     pkg.channel_data[6] = state->heading_deriv + 500;
-    pkg.channel_data[7] = 0;
-    pkg.channel_data[8] = 0;
-    pkg.channel_data[9] = 0;
+    pkg.channel_data[7] = state->acc_x + 500;
+    pkg.channel_data[8] = state->acc_y + 500;
+    pkg.channel_data[9] = state->acc_z + 500;
     pkg.channel_data[10] = 0;
     pkg.channel_data[11] = 0;
     pkg.channel_data[12] = 0;

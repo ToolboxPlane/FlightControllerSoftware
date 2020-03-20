@@ -13,8 +13,8 @@ void input_init(void) {
 }
 
 void input_get_state(volatile state_t *state) {
-    state->roll = -bno055_eul_y_2();
-    state->pitch = bno055_eul_z_2();
+    state->roll = bno055_eul_y_2();
+    state->pitch = -bno055_eul_z_2();
     state->heading = bno055_eul_x_2();
     if (state->heading > 180 * 2) {
         state->heading -= 360 * 2;
@@ -22,5 +22,9 @@ void input_get_state(volatile state_t *state) {
     state->roll_deriv = -bno055_gyr_y();
     state->pitch_deriv = bno055_gyr_z();
     state->heading_deriv = bno055_gyr_x();
+    state->acc_x = bno055_acc_y();
+    state->acc_y = bno055_acc_x();
+    state->acc_z = bno055_acc_z();
+
     state->bno_state = bno055_status();
 }
