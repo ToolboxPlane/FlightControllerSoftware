@@ -19,11 +19,13 @@ volatile setpoint_t curr_setpoint;
 volatile out_state_t out_state;
 volatile uint8_t usbTimout = 0, sbusTimeout = 0;
 
+#define NORMALIZE_TARANIS(x) ((uint16_t)(x-172)*(1000.0F/(1811-172)))
+
 typedef enum {
     failsave, remote, flightcomputer
 } setpoint_source_t;
 
-volatile setpoint_source_t setpoint_source;
+volatile setpoint_source_t setpoint_source = failsave;
 
 void setpoint_update(setpoint_t setpoint) {
     if (setpoint_source == flightcomputer) {
@@ -38,7 +40,7 @@ void setpoint_update(setpoint_t setpoint) {
 void sbus_event(sbus_data_t sbus_data) {
     if (sbus_data.failsave) {
         setpoint_source = failsave;
-    } else if (sbus_data.channel[11] > 600) { //@TODO check value
+    } else if (sbus_data.channel[7] < 500) {
         setpoint_source = remote;
     } else {
         setpoint_source = flightcomputer;
@@ -54,7 +56,9 @@ void timer_tick() {
         setpoint_source = failsave;
     } else if (++usbTimout >= 31) {
         usbTimout = 31;
-        setpoint_source = remote;
+        if (setpoint_source == flightcomputer) {
+            setpoint_source = remote;
+        }
     }
 
     if (setpoint_source == flightcomputer) {
@@ -65,9 +69,9 @@ void timer_tick() {
         out_state.elevon_l = 0;
         out_state.elevon_r = 0;
     } else {
-        out_state.motor = sbus_latest_data.channel[0];
-        out_state.elevon_l = sbus_latest_data.channel[1] - 500;
-        out_state.elevon_r = sbus_latest_data.channel[2] - 500;
+        out_state.motor = NORMALIZE_TARANIS(sbus_latest_data.channel[0]);
+        out_state.elevon_l = NORMALIZE_TARANIS(sbus_latest_data.channel[1])- 500;
+        out_state.elevon_r = NORMALIZE_TARANIS(sbus_latest_data.channel[2])- 500;
     }
     output_set(&out_state);
     output_led(4, toggle);
