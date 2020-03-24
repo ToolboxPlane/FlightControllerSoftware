@@ -27,7 +27,6 @@ uint16_t head, tail;
 
 
 void usb_callback(uint8_t data) {
-    output_led(1, toggle);
     usb_buff[head] = data;
     head = (head + 1) % USB_BUFF_SIZE;
 }
