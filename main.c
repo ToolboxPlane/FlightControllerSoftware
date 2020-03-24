@@ -17,7 +17,7 @@
 volatile state_t curr_state;
 volatile setpoint_t curr_setpoint;
 volatile out_state_t out_state;
-volatile uint8_t usbTimout = 0, sbusTimeout = 0;
+volatile uint8_t usbTimeout = 0, sbusTimeout = 0;
 
 #define NORMALIZE_TARANIS(x) ((uint16_t)(x-172)*(1000.0F/(1811-172)))
 
@@ -29,12 +29,12 @@ volatile setpoint_source_t setpoint_source = failsave;
 
 void setpoint_update(setpoint_t setpoint) {
     if (setpoint_source == flightcomputer) {
-        curr_setpoint.roll = 0;
-        curr_setpoint.pitch = 0;
-        curr_setpoint.power = 0;
+        curr_setpoint.roll = setpoint.roll;
+        curr_setpoint.pitch = setpoint.pitch;
+        curr_setpoint.power = setpoint.power;
     }
     output_led(3, toggle);
-    usbTimout = 0;
+    usbTimeout = 0;
 }
 
 void sbus_event(sbus_data_t sbus_data) {
@@ -54,8 +54,8 @@ void timer_tick() {
     if (++sbusTimeout >= 31) {
         sbusTimeout = 31;
         setpoint_source = failsave;
-    } else if (++usbTimout >= 31) {
-        usbTimout = 31;
+    } else if (++usbTimeout >= 31) {
+        usbTimeout = 31;
         if (setpoint_source == flightcomputer) {
             setpoint_source = remote;
         }
@@ -122,6 +122,7 @@ int main(void) {
             communication_send_status(&curr_state, &out_state);
             mux = 0;
         }
+        communication_handle_usb();
         output_led(0, toggle);
         _delay_ms(10);
     }
