@@ -25,11 +25,11 @@ void output_init(void) {
 }
 
 void output_set(const out_state_t *out_state) {
-    pwm_set_out_a(3, 2 * (1500 + out_state->aileron_r));
-    pwm_set_out_b(3, 2 * (1500 + out_state->vtail_r));
-    pwm_set_out_c(3, 2 * (1000 + out_state->motor));
-    pwm_set_out_a(4, 2 * (1500 + out_state->vtail_l));
-    pwm_set_out_b(4, 2 * (1500 + out_state->aileron_l));
+    pwm_set_out_a(3, 2 * (1500 + out_state->elevon_r));
+    pwm_set_out_b(3, 2 * (1000 + out_state->motor));
+    pwm_set_out_c(3, 2 * (1500 + out_state->elevon_l));
+    pwm_set_out_a(4, 2 * (1500));
+    pwm_set_out_b(4, 2 * (1500));
     pwm_set_out_c(4, 2 * (1500));
     pwm_set_out_a(1, 2 * (1500));
     pwm_set_out_b(1, 2 * (1500));

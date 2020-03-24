@@ -56,8 +56,6 @@ void controller_update(const state_t *state, const setpoint_t *setpoint,
         pitch_ctrl_val = 500;
     }
 
-    out_state->vtail_l = (int16_t)(-pitch_ctrl_val*sinus(roll_controller.is_value-45));
-    out_state->vtail_r = (int16_t)(-pitch_ctrl_val*sinus(roll_controller.is_value+45));
-    out_state->aileron_l = (int16_t)(-roll_ctrl_val);
-    out_state->aileron_r = (int16_t)(-roll_ctrl_val);
+    out_state->elevon_l = (int16_t)(pitch_ctrl_val - roll_ctrl_val);
+    out_state->elevon_r = (int16_t)(pitch_ctrl_val + roll_ctrl_val);
 }

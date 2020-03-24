@@ -238,7 +238,7 @@ uint8_t bno055_read_byte(uint8_t reg) {
 }
 
 void bno055_init(void) {
-    uart_init(UART_ID, 115200, &bno_uart_callback);
+    uart_init(UART_ID, 115200, NONE, 1, &bno_uart_callback);
     bno055_write_byte(BNO055_OPR_MODE_ADDR, 0b0000000); // Switch to Config Mode
     _delay_ms(500);
     /*
