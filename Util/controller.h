@@ -21,7 +21,7 @@ typedef struct controller {
 } controller_t;
 
 void controller_init(uint16_t delta_t);
-void controller_update(const state_t *state, const setpoint_t *setpoint,
-                       out_state_t *out_state);
+void controller_update(volatile const state_t *state, volatile const setpoint_t *setpoint,
+                       volatile out_state_t *out_state);
 
 #endif //FLIGHTCONTROLLER_CONTROLLER_H

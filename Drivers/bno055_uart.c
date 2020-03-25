@@ -221,7 +221,7 @@ bool bno055_read_register(uint8_t reg, uint8_t *data, uint8_t len) {
     return response == read_success;
 }
 
-uint16_t bno055_read_word(uint8_t reg) {
+int16_t bno055_read_word(uint8_t reg) {
     uint8_t buf[2];
     while (!bno055_read_register(reg, buf, 2));
     return buf[1] << 8u | buf[0];

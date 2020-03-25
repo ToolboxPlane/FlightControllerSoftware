@@ -24,7 +24,7 @@ void output_init(void) {
     DDRL = 0xFF; // All as outputs
 }
 
-void output_set(const out_state_t *out_state) {
+void output_set(volatile const out_state_t *out_state) {
     pwm_set_out_a(3, 2 * (1500 + out_state->elevon_r));
     pwm_set_out_b(3, 2 * (1000 + out_state->motor));
     pwm_set_out_c(3, 2 * (1500 + out_state->elevon_l));

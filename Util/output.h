@@ -16,7 +16,7 @@ typedef enum {
 } led_t;
 
 void output_init(void);
-void output_set(const out_state_t *out_state);
+void output_set(volatile const out_state_t *out_state);
 void output_led(uint8_t led, led_t state);
 
 #endif //FLIGHTCONTROLLER_OUTPUT_H

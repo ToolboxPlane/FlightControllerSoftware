@@ -1,11 +1,24 @@
 #include "math.h"
 #include "controller.h"
 
-controller_t roll_controller, pitch_controller;
+static controller_t roll_controller, pitch_controller;
 
-int16_t update_controller(controller_t* c) {
-    int16_t p_val = (int16_t)((c->target_value - c->is_value)*c->P);
-    c->i_area += c->delta_t * c->is_value;
+#define CLAMP(x, min, max) ((x) < (min) ? (min) : ((x) > (max) ? (max) : (x)))
+
+int16_t fix_angle(int16_t angle) {
+    while (angle < -180) {
+        angle += 360;
+    }
+    while (angle > 180) {
+        angle -= 360;
+    }
+    return angle;
+}
+
+int16_t update_controller(controller_t *c) {
+    int16_t error = fix_angle(c->target_value - c->is_value);
+    int16_t p_val = (int16_t)(error * c->P);
+    c->i_area += c->delta_t * error;
     if(c->last_is_value * c->is_value <= 0) {
         c->i_area = 0;
     }
@@ -17,21 +30,21 @@ int16_t update_controller(controller_t* c) {
 }
 
 void controller_init(uint16_t delta_t) {
-    roll_controller.P = 12.0;
-    pitch_controller.P = 20.0;
+    roll_controller.P = 12.0F;
+    pitch_controller.P = 20.0F;
 
-    pitch_controller.I = 0.0;
-    roll_controller.I = 0.0;
+    pitch_controller.I = 0.0F;
+    roll_controller.I = 0.0F;
 
-    roll_controller.D = 0.0;
-    pitch_controller.D = 0.0;
+    roll_controller.D = 0.0F;
+    pitch_controller.D = 0.0F;
 
     roll_controller.i_area = pitch_controller.i_area = 0;
     roll_controller.delta_t = pitch_controller.delta_t = delta_t;
 }
 
-void controller_update(const state_t *state, const setpoint_t *setpoint,
-                       out_state_t *out_state) {
+void controller_update(volatile const state_t *state, volatile const setpoint_t *setpoint,
+                       volatile out_state_t *out_state) {
     roll_controller.is_value = state->roll / 2;
     pitch_controller.is_value = state->pitch / 2;
 
@@ -44,18 +57,6 @@ void controller_update(const state_t *state, const setpoint_t *setpoint,
     int16_t roll_ctrl_val = update_controller(&roll_controller);
     int16_t pitch_ctrl_val = update_controller(&pitch_controller);
 
-    if(roll_ctrl_val < -500) {
-        roll_ctrl_val = -500;
-    } else if(roll_ctrl_val > 500) {
-        roll_ctrl_val = 500;
-    }
-
-    if(pitch_ctrl_val < -500) {
-        pitch_ctrl_val = -500;
-    } else if(pitch_ctrl_val > 500) {
-        pitch_ctrl_val = 500;
-    }
-
-    out_state->elevon_l = (int16_t)(pitch_ctrl_val - roll_ctrl_val);
-    out_state->elevon_r = (int16_t)(pitch_ctrl_val + roll_ctrl_val);
+    out_state->elevon_r = CLAMP((int16_t)(-pitch_ctrl_val + roll_ctrl_val), -500, 500);
+    out_state->elevon_l = CLAMP((int16_t)((pitch_ctrl_val + roll_ctrl_val)), -500, 500);
 }
