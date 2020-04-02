@@ -74,7 +74,11 @@ void timer_tick(void) {
             output_led(7, off);
             break;
         case remote:
-            out_state.motor = NORMALIZE_TARANIS(sbus_latest_data.channel[0]);
+            if (sbus_latest_data.channel[0] != 0) {
+                out_state.motor = NORMALIZE_TARANIS(sbus_latest_data.channel[0]);
+            } else {
+                out_state.motor = 0;
+            }
             out_state.elevon_l = NORMALIZE_TARANIS(sbus_latest_data.channel[1])- 500;
             out_state.elevon_r = NORMALIZE_TARANIS(sbus_latest_data.channel[2])- 500;
             output_led(6, off);
