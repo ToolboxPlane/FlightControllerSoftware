@@ -28,6 +28,12 @@ state_t input_get_state(void) {
     state.acc_z = bno055_acc_z();
 
     state.bno_state = bno055_status();
+    if (state.bno_state == system_error) {
+        state.error = bno055_error();
+    } else {
+        state.error = 0;
+    }
+    state.calib_stat =bno055_calib_stat();
 
     return state;
 }

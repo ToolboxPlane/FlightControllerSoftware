@@ -76,8 +76,8 @@ void communication_send_status(volatile const state_t *state, volatile const out
     pkg.channel_data[7] = state->acc_x + 500;
     pkg.channel_data[8] = state->acc_y + 500;
     pkg.channel_data[9] = state->acc_z + 500;
-    pkg.channel_data[10] = 0;
-    pkg.channel_data[11] = 0;
+    pkg.channel_data[10] = state->error;
+    pkg.channel_data[11] = state->calib_stat;
     pkg.channel_data[12] = 0;
     pkg.channel_data[13] = out_state->motor;
     pkg.channel_data[14] = out_state->elevon_l + 500;
