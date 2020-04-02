@@ -67,8 +67,8 @@ The axis are according to DIN-9300.
 | 7 | Acceleration-X + 500 |
 | 8 | Acceleration-Y + 500 |
 | 9 | Acceleration-Z + 500 |
-| 10 | Empty |
-| 11 | Empty |
+| 10 | BNO055 Error |
+| 11 | BNO055 Calib-Status |
 | 12 | Empty |
 | 13 | Motor |
 | 14 | Servo-Elevon-Left + 500 |
