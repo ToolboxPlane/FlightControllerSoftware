@@ -33,11 +33,9 @@ const setpoint_t failsave_setpoint = {
 };
 
 void setpoint_update(setpoint_t setpoint) {
-    if (setpoint_source == flightcomputer) {
-        flightcomputer_setpoint.roll = setpoint.roll;
-        flightcomputer_setpoint.pitch = setpoint.pitch;
-        flightcomputer_setpoint.power = setpoint.power;
-    }
+    flightcomputer_setpoint.roll = setpoint.roll;
+    flightcomputer_setpoint.pitch = setpoint.pitch;
+    flightcomputer_setpoint.power = setpoint.power;
     output_led(3, toggle);
     usbTimeout = 0;
 }

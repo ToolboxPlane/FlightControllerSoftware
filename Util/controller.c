@@ -55,7 +55,7 @@ void controller_update(volatile const state_t *state, volatile const setpoint_t 
     pitch_controller.target_value = setpoint->pitch;
 
     int16_t roll_ctrl_val = update_controller(&roll_controller);
-    int16_t pitch_ctrl_val = update_controller(&pitch_controller);
+    int16_t pitch_ctrl_val = (int16_t)(update_controller(&pitch_controller) * cosinus(state->roll/2));
 
     out_state->elevon_r = CLAMP((int16_t)(-pitch_ctrl_val + roll_ctrl_val), -500, 500);
     out_state->elevon_l = CLAMP((int16_t)((pitch_ctrl_val + roll_ctrl_val)), -500, 500);
