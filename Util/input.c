@@ -23,8 +23,8 @@ state_t input_get_state(void) {
     state.roll_deriv = -bno055_gyr_y();
     state.pitch_deriv = bno055_gyr_z();
     state.heading_deriv = bno055_gyr_x();
-    state.acc_x = bno055_acc_y() / 16;
-    state.acc_y = bno055_acc_x() / 16;
+    state.acc_x = -bno055_acc_y() / 16;
+    state.acc_y = -bno055_acc_x() / 16;
     state.acc_z = bno055_acc_z() / 16;
 
     state.bno_state = bno055_status();
