@@ -18,10 +18,10 @@ void output_init(void) {
     pwm_init(3, prescaler_8, 40000);
     pwm_init(4, prescaler_8, 40000);
 
-    DDRB |= 0b11100000;
-    DDRE |= 0b00111000;
-    DDRH |= 0b00111000;
-    DDRL = 0xFF; // All as outputs
+    DDRB |= 0b11100000u;
+    DDRE |= 0b00111000u;
+    DDRH |= 0b00111000u;
+    DDRL = 0xFFu; // All as outputs
 }
 
 void output_set(volatile const out_state_t *out_state) {
@@ -39,13 +39,13 @@ void output_set(volatile const out_state_t *out_state) {
 void output_led(uint8_t led, led_t state) {
     switch (state) {
         case on:
-            PORTL |= (1 << led);
+            PORTL |= (1u << led);
             break;
         case off:
-            PORTL &= ~(1 << led);
+            PORTL &= ~(1u << led);
             break;
         case toggle:
-            PORTL ^= (1 << led);
+            PORTL ^= (1u << led);
             break;
         default:
             break;

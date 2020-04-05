@@ -333,7 +333,7 @@ uint8_t bno055_calib_stat(void) {
 }
 
 void bno055_reset(void) {
-    bno055_write_byte(BNO055_SYS_TRIGGER_ADDR, 1 << 5);
+    bno055_write_byte(BNO055_SYS_TRIGGER_ADDR, 1u << 5u);
 }
 
 bno055_status_t bno055_status(void) {
@@ -341,7 +341,7 @@ bno055_status_t bno055_status(void) {
     if (status > 0x6) {
         return unknown_status;
     }
-    return status;
+    return (bno055_status_t)status;
 }
 
 bno055_error_t bno055_error(void) {
@@ -349,5 +349,5 @@ bno055_error_t bno055_error(void) {
     if (error > 0xa) {
         return unknown_error;
     }
-    return error;
+    return (bno055_error_t)error;
 }

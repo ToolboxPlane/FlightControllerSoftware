@@ -21,7 +21,7 @@ volatile out_state_t out_state = {
 };
 volatile uint8_t usbTimeout = 0, sbusTimeout = 0;
 
-#define NORMALIZE_TARANIS(x) ((uint16_t)(x-172)*(1000.0F/(1811-172)))
+#define NORMALIZE_TARANIS(x) ((uint16_t)(((x)-172)*(1000.0F/(1811-172))))
 
 typedef enum {
     failsave, remote, flightcomputer
@@ -100,14 +100,14 @@ int main(void) {
     cli();
     output_init();
     output_led(0, on);
-    output_led(1, MCUSR & (1 << WDRF) ? off : on); // Watchdog
-    output_led(2, MCUSR & (1 << BORF) ? off : on); // Brownout
+    output_led(1, MCUSR & (1u << WDRF) ? off : on); // Watchdog
+    output_led(2, MCUSR & (1u << BORF) ? off : on); // Brownout
     MCUSR = 0;
 
     communication_init(&setpoint_update, &sbus_event);
     controller_init(16);
     // Runs at 16.384ms interval, the BNO055 provides data at 100Hz, the output can be updated at 50Hz
-    timer0_init(prescaler_1024, &timer_tick);
+    timer_8bit_init(prescaler_1024, &timer_tick);
     sei();
 
     wdt_enable(WDTO_250MS);

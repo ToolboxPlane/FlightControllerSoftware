@@ -35,8 +35,8 @@ bool sbus_parse(const uint8_t *data, uint8_t len) {
                 byteCount = 0;
                 break;
             case 23: // Flags
-                new_data.failsave = (data[c] >> 3) & 1;
-                new_data.frame_lost = (data[c] >> 2) & 1;
+                new_data.failsave = (data[c] >> 3u) & 1u;
+                new_data.frame_lost = (data[c] >> 2u) & 1u;
                 byteCount =  24;
                 break;
             default: // Data
@@ -46,7 +46,7 @@ bool sbus_parse(const uint8_t *data, uint8_t len) {
                 for(uint8_t b=0; b<8; b++) {
                     uint8_t channelNumber = (startBitNum + b) / 11;
                     uint8_t bitInChannel = ((startBitNum + b) % 11);
-                    uint8_t bit = (data[c] >> b) & 1;
+                    uint8_t bit = (data[c] >> b) & 1u;
                     new_data.channel[channelNumber] |= bit << bitInChannel;
                 }
                 byteCount++;
