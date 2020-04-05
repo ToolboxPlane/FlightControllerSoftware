@@ -36,7 +36,7 @@ void setpoint_update(setpoint_t setpoint) {
     flightcomputer_setpoint.roll = setpoint.roll;
     flightcomputer_setpoint.pitch = setpoint.pitch;
     flightcomputer_setpoint.power = setpoint.power;
-    output_led(3, toggle);
+    output_led(4, toggle);
     usbTimeout = 0;
 }
 
@@ -91,6 +91,8 @@ void timer_tick(void) {
         default:
             break;
     }
+
+    output_led(3, toggle);
     output_set(&out_state);
 }
 
@@ -108,10 +110,9 @@ int main(void) {
     timer0_init(prescaler_1024, &timer_tick);
     sei();
 
-    wdt_enable(WDTO_8S);
+    wdt_enable(WDTO_250MS);
 
     input_init();
-    _delay_ms(100);
 
     uint8_t mux = 0;
 

@@ -240,19 +240,18 @@ uint8_t bno055_read_byte(uint8_t reg) {
 void bno055_init(void) {
     uart_init(UART_ID, 115200, NONE, 1, &bno_uart_callback);
     bno055_write_byte(BNO055_OPR_MODE_ADDR, 0b0000000); // Switch to Config Mode
-    _delay_ms(500);
+    _delay_ms(20);
     /*
      * Units:
      *  * Acceleration: m/s^2
      *  * Angular-Rate: Dps
      *  * Angles: Degrees
      *  * Temperature: Celsius
-     *  * Data output format: Android //@TODO don't know if right
+     *  * Data output format: Android
      */
     bno055_write_byte(BNO055_UNIT_SEL_ADDR, 0b0000000);
-    _delay_ms(500);
     bno055_write_byte(BNO055_OPR_MODE_ADDR, 0b0001011); // Switch to NDOF-FMC-OFF Mode
-    _delay_ms(500);
+    _delay_ms(20);
 }
 
 int16_t bno055_acc_x(void) {

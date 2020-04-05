@@ -42,8 +42,8 @@ If only a single led is off for a longer time, there is a some kind of problem
 | 0 | Alive (blinks regularly) |
 | 1 | Not Watchdog |
 | 2 | Not Brownout |
-| 3 | USB-RX (Toggle on package receive) |
-| 4 | Timer active  |
+| 3 | Timer active  |
+| 4 | USB-RX (Toggle on package receive) |
 | 5 | SBUS-RX (Toggle on package receive) |
 | 6 | Use Flightcomputer as a setpoint source |
 | 7 | Not Failsave |
