@@ -14,18 +14,20 @@
 #include "Drivers/bno055_uart.h"
 #include "HAL/uart.h"
 
+#define NORMALIZE_TARANIS(x) ((uint16_t)(((x)-172)*(1000.0F/(1811-172))))
+
+typedef enum {
+    failsave, remote, flightcomputer
+} setpoint_source_t;
+
 volatile state_t curr_state;
 volatile setpoint_t flightcomputer_setpoint;
 volatile out_state_t out_state = {
     .elevon_r = 500, .elevon_l = 500, .motor = 0
 };
 volatile uint8_t usbTimeout = 0, sbusTimeout = 0;
-
-#define NORMALIZE_TARANIS(x) ((uint16_t)(((x)-172)*(1000.0F/(1811-172))))
-
-typedef enum {
-    failsave, remote, flightcomputer
-} setpoint_source_t;
+volatile uint16_t setpoint_source_counter = 0;
+volatile sbus_data_t last_valid_sbus_package;
 
 volatile setpoint_source_t setpoint_source = failsave;
 const setpoint_t failsave_setpoint = {
@@ -41,12 +43,16 @@ void setpoint_update(setpoint_t setpoint) {
 }
 
 void sbus_event(sbus_data_t sbus_data) {
-    if (sbus_data.failsave) {
+    if (sbus_data.failsave || sbus_data.frame_lost) {
         setpoint_source = failsave;
-    } else if (sbus_data.channel[7] < 500) {
-        setpoint_source = remote;
     } else {
-        setpoint_source = flightcomputer;
+        last_valid_sbus_package = sbus_data;
+
+        if (sbus_data.channel[7] < 500) {
+            setpoint_source = remote;
+        } else {
+            setpoint_source = flightcomputer;
+        }
     }
     output_led(5, toggle);
     sbusTimeout = 0;
@@ -64,6 +70,7 @@ void timer_tick(void) {
         }
     }
 
+    // Set outputs
     switch (setpoint_source) {
         case failsave:
             controller_update(&curr_state, &failsave_setpoint, &out_state);
@@ -72,13 +79,13 @@ void timer_tick(void) {
             output_led(7, off);
             break;
         case remote:
-            if (sbus_latest_data.channel[0] != 0) {
-                out_state.motor = NORMALIZE_TARANIS(sbus_latest_data.channel[0]);
+            if (last_valid_sbus_package.channel[0] != 0) {
+                out_state.motor = NORMALIZE_TARANIS(last_valid_sbus_package.channel[0]);
             } else {
                 out_state.motor = 0;
             }
-            out_state.elevon_l = NORMALIZE_TARANIS(sbus_latest_data.channel[1])- 500;
-            out_state.elevon_r = NORMALIZE_TARANIS(sbus_latest_data.channel[2])- 500;
+            out_state.elevon_l = NORMALIZE_TARANIS(last_valid_sbus_package.channel[1]) - 500;
+            out_state.elevon_r = NORMALIZE_TARANIS(last_valid_sbus_package.channel[2]) - 500;
             output_led(6, off);
             output_led(7, on);
             break;
@@ -123,7 +130,7 @@ int main(void) {
             communication_send_status(&curr_state, &out_state);
             mux = 0;
         }
-        communication_handle_usb();
+        communication_handle();
         output_led(0, toggle);
         _delay_ms(10);
     }

@@ -34,6 +34,6 @@ void communication_send_status(volatile const state_t *state, volatile const out
  */
 bool communication_is_failsave(void);
 
-void communication_handle_usb(void);
+void communication_handle(void);
 
 #endif //FLIGHTCONTROLLER_COMMUNICATION_H
