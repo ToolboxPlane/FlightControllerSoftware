@@ -26,7 +26,6 @@ volatile out_state_t out_state = {
     .elevon_r = 500, .elevon_l = 500, .motor = 0
 };
 volatile uint8_t usbTimeout = 0, sbusTimeout = 0;
-volatile uint16_t setpoint_source_counter = 0;
 volatile sbus_data_t last_valid_sbus_package;
 
 volatile setpoint_source_t setpoint_source = failsave;
