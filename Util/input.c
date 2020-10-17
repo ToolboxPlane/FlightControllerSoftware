@@ -14,8 +14,8 @@ void input_init(void) {
 
 state_t input_get_state(void) {
     state_t state;
-    state.roll = bno055_eul_y_2();
-    state.pitch = -bno055_eul_z_2();
+    state.roll = -bno055_eul_y_2();
+    state.pitch = bno055_eul_z_2();
     state.heading = bno055_eul_x_2();
     if (state.heading > 180 * 2) {
         state.heading -= 360 * 2;
