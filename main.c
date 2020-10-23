@@ -16,6 +16,10 @@
 
 #define NORMALIZE_TARANIS(x) ((uint16_t)(((x)-172)*(1000.0F/(1811-172))))
 
+#define FAILSAVE_THRESH 50
+#define SBUS_TIMEOUT 31
+#define USB_TIMEOUT 31
+
 typedef enum {
     failsave, remote, flightcomputer
 } setpoint_source_t;
@@ -42,9 +46,15 @@ void setpoint_update(setpoint_t setpoint) {
 }
 
 void sbus_event(sbus_data_t sbus_data) {
+    static uint8_t failsave_count;
     if (sbus_data.failsave || sbus_data.frame_lost) {
-        setpoint_source = failsave;
+        failsave_count += 1;
+        if (failsave_count >= FAILSAVE_THRESH) {
+            setpoint_source = failsave;
+            failsave_count = FAILSAVE_THRESH;
+        }
     } else {
+        failsave_count = 0;
         last_valid_sbus_package = sbus_data;
 
         if (sbus_data.channel[7] < 500) {
@@ -59,11 +69,11 @@ void sbus_event(sbus_data_t sbus_data) {
 
 void timer_tick(void) {
     // Timeout equals 500ms
-    if (++sbusTimeout >= 31) {
-        sbusTimeout = 31;
+    if (++sbusTimeout >= SBUS_TIMEOUT) {
+        sbusTimeout = SBUS_TIMEOUT;
         setpoint_source = failsave;
-    } else if (++usbTimeout >= 31) {
-        usbTimeout = 31;
+    } else if (++usbTimeout >= USB_TIMEOUT) {
+        usbTimeout = USB_TIMEOUT;
         if (setpoint_source == flightcomputer) {
             setpoint_source = remote;
         }
