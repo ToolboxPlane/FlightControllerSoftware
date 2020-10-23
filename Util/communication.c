@@ -16,7 +16,7 @@
 
 #define BUFF_SIZE 512
 
-static void (*setpoint_callback)(setpoint_t) = 0;
+static void (*_setpoint_callback)(setpoint_t) = 0;
 static void (*_sbus_callback)(sbus_data_t) = 0;
 static volatile bool failsave = false;
 static volatile rc_lib_package_t usb_rx_pkg;
@@ -40,7 +40,7 @@ void sbus_receive(uint8_t data) {
 }
 
 void communication_init(void (*setpoint_callback)(setpoint_t), void (*sbus_callback)(sbus_data_t)) {
-    setpoint_callback = setpoint_callback;
+    _setpoint_callback = setpoint_callback;
     _sbus_callback = sbus_callback;
     rc_lib_init_rx(&usb_rx_pkg);
     rc_lib_global_package_uid = 0;
@@ -87,14 +87,14 @@ void communication_handle(void) {
         uint8_t data = usb_buff[usb_tail];
         usb_tail = (usb_tail + 1) % BUFF_SIZE;
         if (rc_lib_decode(&usb_rx_pkg, data)) {
-            if (setpoint_callback != 0) {
+            if (_setpoint_callback != 0) {
                 setpoint_t setpoint = {
                         .power = usb_rx_pkg.channel_data[0],
                         .pitch = usb_rx_pkg.channel_data[1] - 180,
                         .roll = usb_rx_pkg.channel_data[2] - 180
                 };
 
-                (*setpoint_callback)(setpoint);
+                (*_setpoint_callback)(setpoint);
             }
         }
     }
