@@ -175,15 +175,15 @@ void bno055_read_acc_z_mul_100(int16_t *out, bno_callback_t callback) {
     bno055_uart_read_register(BNO055_ACCEL_DATA_Z_LSB_ADDR, 2, callback, out, 1);
 }
 
-void bno055_read_gyr_x(int16_t *out, bno_callback_t callback) {
+void bno055_read_gyr_x_mul_16(int16_t *out, bno_callback_t callback) {
     bno055_uart_read_register(BNO055_GYRO_DATA_X_LSB_ADDR, 2, callback, out, 1);
 }
 
-void bno055_read_gyr_y(int16_t *out, bno_callback_t callback) {
+void bno055_read_gyr_y_mul_16(int16_t *out, bno_callback_t callback) {
     bno055_uart_read_register(BNO055_GYRO_DATA_Y_LSB_ADDR, 2, callback, out, 1);
 }
 
-void bno055_read_gyr_z(int16_t *out, bno_callback_t callback) {
+void bno055_read_gyr_z_mul_16(int16_t *out, bno_callback_t callback) {
     bno055_uart_read_register(BNO055_GYRO_DATA_Z_LSB_ADDR, 2, callback, out, 1);
 }
 

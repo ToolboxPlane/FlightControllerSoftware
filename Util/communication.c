@@ -65,9 +65,9 @@ void communication_send_status(volatile const imu_data_t *state, volatile const 
     messagesFlightController.roll_mul_16 = state->roll_mul_16;
     messagesFlightController.pitch_mul_16 = state->pitch_mul_16;
     messagesFlightController.yaw_mul_16 = state->heading_mul_16;
-    messagesFlightController.dRoll = state->d_roll;
-    messagesFlightController.dPitch = state->d_pitch;
-    messagesFlightController.dYaw = state->d_heading;
+    messagesFlightController.dRoll_mul_16 = state->d_roll_mul_16;
+    messagesFlightController.dPitch_mul_16 = state->d_pitch_mul_16;
+    messagesFlightController.dYaw_mul_16 = state->d_heading_mul_16;
     messagesFlightController.accX_mul_100 = state->acc_x_mul_100;
     messagesFlightController.accY_mul_100 = state->acc_y_mul_100;
     messagesFlightController.accZ_mul_100 = state->acc_z_mul_100;

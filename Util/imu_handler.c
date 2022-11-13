@@ -57,15 +57,15 @@ void bno_sample_callback(bno055_response_t response) {
                 break;
             case HEADING:
                 bno_sampling_state = D_ROLL;
-                bno055_read_gyr_x(&imu_data->d_roll, bno_sample_callback);
+                bno055_read_gyr_x_mul_16(&imu_data->d_roll_mul_16, bno_sample_callback);
                 break;
             case D_ROLL:
                 bno_sampling_state = D_PITCH;
-                bno055_read_gyr_y(&imu_data->d_pitch, bno_sample_callback);
+                bno055_read_gyr_y_mul_16(&imu_data->d_pitch, bno_sample_callback);
                 break;
             case D_PITCH:
                 bno_sampling_state = D_HEADING;
-                bno055_read_gyr_z(&imu_data->d_heading, bno_sample_callback);
+                bno055_read_gyr_z_mul_16(&imu_data->d_heading_mul_16, bno_sample_callback);
                 break;
             case D_HEADING:
                 bno_sampling_state = ACC_X;

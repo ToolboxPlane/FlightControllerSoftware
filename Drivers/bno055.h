@@ -86,9 +86,9 @@ void bno055_read_acc_x_mul_100(int16_t *out, bno_callback_t callback);
 void bno055_read_acc_y_mul_100(int16_t *out, bno_callback_t callback);
 void bno055_read_acc_z_mul_100(int16_t *out, bno_callback_t callback);
 
-void bno055_read_gyr_x(int16_t *out, bno_callback_t callback);
-void bno055_read_gyr_y(int16_t *out, bno_callback_t callback);
-void bno055_read_gyr_z(int16_t *out, bno_callback_t callback);
+void bno055_read_gyr_x_mul_16(int16_t *out, bno_callback_t callback);
+void bno055_read_gyr_y_mul_16(int16_t *out, bno_callback_t callback);
+void bno055_read_gyr_z_mul_16(int16_t *out, bno_callback_t callback);
 
 void bno055_read_eul_x_2_mul_16(int16_t *out, bno_callback_t callback);
 void bno055_read_eul_y_2_mul_16(int16_t *out, bno_callback_t callback);

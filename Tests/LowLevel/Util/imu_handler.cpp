@@ -167,17 +167,17 @@ TEST(TEST_NAME, read__full_read) {
         callback(read_success);
     });
 
-    bnoHandle.overrideFunc<bno055_read_gyr_x>([](int16_t *out, bno_callback_t callback) {
+    bnoHandle.overrideFunc<bno055_read_gyr_x_mul_16>([](int16_t *out, bno_callback_t callback) {
         *out = 104;
         callback(read_success);
     });
 
-    bnoHandle.overrideFunc<bno055_read_gyr_y>([](int16_t *out, bno_callback_t callback) {
+    bnoHandle.overrideFunc<bno055_read_gyr_y_mul_16>([](int16_t *out, bno_callback_t callback) {
         *out = 105;
         callback(read_success);
     });
 
-    bnoHandle.overrideFunc<bno055_read_gyr_z>([](int16_t *out, bno_callback_t callback) {
+    bnoHandle.overrideFunc<bno055_read_gyr_z_mul_16>([](int16_t *out, bno_callback_t callback) {
         *out = 106;
         callback(read_success);
     });
@@ -214,9 +214,9 @@ TEST(TEST_NAME, read__full_read) {
     EXPECT_EQ(data.roll_mul_16, 101);
     EXPECT_EQ(data.pitch_mul_16, 102);
     EXPECT_EQ(data.heading_mul_16, 103);
-    EXPECT_EQ(data.d_roll, 104);
+    EXPECT_EQ(data.d_roll_mul_16, 104);
     EXPECT_EQ(data.d_pitch, 105);
-    EXPECT_EQ(data.d_heading, 106);
+    EXPECT_EQ(data.d_heading_mul_16, 106);
     EXPECT_EQ(data.acc_x_mul_100, 107);
     EXPECT_EQ(data.acc_y_mul_100, 108);
     EXPECT_EQ(data.acc_z_mul_100, 109);
