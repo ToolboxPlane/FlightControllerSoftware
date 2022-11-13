@@ -10,63 +10,34 @@
 
 #include <stdint.h>
 
-typedef enum {
-    system_idle = 0x0,
-    system_error = 0x1,
-    initializing_peripherals = 0x2,
-    system_initialization = 0x3,
-    executing_selftest = 0x4,
-    sensor_fusion_algorithm_running = 0x5,
-    system_running_without_fusion_algorithm = 0x6,
-    unknown_status,
-} bno055_status_t;
+#define BNO_UART_ID 1
 
 typedef enum {
-    no_error = 0x0,
-    peripheral_initialization_error = 0x1,
-    system_initialization_error = 0x2,
-    self_test_result_failed = 0x3,
-    register_map_value_out_of_range = 0x4,
-    register_map_address_out_of_range = 0x5,
-    register_map_write_error = 0x6,
-    bno_low_power_mode_not_available_for_selected_operation_mode = 0x7,
-    accelerometer_power_mode_not_available = 0x8,
-    fusion_algorithm_configuration_error = 0x9,
-    sensor_configuration_error = 0xa,
-    unknown_error
-} bno055_error_t;
+    // From BNO
+    read_success = 0x00,
+    write_success = 0x01,
+    read_fail = 0x02,
+    write_fail = 0x03,
+    regmap_invalid_address = 0x04,
+    regmap_write_disabled = 0x05,
+    wrong_start_byte = 0x06,
+    bus_over_run_error = 0x07,
+    max_length_error = 0x08,
+    min_length_error = 0x09,
+    receive_char_timeout = 0x0A,
 
-void bno055_init(void);
+    // From Library
+    callback_buffer_invalid,
+    callback_length_invalid
+} bno055_response_t;
 
-void bno055_reset(void);
+typedef void (*bno_callback_t)(bno055_response_t);
 
-bno055_status_t bno055_status(void);
-bno055_error_t bno055_error(void);
-uint8_t bno055_calib_stat(void);
+void bno055_uart_init(void);
 
-int16_t bno055_acc_x(void);
-int16_t bno055_acc_y(void);
-int16_t bno055_acc_z(void);
+void bno055_uart_write_register(uint8_t reg, const uint8_t *data, uint8_t len, bno_callback_t callback, void *result, uint8_t div);
 
-int16_t bno055_mag_x(void);
-int16_t bno055_mag_y(void);
-int16_t bno055_mag_z(void);
-
-int16_t bno055_gyr_x(void);
-int16_t bno055_gyr_y(void);
-int16_t bno055_gyr_z(void);
-
-int16_t bno055_eul_x_2(void);
-int16_t bno055_eul_y_2(void);
-int16_t bno055_eul_z_2(void);
-
-int16_t bno055_linear_acc_x(void);
-int16_t bno055_linear_acc_y(void);
-int16_t bno055_linear_acc_z(void);
-
-int16_t bno055_grv_x(void);
-int16_t bno055_grv_y(void);
-int16_t bno055_grv_z(void);
+void bno055_uart_read_register(uint8_t reg, uint8_t len, bno_callback_t callback, void *result, uint8_t div);
 
 
-#endif //FLIGHTCONTROLLER_BNO055_UART_H
+#endif // FLIGHTCONTROLLER_BNO055_UART_H

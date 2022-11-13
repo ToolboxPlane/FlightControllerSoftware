@@ -13,11 +13,14 @@
 typedef struct controller {
     int16_t target_value, is_value;
 
-    float P,I,D;
+    // Value = Value_num/Value_denom
+    uint8_t P_num, P_denom;
+    uint8_t I_num, I_denom;
+    uint8_t D_num,D_denom;
 
     int16_t i_area, last_is_value;
     int16_t deriv;
-    int16_t delta_t;
+    uint16_t delta_t;
 } controller_t;
 
 void controller_init(uint16_t delta_t);

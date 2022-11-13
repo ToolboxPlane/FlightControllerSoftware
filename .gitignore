@@ -8,3 +8,4 @@ Src/Backup/
 build/
 /Inc/Backup/
 .idea/*
+/Tests/Mock/Modules

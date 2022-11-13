@@ -14,9 +14,11 @@ void output_init(void) {
      * This combination of prescaler and max value yields a frequency of 50Hz.
      * Each LSB corresponds to 0.5us
      */
+#ifdef NDEBUG
     pwm_init(1, prescaler_8, 40000);
     pwm_init(3, prescaler_8, 40000);
     pwm_init(4, prescaler_8, 40000);
+#endif
 
     DDRB |= 0b11100000u;
     DDRE |= 0b00111000u;
@@ -49,5 +51,62 @@ void output_led(uint8_t led, led_t state) {
             break;
         default:
             break;
+    }
+}
+void output_debug(uint8_t id, led_t state) {
+    volatile uint8_t *port = 0;
+    uint8_t bit = 0;
+    switch (id) {
+        case 0:
+            port = &PORTE;
+            bit = 3;
+            break;
+        case 1:
+            port = &PORTE;
+            bit = 4;
+            break;
+        case 2:
+            port = &PORTE;
+            bit = 5;
+            break;
+        case 3:
+            port = &PORTH;
+            bit = 3;
+            break;
+        case 4:
+            port = &PORTH;
+            bit = 4;
+            break;
+        case 5:
+            port = &PORTB;
+            bit = 5;
+            break;
+        case 6:
+            port = &PORTB;
+            bit = 6;
+            break;
+        case 7:
+            port = &PORTB;
+            bit = 7;
+            break;
+        default:
+            // We shouldn't be here...
+            break;
+    }
+
+    if (port != 0) {
+        switch (state) {
+            case on:
+                *port |= (1u << bit);
+                break;
+            case off:
+                *port &= ~(1u << bit);
+                break;
+            case toggle:
+                *port ^= (1u << bit);
+                break;
+            default:
+                break;
+        }
     }
 }

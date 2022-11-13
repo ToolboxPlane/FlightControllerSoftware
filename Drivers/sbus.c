@@ -7,7 +7,6 @@
 #define SBUS_START_BYTE 0x0F
 #define SBUS_END_BYTE 0x00
 
-static sbus_data_t new_data;
 sbus_data_t sbus_latest_data = {{0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0}, true, true};
 
 bool sbus_parse(const uint8_t *data, uint8_t len) {
@@ -23,20 +22,13 @@ bool sbus_parse(const uint8_t *data, uint8_t len) {
                 break;
             case 24: // Endbyte
                 if (data[c] == SBUS_END_BYTE) {
-                    for(uint8_t c=0; c<16; c++) {
-                        sbus_latest_data.channel[c] = new_data.channel[c];
-                        new_data.channel[c] = 0;
-                    }
-                    sbus_latest_data.frame_lost = new_data.frame_lost;
-                    sbus_latest_data.failsave =  new_data.failsave;
-
                     ret = true;
                 }
                 byteCount = 0;
                 break;
             case 23: // Flags
-                new_data.failsave = (data[c] >> 3u) & 1u;
-                new_data.frame_lost = (data[c] >> 2u) & 1u;
+                sbus_latest_data.failsave = (data[c] >> 3u) & 1u;
+                sbus_latest_data.frame_lost = (data[c] >> 2u) & 1u;
                 byteCount =  24;
                 break;
             default: // Data
@@ -47,7 +39,7 @@ bool sbus_parse(const uint8_t *data, uint8_t len) {
                     uint8_t channelNumber = (startBitNum + b) / 11;
                     uint8_t bitInChannel = ((startBitNum + b) % 11);
                     uint8_t bit = (data[c] >> b) & 1u;
-                    new_data.channel[channelNumber] |= bit << bitInChannel;
+                    sbus_latest_data.channel[channelNumber] |= bit << bitInChannel;
                 }
                 byteCount++;
             }

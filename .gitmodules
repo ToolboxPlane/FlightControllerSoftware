@@ -4,3 +4,6 @@
 [submodule "Drivers/rc_lib"]
 	path = Drivers/rc_lib
 	url = git@github.com:ToolboxPlane/RadioControlProtocolC.git
+[submodule "Messages"]
+	path = Messages
+	url = git@github.com:ToolboxPlane/Messages.git

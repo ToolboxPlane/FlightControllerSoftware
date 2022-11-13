@@ -1,41 +1,34 @@
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wmissing-noreturn"
 
-#include <stdbool.h>
 #include <avr/interrupt.h>
 #include <avr/wdt.h>
+#include <stdbool.h>
 #include <util/delay.h>
 
+#include "Drivers/bno055_uart.h"
+#include "HAL/timer8bit.h"
+#include "HAL/uart.h"
 #include "Util/communication.h"
 #include "Util/controller.h"
-#include "Util/output.h"
-#include "HAL/timer8bit.h"
 #include "Util/input.h"
-#include "Drivers/bno055_uart.h"
-#include "HAL/uart.h"
+#include "Util/output.h"
 
-#define NORMALIZE_TARANIS(x) ((uint16_t)(((x)-172)*(1000.0F/(1811-172))))
 
 #define FAILSAVE_THRESH 50
 #define SBUS_TIMEOUT 31
 #define USB_TIMEOUT 31
 
-typedef enum {
-    failsave, remote, flightcomputer
-} setpoint_source_t;
+typedef enum { failsave, remote, flightcomputer } setpoint_source_t;
 
 volatile state_t curr_state;
 volatile setpoint_t flightcomputer_setpoint;
-volatile out_state_t out_state = {
-    .elevon_r = 500, .elevon_l = 500, .motor = 0
-};
+volatile out_state_t out_state = {.elevon_r = 500, .elevon_l = 500, .motor = 0};
 volatile uint8_t usbTimeout = 0, sbusTimeout = 0;
 volatile sbus_data_t last_valid_sbus_package;
 
 volatile setpoint_source_t setpoint_source = failsave;
-const setpoint_t failsave_setpoint = {
-    .roll = 0, .pitch = 0, .power = 0
-};
+const setpoint_t failsave_setpoint = {.roll = 0, .pitch = 0, .power = 0};
 
 void setpoint_update(setpoint_t setpoint) {
     flightcomputer_setpoint.roll = setpoint.roll;
@@ -57,7 +50,7 @@ void sbus_event(sbus_data_t sbus_data) {
         failsave_count = 0;
         last_valid_sbus_package = sbus_data;
 
-        if (sbus_data.channel[7] < 500) {
+        if (sbus_data.channel[7] < 400) {
             setpoint_source = remote;
         } else {
             setpoint_source = flightcomputer;
@@ -68,6 +61,8 @@ void sbus_event(sbus_data_t sbus_data) {
 }
 
 void timer_tick(void) {
+    curr_state = input_get_state();
+
     // Timeout equals 500ms
     if (++sbusTimeout >= SBUS_TIMEOUT) {
         sbusTimeout = SBUS_TIMEOUT;
@@ -84,40 +79,45 @@ void timer_tick(void) {
         case failsave:
             controller_update(&curr_state, &failsave_setpoint, &out_state);
             out_state.motor = failsave_setpoint.power;
-            output_led(6, off);
-            output_led(7, off);
+            output_led(6, on);
+            output_led(7, on);
             break;
         case remote:
             if (last_valid_sbus_package.channel[0] != 0) {
-                out_state.motor = NORMALIZE_TARANIS(last_valid_sbus_package.channel[0]);
+                out_state.motor = last_valid_sbus_package.channel[0];
             } else {
                 out_state.motor = 0;
             }
-            out_state.elevon_l = NORMALIZE_TARANIS(last_valid_sbus_package.channel[1]) - 500;
-            out_state.elevon_r = NORMALIZE_TARANIS(last_valid_sbus_package.channel[2]) - 500;
-            output_led(6, off);
-            output_led(7, on);
+            out_state.elevon_l = (int16_t) (last_valid_sbus_package.channel[1]) - 500;
+            out_state.elevon_r = (int16_t) (last_valid_sbus_package.channel[2]) - 500;
+            output_led(6, on);
+            output_led(7, off);
             break;
         case flightcomputer:
             controller_update(&curr_state, &flightcomputer_setpoint, &out_state);
             out_state.motor = flightcomputer_setpoint.power;
-            output_led(6, on);
-            output_led(7, on);
+            output_led(6, off);
+            output_led(7, off);
             break;
         default:
             break;
     }
 
     output_led(3, toggle);
+
+#ifdef NDEBUG
     output_set(&out_state);
+#endif
+
+    communication_send_status(&curr_state, &out_state);
 }
 
 int main(void) {
     cli();
     output_init();
     output_led(0, on);
-    output_led(1, MCUSR & (1u << WDRF) ? off : on); // Watchdog
-    output_led(2, MCUSR & (1u << BORF) ? off : on); // Brownout
+    output_led(1, MCUSR & (1u << WDRF) ? on : off); // Watchdog
+    output_led(2, MCUSR & (1u << BORF) ? on : off); // Brownout
     MCUSR = 0;
 
     communication_init(&setpoint_update, &sbus_event);
@@ -130,18 +130,10 @@ int main(void) {
 
     input_init();
 
-    uint8_t mux = 0;
-
     while (true) {
         wdt_reset();
-        curr_state = input_get_state();
-        if (++mux >= 10) {
-            communication_send_status(&curr_state, &out_state);
-            mux = 0;
-        }
         communication_handle();
         output_led(0, toggle);
-        _delay_ms(10);
     }
 }
 
