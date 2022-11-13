@@ -128,7 +128,11 @@ int main(void) {
 
     wdt_enable(WDTO_250MS);
 
-    input_init();
+    if (!input_init()) {
+        // TODO do something
+    }
+
+    input_start_sampling();
 
     while (true) {
         wdt_reset();

@@ -10,7 +10,10 @@
 #ifndef FLIGHTCONTROLLER_INPUT_H
 #define FLIGHTCONTROLLER_INPUT_H
 
-void input_init(void);
+#include <stdbool.h>
+
+bool input_init(void);
+void input_start_sampling(void);
 state_t input_get_state(void);
 
 #endif //FLIGHTCONTROLLER_INPUT_H

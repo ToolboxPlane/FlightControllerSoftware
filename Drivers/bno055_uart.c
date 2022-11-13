@@ -23,7 +23,7 @@ static void bno_uart_handle_response(volatile const uint8_t *data, uint8_t len, 
         if (len == 0) {
             // No data read...
         } else {
-            if (data == 0) {
+            if (bno_result_data == 0) {
                 bno_callback(callback_buffer_invalid);
                 return;
             }
@@ -36,6 +36,7 @@ static void bno_uart_handle_response(volatile const uint8_t *data, uint8_t len, 
                 *result16 = (data[1] << 8u | data[0]) / bno_result_div;
             } else {
                 bno_callback(callback_length_invalid);
+                return;
             }
         }
         bno_callback(response);
@@ -76,7 +77,7 @@ static void bno_uart_callback(uint8_t data) {
             ++byte_in_message;
             if (byte_in_message >= payload_len + 2) {
                 byte_in_message = 0;
-                bno_uart_handle_response(receive_buf, payload_len - 2, read_success);
+                bno_uart_handle_response(receive_buf, payload_len, read_success);
             }
             break;
     }

@@ -115,23 +115,31 @@ void bno_sample_callback(bno055_response_t response) {
     }
 }
 
-void input_init(void) {
+bool input_init(void) {
     bno055_init();
     callback_ready = false;
     bno055_op_mode(config_mode, bno_init_callback);
-    while (!callback_ready)
-        ;
     _delay_ms(20);
+    if (!callback_ready || init_response != write_success) {
+        return false;
+    }
     callback_ready = false;
     bno055_unit_set(0, bno_init_callback);
-    while (!callback_ready)
-        ;
+    _delay_ms(20);
+    if (!callback_ready || init_response != write_success) {
+        return false;
+    }
     callback_ready = false;
     bno055_op_mode(ndof_fmc_off, bno_init_callback);
-    while (!callback_ready)
-        ;
     _delay_ms(20);
+    if (!callback_ready || init_response != write_success) {
+        return false;
+    }
 
+    return true;
+}
+
+void input_start_sampling(void) {
     bno_sampling_state = ROLL;
     current_sample_state_id = 0;
     bno055_eul_y_2((int16_t *) &states[current_sample_state_id].roll, bno_sample_callback);
