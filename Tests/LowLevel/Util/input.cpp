@@ -6,11 +6,11 @@
  */
 #include <gtest/gtest.h>
 
-#include <Modules//Drivers/bno055.hpp>
+#include <Modules/Drivers/bno055.hpp>
 #include <Modules/Tests/Mock/System/util/delay.hpp>
 
 extern "C" {
-#include "../../Util/input.h"
+#include <Util/input.h>
 }
 
 TEST(TEST_NAME, init__success) {

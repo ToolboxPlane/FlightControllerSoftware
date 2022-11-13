@@ -4,8 +4,6 @@ import sys
 
 module = sys.argv[1]
 out_dir = sys.argv[2]
-print(f"Module: {module}")
-print(f"Out Dir: {out_dir}")
 
 header_file = "\n".join(open(f"{module}.h", "r").readlines())
 
@@ -27,7 +25,6 @@ function_list = ", ".join([function[1] for function in functions])
 
 out_dir = os.path.dirname(f"{out_dir}/{module}")
 os.makedirs(out_dir, exist_ok=True)
-print(f"out_dir {out_dir}")
 mock_header = open(f"{out_dir}/{mock_name}.hpp", "w")
 mock_header.write(
     f"#ifndef MOCK_{mock_name}_HPP \n"
