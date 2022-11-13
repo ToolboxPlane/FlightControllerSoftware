@@ -49,31 +49,49 @@ typedef enum {
     m4g = 0b1010,
     ndof_fmc_off = 0b1011,
     ndof = 0b1100
-} bno055_op_mode_t;
+} bno055_opr_mode_t;
+
+typedef enum { x_axis = 0, y_axis = 1, z_axis = 2 } bno055_axis_remap_axis_t;
+
+typedef enum { positive = 0, neg = 1 } bno055_axis_remap_sign_t;
+
+typedef enum { mps2 = 0, mg = 1 } bno055_unit_sel_acc;
+
+typedef enum { dps = 0, rps = 1 } bno055_unit_sel_angular_rate;
+
+typedef enum { degrees = 0, radians = 1 } bno055_unit_sel_euler_angles;
+
+typedef enum { celsius = 0, fahrenheit = 1 } bno055_unit_sel_temperature;
+
+typedef enum { windows = 0, android = 1 } bno055_unit_sel_orientation_def;
 
 void bno055_init(void);
 
-void bno055_reset(bno_callback_t callback);
+void bno055_write_reset(bno_callback_t callback);
 
 // TODO chip IDs
 // TODO remapping
 
-void bno055_system_status(bno055_status_t *out, bno_callback_t callback);
-void bno055_error(bno055_error_t *out, bno_callback_t callback);
-void bno055_calib_stat(uint8_t *out, bno_callback_t callback);
-void bno055_op_mode(bno055_op_mode_t op_mode, bno_callback_t callback);
-void bno055_unit_set(uint8_t unit_sel, bno_callback_t callback);
+void bno055_read_system_status(bno055_status_t *out, bno_callback_t callback);
+void bno055_read_system_error(bno055_error_t *out, bno_callback_t callback);
+void bno055_read_calib_status(uint8_t *out, bno_callback_t callback);
+void bno055_write_opr_mode(bno055_opr_mode_t op_mode, bno_callback_t callback);
+// clang-format off
+void bno055_write_unit_selection(bno055_unit_sel_acc acc_unit, bno055_unit_sel_angular_rate angular_rate_unit,bno055_unit_sel_euler_angles euler_angles_unit,bno055_unit_sel_temperature temperature_unit,bno055_unit_sel_orientation_def orientation_def, bno_callback_t callback);
+void bno055_write_remap_axis(bno055_axis_remap_axis_t new_x, bno055_axis_remap_axis_t new_y, bno055_axis_remap_axis_t new_z,bno_callback_t callback);
+void bno055_write_remap_axis_sign(bno055_axis_remap_sign_t new_x_sign, bno055_axis_remap_sign_t new_y_sign,bno055_axis_remap_sign_t new_z_sign, bno_callback_t callback);
+// clang-format on
 
-void bno055_acc_x(int16_t *out, bno_callback_t callback);
-void bno055_acc_y(int16_t *out, bno_callback_t callback);
-void bno055_acc_z(int16_t *out, bno_callback_t callback);
+void bno055_read_acc_x_mul_100(int16_t *out, bno_callback_t callback);
+void bno055_read_acc_y_mul_100(int16_t *out, bno_callback_t callback);
+void bno055_read_acc_z_mul_100(int16_t *out, bno_callback_t callback);
 
-void bno055_gyr_x(int16_t *out, bno_callback_t callback);
-void bno055_gyr_y(int16_t *out, bno_callback_t callback);
-void bno055_gyr_z(int16_t *out, bno_callback_t callback);
+void bno055_read_gyr_x(int16_t *out, bno_callback_t callback);
+void bno055_read_gyr_y(int16_t *out, bno_callback_t callback);
+void bno055_read_gyr_z(int16_t *out, bno_callback_t callback);
 
-void bno055_eul_x_2(int16_t *out, bno_callback_t callback);
-void bno055_eul_y_2(int16_t *out, bno_callback_t callback);
-void bno055_eul_z_2(int16_t *out, bno_callback_t callback);
+void bno055_read_eul_x_2_mul_16(int16_t *out, bno_callback_t callback);
+void bno055_read_eul_y_2_mul_16(int16_t *out, bno_callback_t callback);
+void bno055_read_eul_z_2_mul_16(int16_t *out, bno_callback_t callback);
 
 #endif // FLIGHTCONTROLLER_BNO055_H

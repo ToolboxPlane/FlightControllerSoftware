@@ -11,7 +11,7 @@
 #include "HAL/uart.h"
 #include "Util/communication.h"
 #include "Util/controller.h"
-#include "Util/input.h"
+#include "Util/imu_handler.h"
 #include "Util/output.h"
 
 
@@ -21,7 +21,7 @@
 
 typedef enum { failsave, remote, flightcomputer } setpoint_source_t;
 
-volatile state_t curr_state;
+volatile imu_data_t curr_state;
 volatile setpoint_t flightcomputer_setpoint;
 volatile out_state_t out_state = {.elevon_r = 500, .elevon_l = 500, .motor = 0};
 volatile uint8_t usbTimeout = 0, sbusTimeout = 0;
@@ -61,7 +61,7 @@ void sbus_event(sbus_data_t sbus_data) {
 }
 
 void timer_tick(void) {
-    curr_state = input_get_state();
+    curr_state = imu_handler_get_latest_data();
 
     // Timeout equals 500ms
     if (++sbusTimeout >= SBUS_TIMEOUT) {
@@ -128,11 +128,11 @@ int main(void) {
 
     wdt_enable(WDTO_250MS);
 
-    if (!input_init()) {
+    if (!imu_handler_init()) {
         // TODO do something
     }
 
-    input_start_sampling();
+    imu_handler_start_sampling();
 
     while (true) {
         wdt_reset();

@@ -51,13 +51,13 @@ void controller_init(uint16_t delta_t) {
     roll_controller.delta_t = pitch_controller.delta_t = delta_t;
 }
 
-void controller_update(volatile const state_t *state, volatile const setpoint_t *setpoint,
+void controller_update(volatile const imu_data_t  *state, volatile const setpoint_t *setpoint,
                        volatile out_state_t *out_state) {
-    roll_controller.is_value = state->roll / 2;
+    /*roll_controller.is_value = state->roll / 2;
     pitch_controller.is_value = state->pitch / 2;
 
-    roll_controller.deriv = state->roll_deriv;
-    pitch_controller.deriv = state->pitch_deriv;
+    roll_controller.deriv = state->d_roll;
+    pitch_controller.deriv = state->d_pitch;
 
     roll_controller.target_value = setpoint->roll;
     pitch_controller.target_value = setpoint->pitch;
@@ -66,5 +66,5 @@ void controller_update(volatile const state_t *state, volatile const setpoint_t 
     int16_t pitch_ctrl_val = (int16_t) (update_controller(&pitch_controller) * cosinus(state->roll / 2));
 
     out_state->elevon_r = CLAMP((int16_t) (pitch_ctrl_val - roll_ctrl_val), -500, 500);
-    out_state->elevon_l = CLAMP((int16_t) (-pitch_ctrl_val - roll_ctrl_val), -500, 500);
+    out_state->elevon_l = CLAMP((int16_t) (-pitch_ctrl_val - roll_ctrl_val), -500, 500);*/
 }

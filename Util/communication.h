@@ -9,10 +9,11 @@
 #define FLIGHTCONTROLLER_COMMUNICATION_H
 
 #include <stdbool.h>
-#include "../state.h"
+
+#include "../Drivers/sbus.h"
 #include "../out_state.h"
 #include "../setpoint.h"
-#include "../Drivers/sbus.h"
+#include "imu_handler.h"
 
 /**
  * Initialize the communication, this enables uart0 (usb) and uart2 (sbus)
@@ -26,7 +27,7 @@ void communication_init(void (*setpoint_callback)(setpoint_t), void (*sbus_callb
  * @param state the state of the airplane
  * @param out_state the state of the actors
  */
-void communication_send_status(volatile const state_t *state, volatile const out_state_t *out_state);
+void communication_send_status(volatile const imu_data_t *state, volatile const out_state_t *out_state);
 
 /**
  * Get the sbus failsave data.
@@ -36,4 +37,4 @@ bool communication_is_failsave(void);
 
 void communication_handle(void);
 
-#endif //FLIGHTCONTROLLER_COMMUNICATION_H
+#endif // FLIGHTCONTROLLER_COMMUNICATION_H

@@ -67,17 +67,18 @@ namespace mock::util {
 
     template<std::size_t i = 0>
     auto argsMatch(auto callTuple, auto arg, auto... args) {
+        bool currentMatches;
+        if constexpr (std::is_same_v<std::remove_cvref_t<decltype(arg)>,
+                std::remove_cvref_t<decltype(std::ignore)>>) {
+            currentMatches = true;
+        } else {
+            currentMatches = (std::get<i>(callTuple) == arg);
+        }
+
         if constexpr (sizeof...(args) > 0) {
-            bool currentMatches;
-            if constexpr (std::is_same_v<std::remove_cvref_t<decltype(arg)>,
-                                         std::remove_cvref_t<decltype(std::ignore)>>) {
-                currentMatches = true;
-            } else {
-                currentMatches = (std::get<i>(callTuple) == arg);
-            }
             return currentMatches and argsMatch<i + 1>(callTuple, args...);
         } else {
-            return true;
+            return currentMatches;
         }
     }
 } // namespace mock::util

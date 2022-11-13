@@ -6,7 +6,7 @@
 #define FLIGHTCONTROLLER_CONTROLLER_H
 
 #include <stdbool.h>
-#include "../state.h"
+#include "../Util/imu_handler.h"
 #include "../setpoint.h"
 #include "../out_state.h"
 
@@ -24,7 +24,7 @@ typedef struct controller {
 } controller_t;
 
 void controller_init(uint16_t delta_t);
-void controller_update(volatile const state_t *state, volatile const setpoint_t *setpoint,
+void controller_update(volatile const imu_data_t *state, volatile const setpoint_t *setpoint,
                        volatile out_state_t *out_state);
 
 #endif //FLIGHTCONTROLLER_CONTROLLER_H

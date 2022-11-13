@@ -9,7 +9,6 @@
 
 #include <pb_encode.h>
 
-#include "../Drivers/rc_lib/rc_lib.h"
 #include "../Drivers/sbus.h"
 #include "../HAL/uart.h"
 #include "FlightController.pb.h"
@@ -59,22 +58,20 @@ void communication_init(void (*setpoint_callback)(setpoint_t), void (*sbus_callb
     uart_init(2, 100000, EVEN, 2, &sbus_receive);
 }
 
-void communication_send_status(volatile const state_t *state, volatile const out_state_t *out_state) {
+void communication_send_status(volatile const imu_data_t *state, volatile const out_state_t *out_state) {
     static uint8_t buf[ToolboxPlaneMessages_FlightController_size + 2];
 
     ToolboxPlaneMessages_FlightController messagesFlightController;
-    messagesFlightController.bnoState = state->bno_state;
-    messagesFlightController.roll = state->roll + 500;
-    messagesFlightController.pitch = state->pitch + 500;
-    messagesFlightController.yaw = state->heading + 500;
-    messagesFlightController.dRoll = state->roll_deriv + 500;
-    messagesFlightController.dPitch = state->pitch_deriv + 500;
-    messagesFlightController.dYaw = state->heading_deriv + 500;
-    messagesFlightController.accX = state->acc_x + 500;
-    messagesFlightController.accY = state->acc_y + 500;
-    messagesFlightController.accZ = state->acc_z + 500;
-    messagesFlightController.bnoError = state->error;
-    messagesFlightController.bnoCalibStat = state->calib_stat;
+    messagesFlightController.roll_mul_16 = state->roll_mul_16;
+    messagesFlightController.pitch_mul_16 = state->pitch_mul_16;
+    messagesFlightController.yaw_mul_16 = state->heading_mul_16;
+    messagesFlightController.dRoll = state->d_roll;
+    messagesFlightController.dPitch = state->d_pitch;
+    messagesFlightController.dYaw = state->d_heading;
+    messagesFlightController.accX_mul_100 = state->acc_x_mul_100;
+    messagesFlightController.accY_mul_100 = state->acc_y_mul_100;
+    messagesFlightController.accZ_mul_100 = state->acc_z_mul_100;
+    messagesFlightController.imu_ok = state->imu_ok;
     messagesFlightController.motor = out_state->motor;
     messagesFlightController.servoLeft = out_state->elevon_l + 500;
     messagesFlightController.servoRight = out_state->elevon_r + 500;
