@@ -13,8 +13,10 @@ typedef struct {
     bool failsave, frame_lost;
 } sbus_data_t;
 
+void sbus_init(void);
+
 bool sbus_parse(const uint8_t *data, uint8_t len);
 
-extern sbus_data_t sbus_latest_data;
+sbus_data_t sbus_get_latest_data(void);
 
 #endif // FLIGHTCONTROLLER_SBUS_H

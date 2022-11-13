@@ -5,11 +5,10 @@
  * @brief input @TODO
  */
 
-#include "imu_handler.h"
+#include "imu.h"
 
+#include <Drivers/bno055.h>
 #include <util/delay.h>
-
-#include "../Drivers/bno055.h"
 
 typedef enum {
     ROLL,
@@ -24,7 +23,6 @@ typedef enum {
     STATUS,
     ERROR_REG,
     CALIB_STAT,
-    SAMPLING_ERROR
 } bno_sampling_state_t;
 
 static volatile bno055_response_t init_response;
@@ -33,6 +31,7 @@ static volatile bno_sampling_state_t bno_sampling_state;
 
 static volatile imu_data_t imu_datas[2];
 static volatile uint8_t current_sample_state_id = 0;
+static volatile bool sampling_complete = false;
 
 void bno_init_callback(bno055_response_t response) {
     init_response = response;
@@ -53,19 +52,19 @@ void bno_sample_callback(bno055_response_t response) {
                 break;
             case PITCH:
                 bno_sampling_state = HEADING;
-                bno055_read_eul_z_2_mul_16(&imu_data->heading_mul_16, bno_sample_callback);
+                bno055_read_eul_z_2_mul_16(&imu_data->roll_mul_16, bno_sample_callback); // Roll is actually heading
                 break;
             case HEADING:
                 bno_sampling_state = D_ROLL;
-                bno055_read_gyr_x_mul_16(&imu_data->d_roll_mul_16, bno_sample_callback);
+                bno055_read_gyr_x_mul_16(&imu_data->d_heading_mul_16, bno_sample_callback);
                 break;
             case D_ROLL:
                 bno_sampling_state = D_PITCH;
-                bno055_read_gyr_y_mul_16(&imu_data->d_pitch, bno_sample_callback);
+                bno055_read_gyr_y_mul_16(&imu_data->d_pitch_mul_16, bno_sample_callback);
                 break;
             case D_PITCH:
                 bno_sampling_state = D_HEADING;
-                bno055_read_gyr_z_mul_16(&imu_data->d_heading_mul_16, bno_sample_callback);
+                bno055_read_gyr_z_mul_16(&imu_data->d_roll_mul_16, bno_sample_callback);
                 break;
             case D_HEADING:
                 bno_sampling_state = ACC_X;
@@ -100,19 +99,23 @@ void bno_sample_callback(bno055_response_t response) {
                 break;
             case CALIB_STAT:
                 current_sample_state_id = 1 - current_sample_state_id;
-                imu_handler_start_sampling();
+                sampling_complete = true;
+                imu_start_sampling();
                 break;
             default:
-                bno_sampling_state = SAMPLING_ERROR;
+                imu_data->imu_ok = false;
+                current_sample_state_id = 1 - current_sample_state_id;
+                imu_start_sampling();
                 break;
         }
     } else {
-        bno_sampling_state = SAMPLING_ERROR;
+        imu_data->imu_ok = false;
+        current_sample_state_id = 1 - current_sample_state_id;
+        imu_start_sampling();
     }
 }
 
-bool imu_handler_init(void) {
-    // TODO run self test, check CHIP IDs, reconfigure axis
+bool imu_init(void) {
     bno055_init();
 
     // Set to config mode
@@ -123,9 +126,17 @@ bool imu_handler_init(void) {
         return false;
     }
 
-    // Check BNO-ID (todo others)
-
     // Run Self Test
+    callback_ready = false;
+    uint8_t self_test_result;
+    bno055_read_self_test(&self_test_result, bno_init_callback);
+    _delay_ms(20);
+    if (!callback_ready || init_response != read_success) {
+        return false;
+    }
+    if (self_test_result != 0b1111) {
+        return false;
+    }
 
     // Set unit selection
     callback_ready = false;
@@ -172,12 +183,17 @@ bool imu_handler_init(void) {
     return true;
 }
 
-void imu_handler_start_sampling(void) {
+void imu_start_sampling(void) {
     bno_sampling_state = ROLL;
     imu_data_t *imu_data = (imu_data_t *) (&imu_datas[current_sample_state_id]);
-    bno055_read_eul_x_2_mul_16(&imu_data->roll_mul_16, bno_sample_callback);
+    bno055_read_eul_x_2_mul_16(&imu_data->heading_mul_16, bno_sample_callback); // Heading is actually roll
 }
 
-imu_data_t imu_handler_get_latest_data(void) {
+imu_data_t imu_get_latest_data(void) {
+    sampling_complete = false;
     return imu_datas[1 - current_sample_state_id];
+}
+
+bool imu_data_available(void) {
+    return sampling_complete;
 }

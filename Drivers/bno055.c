@@ -6,8 +6,6 @@
  */
 #include "bno055.h"
 
-#include "../HAL/uart.h"
-
 #define BNO055_CHIP_ID_ADDR 0x00
 #define BNO055_ACCEL_REV_ID_ADDR 0x01
 #define BNO055_MAG_REV_ID_ADDR 0x02
@@ -161,6 +159,10 @@ void bno055_write_remap_axis_sign(bno055_axis_remap_sign_t new_x_sign, bno055_ax
                             bno055_axis_remap_sign_t new_z_sign, bno_callback_t callback) {
     uint8_t remap_reg = (new_x_sign << 2) | (new_y_sign << 1) | new_z_sign;
     bno055_uart_write_register(BNO055_AXIS_MAP_SIGN_ADDR, &remap_reg, 1, callback);
+}
+
+void bno055_read_self_test(uint8_t *out, bno_callback_t callback) {
+    bno055_uart_read_register(BNO055_SELFTEST_RESULT_ADDR, 1, callback, out, 1);
 }
 
 void bno055_read_acc_x_mul_100(int16_t *out, bno_callback_t callback) {

@@ -10,8 +10,6 @@
 
 #include <stdint.h>
 
-#define BNO_UART_ID 1
-
 typedef enum {
     // From BNO
     read_success = 0x00,
@@ -28,7 +26,8 @@ typedef enum {
 
     // From Library
     callback_buffer_invalid,
-    callback_length_invalid
+    callback_length_invalid,
+    invalid_sync
 } bno055_response_t;
 
 typedef void (*bno_callback_t)(bno055_response_t);

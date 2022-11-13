@@ -123,6 +123,13 @@ TEST(TEST_NAME, write_remap_axis_sign) {
     EXPECT_TRUE(bnoUartHandle.functionGotCalled<bno055_uart_write_register>());
 }
 
+TEST(TEST_NAME, read_self_test) {
+    auto bnoUartHandle = mock::bno055_uart.getHandle();
+    bno055_read_self_test(nullptr, nullptr);
+    // [https://cdn-shop.adafruit.com/datasheets/BST_BNO055_DS000_12.pdf P.51]
+    EXPECT_TRUE(bnoUartHandle.functionGotCalled<bno055_uart_read_register>(0x36, 1, nullptr, nullptr, 1));
+}
+
 TEST(TEST_NAME, read_acc_x_mul_100) {
     auto bnoUartHandle = mock::bno055_uart.getHandle();
     bno055_read_acc_x_mul_100(nullptr, nullptr);

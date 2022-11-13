@@ -8,9 +8,10 @@
 #include "bno055_uart.h"
 
 #include <stdbool.h>
-#include <stdint.h>
 
-#include "../HAL/uart.h"
+#include <HAL/uart.h>
+
+#define BNO_UART_ID 1
 
 
 static volatile uint8_t receive_buf[512];
@@ -60,7 +61,7 @@ static void bno_uart_callback(uint8_t data) {
                 byte_in_message = 1;
             } else {
                 byte_in_message = 0;
-                bno_uart_handle_response(0, 0, bus_over_run_error);
+                bno_uart_handle_response(0, 0, invalid_sync);
             }
             break;
         case 1:

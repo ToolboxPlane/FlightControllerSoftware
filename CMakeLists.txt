@@ -1,44 +1,46 @@
 cmake_minimum_required(VERSION 3.9)
 project(FlightController)
 
+set(CMAKE_CXX_STANDARD 20)
+set(CMAKE_C_STANDARD 17)
+
+set(SHARED_FLAGS "-Wall -Wextra -Werror ")
+set(CMAKE_C_FLAGS  "${SHARED_FLAGS} -Wstrict-prototypes")
+set(CMAKE_CXX_FLAGS "${SHARED_FLAGS}")
+add_definitions(-DF_CPU=16000000ul)
+
 if (${CMAKE_C_COMPILER} MATCHES "avr")
-    set(AVRSTRIP avr-strip)
-    set(OBJCOPY avr-objcopy)
     set(TARGET AVR)
+    set(AVR_FLAGS "-funsigned-char -funsigned-bitfields -fpack-struct -fshort-enums -O3 -mmcu=atmega2560")
+    set(CMAKE_C_FLAGS "${CMAKE_CXX_FLAGS} ${AVR_FLAGS}")
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${AVR_FLAGS}")
 else ()
     set(TARGET PC)
 endif ()
 
-set(CWARN "-Wall -Wextra -Wstrict-prototypes")
-set(CTUNING "-funsigned-char -funsigned-bitfields -fpack-struct -fshort-enums")
-if (${TARGET} STREQUAL AVR)
-    set(COPT "-O3")
-    set(CMCU "-mmcu=atmega2560")
-endif ()
-set(CDEFS "-DF_CPU=16000000ul")
-set(CFLAGS "${CMCU} ${CDEFS} ${CINCS} ${COPT} ${CWARN}")
-set(CXXFLAGS "${CMCU} ${CDEFS} ${CINCS} ${COPT} ${CWARN}")
-set(CMAKE_C_FLAGS ${CFLAGS})
-set(CMAKE_CXX_FLAGS ${CXXFLAGS})
+include_directories(${CMAKE_SOURCE_DIR})
 
-set(CMAKE_CXX_STANDARD 20)
-set(CMAKE_C_STANDARD 17)
-
-set(SOURCES_HAL HAL/uart.c HAL/pwm16bit.c HAL/timer8bit.c)
-set(SOURCES_DRIVER Drivers/sbus.c Drivers/bno055_uart.c Drivers/bno055.c)
-set(SOURCES main.c ${SOURCES_HAL} ${SOURCES_DRIVER}
-        Util/communication.c Util/controller.c Util/output.c Util/imu_handler.c Util/math.c)
-
-add_subdirectory(Messages)
 
 if (${TARGET} STREQUAL AVR)
-    message(STATUS "Building for AVR")
-    add_executable(${PROJECT_NAME} ${SOURCES})
-    target_link_libraries(${PROJECT_NAME} ToolboxPlaneMessages)
+    add_executable(${PROJECT_NAME} main.c
+            Util/communication.c
+            Util/controller.c
+            Util/output.c
+            Interfaces/imu.c
+            Util/math.c)
+    target_link_libraries(${PROJECT_NAME} ToolboxPlaneMessages Drivers)
     set_target_properties(${PROJECT_NAME} PROPERTIES OUTPUT_NAME "${PROJECT_NAME}.elf")
-    add_custom_target(strip ALL ${AVRSTRIP} "${PROJECT_NAME}.elf" DEPENDS ${PROJECT_NAME})
-    add_custom_target(${PROJECT_NAME}.hex ALL ${OBJCOPY} -R .eeprom -O ihex "${PROJECT_NAME}.elf" "${PROJECT_NAME}.hex" DEPENDS strip)
+    add_custom_target(strip ALL
+            avr-strip "${PROJECT_NAME}.elf"
+            DEPENDS ${PROJECT_NAME})
+    add_custom_target(${PROJECT_NAME}.hex ALL
+            avr-objcopy -R .eeprom -O ihex "${PROJECT_NAME}.elf" "${PROJECT_NAME}.hex"
+            DEPENDS strip)
 else ()
-    message(STATUS "Building tests for current platform")
     add_subdirectory(Tests)
 endif ()
+
+add_subdirectory(Drivers)
+add_subdirectory(HAL)
+add_subdirectory(Interfaces)
+add_subdirectory(Messages)

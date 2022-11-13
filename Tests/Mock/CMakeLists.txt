@@ -14,7 +14,7 @@ foreach(MockedModule ${MockedModules})
     # For the name generation replace all / in the path with _
     string(REPLACE "/" "_" MockedModuleName ${MockedModule})
     set(MockLibTarget Mock_${MockedModuleName})
-    set(MockPath ${CMAKE_CURRENT_BINARY_DIR}/Mock/Modules)
+    set(MockPath ${CMAKE_CURRENT_BINARY_DIR}/Mock/Mock)
     set(MockCpp ${MockPath}/${MockedModule}.cpp)
     set(MockHpp ${MockPath}/${MockedModule}.hpp)
 
@@ -32,7 +32,6 @@ foreach(MockedModule ${MockedModules})
     add_library(${MockLibTarget} STATIC ${MockCpp} ${MockHpp})
     target_link_libraries(${MockLibTarget} PUBLIC MockLib)
     target_include_directories(${MockLibTarget} INTERFACE ${CMAKE_CURRENT_BINARY_DIR}/Mock)
-    target_include_directories(${MockLibTarget} PUBLIC ${CMAKE_SOURCE_DIR})
 endforeach()
 
 add_subdirectory(Lib)

@@ -31,8 +31,11 @@ target_link_libraries(Test_Drivers_bno055_uart PRIVATE Mock_HAL_uart)
 make_test(Drivers/bno055)
 target_link_libraries(Test_Drivers_bno055 PRIVATE Mock_Drivers_bno055_uart)
 
-make_test(Util/imu_handler)
-target_link_libraries(Test_Util_imu_handler PRIVATE Mock_Drivers_bno055)
-target_link_libraries(Test_Util_imu_handler PRIVATE Mock_Tests_Mock_System_util_delay)
-target_include_directories(Test_Util_imu_handler PRIVATE ../Mock/System)
+make_test(Drivers/sbus)
+target_link_libraries(Test_Drivers_sbus PRIVATE Mock_HAL_uart)
+
+make_test(Interfaces/imu)
+target_link_libraries(Test_Interfaces_imu PRIVATE Mock_Drivers_bno055)
+target_link_libraries(Test_Interfaces_imu PRIVATE Mock_Tests_Mock_System_util_delay)
+target_include_directories(Test_Interfaces_imu PRIVATE ../Mock/System)
 

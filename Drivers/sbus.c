@@ -4,47 +4,63 @@
 
 #include "sbus.h"
 
+#include <HAL/uart.h>
+
+#define SBUS_UART 2
+
 #define SBUS_START_BYTE 0x0F
 #define SBUS_END_BYTE 0x00
 
-sbus_data_t sbus_latest_data = {{0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0}, true, true};
+static volatile sbus_data_t sbus_datas[2];
+static uint8_t curr_sampling_data = 0;
 
-bool sbus_parse(const uint8_t *data, uint8_t len) {
-    static uint8_t byteCount = 0;
-    bool ret = false;
+static void sbus_uart_callback(uint8_t data) {
+    static uint8_t byte_count = 0;
 
-    for(uint8_t c=0; c<len; c++) {
-        switch (byteCount) {
-            case 0: // Startbyte
-                if (data[c] == SBUS_START_BYTE) {
-                    byteCount = 1;
-                }
-                break;
-            case 24: // Endbyte
-                if (data[c] == SBUS_END_BYTE) {
-                    ret = true;
-                }
-                byteCount = 0;
-                break;
-            case 23: // Flags
-                sbus_latest_data.failsave = (data[c] >> 3u) & 1u;
-                sbus_latest_data.frame_lost = (data[c] >> 2u) & 1u;
-                byteCount =  24;
-                break;
-            default: // Data
-            {
-                uint16_t startBitNum = (byteCount - 1) * 8;
+    sbus_data_t *sbus_data = (sbus_data_t *) (&sbus_datas[curr_sampling_data]);
 
-                for(uint8_t b=0; b<8; b++) {
-                    uint8_t channelNumber = (startBitNum + b) / 11;
-                    uint8_t bitInChannel = ((startBitNum + b) % 11);
-                    uint8_t bit = (data[c] >> b) & 1u;
-                    sbus_latest_data.channel[channelNumber] |= bit << bitInChannel;
-                }
-                byteCount++;
+    switch (byte_count) {
+        case 0: // Startbyte
+            if (data == SBUS_START_BYTE) {
+                byte_count = 1;
+            }
+            for (uint8_t c = 0; c < 16; ++c) {
+                sbus_data->channel[c] = 0;
             }
             break;
-        }
+        case 24: // Endbyte
+            if (data == SBUS_END_BYTE) {
+                curr_sampling_data = 1 - curr_sampling_data;
+            }
+            byte_count = 0;
+            break;
+        case 23: // Flags
+            sbus_data->failsave = (data >> 3u) & 1u;
+            sbus_data->frame_lost = (data >> 2u) & 1u;
+            byte_count = 24;
+            break;
+        default: // Data
+        {
+            uint16_t startBitNum = (byte_count - 1) * 8;
+
+            for (uint8_t b = 0; b < 8; b++) {
+                uint8_t channelNumber = (startBitNum + b) / 11;
+                uint8_t bitInChannel = ((startBitNum + b) % 11);
+                uint8_t bit = (data >> b) & 1u;
+                sbus_data->channel[channelNumber] |= bit << bitInChannel;
+            }
+            byte_count++;
+        } break;
     }
-    return ret;
+}
+
+void sbus_init(void) {
+    uart_init(SBUS_UART, 100000, EVEN, 2, sbus_uart_callback);
+    curr_sampling_data = 0;
+    sbus_datas[1 - curr_sampling_data].frame_lost = true;
+    sbus_datas[1 - curr_sampling_data].failsave = true;
+}
+
+sbus_data_t sbus_get_latest_data(void) {
+    return sbus_datas[1 - curr_sampling_data];
 }

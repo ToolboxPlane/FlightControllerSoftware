@@ -6,7 +6,7 @@
 #define FLIGHTCONTROLLER_CONTROLLER_H
 
 #include <stdbool.h>
-#include "../Util/imu_handler.h"
+#include "../Interfaces/imu.h"
 #include "../setpoint.h"
 #include "../out_state.h"
 

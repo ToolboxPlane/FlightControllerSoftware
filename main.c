@@ -61,7 +61,7 @@ void sbus_event(sbus_data_t sbus_data) {
 }
 
 void timer_tick(void) {
-    curr_state = imu_handler_get_latest_data();
+    curr_state = imu_get_latest_data();
 
     // Timeout equals 500ms
     if (++sbusTimeout >= SBUS_TIMEOUT) {
@@ -121,22 +121,31 @@ int main(void) {
     MCUSR = 0;
 
     communication_init(&setpoint_update, &sbus_event);
-    controller_init(16);
+    //controller_init(16);
     // Runs at 16.384ms interval, the BNO055 provides data at 100Hz, the output can be updated at 50Hz
-    timer_8bit_init(prescaler_1024, &timer_tick);
+    //timer_8bit_init(prescaler_1024, &timer_tick);
     sei();
 
     wdt_enable(WDTO_250MS);
 
-    if (!imu_handler_init()) {
-        // TODO do something
+    if (!imu_init()) {
+        while (true) {
+            output_led(7, toggle);
+            _delay_ms(100);
+            wdt_reset();
+        }
     }
 
-    imu_handler_start_sampling();
+    imu_start_sampling();
 
     while (true) {
-        wdt_reset();
-        communication_handle();
+        curr_state = imu_get_latest_data();
+        communication_send_status(&curr_state, &out_state);
+        for (uint8_t c=0; c<10; ++c) {
+            _delay_ms(10);
+            wdt_reset();
+        }
+
         output_led(0, toggle);
     }
 }
