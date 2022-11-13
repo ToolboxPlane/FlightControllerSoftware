@@ -41,7 +41,7 @@ TEST(TEST_NAME, write_register__buffer_format) {
         EXPECT_EQ(buf[5], 45);
     });
 
-    bno055_uart_write_register(17, data, 2, nullptr, nullptr, 0);
+    bno055_uart_write_register(17, data, 2, nullptr);
     EXPECT_TRUE(handle.functionGotCalled<uart_send_buf>());
 }
 
@@ -95,7 +95,7 @@ TEST(TEST_NAME, write_register__write_success) {
     // Actual test
     uint8_t data[] = {38, 45};
 
-    bno055_uart_write_register(0, data, 2, bnoCallback, nullptr, 0);
+    bno055_uart_write_register(0, data, 2, bnoCallback);
 
     uartCallback(0xEE);
     uartCallback(0x01);
@@ -118,7 +118,7 @@ TEST(TEST_NAME, write_register__write_wrong_start_byte) {
     // Actual test
     uint8_t data[] = {38, 45};
 
-    bno055_uart_write_register(0, data, 2, bnoCallback, nullptr, 0);
+    bno055_uart_write_register(0, data, 2, bnoCallback);
 
     uartCallback(0xEE);
     uartCallback(0x06);

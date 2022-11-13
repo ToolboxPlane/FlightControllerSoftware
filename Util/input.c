@@ -85,7 +85,7 @@ void bno_sample_callback(bno055_response_t response) {
                 break;
             case ACC_Z:
                 bno_sampling_state = STATUS;
-                bno055_status(&state->bno_state, bno_sample_callback);
+                bno055_system_status(&state->bno_state, bno_sample_callback);
                 break;
             case STATUS:
                 if (state->bno_state == system_error) {
@@ -116,6 +116,7 @@ void bno_sample_callback(bno055_response_t response) {
 }
 
 bool input_init(void) {
+    // TODO run self test, check CHIP IDs, reconfigure axis
     bno055_init();
     callback_ready = false;
     bno055_op_mode(config_mode, bno_init_callback);

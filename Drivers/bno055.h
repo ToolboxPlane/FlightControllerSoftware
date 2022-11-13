@@ -55,7 +55,10 @@ void bno055_init(void);
 
 void bno055_reset(bno_callback_t callback);
 
-void bno055_status(bno055_status_t *out, bno_callback_t callback);
+// TODO chip IDs
+// TODO remapping
+
+void bno055_system_status(bno055_status_t *out, bno_callback_t callback);
 void bno055_error(bno055_error_t *out, bno_callback_t callback);
 void bno055_calib_stat(uint8_t *out, bno_callback_t callback);
 void bno055_op_mode(bno055_op_mode_t op_mode, bno_callback_t callback);
@@ -65,10 +68,6 @@ void bno055_acc_x(int16_t *out, bno_callback_t callback);
 void bno055_acc_y(int16_t *out, bno_callback_t callback);
 void bno055_acc_z(int16_t *out, bno_callback_t callback);
 
-void bno055_mag_x(int16_t *out, bno_callback_t callback);
-void bno055_mag_y(int16_t *out, bno_callback_t callback);
-void bno055_mag_z(int16_t *out, bno_callback_t callback);
-
 void bno055_gyr_x(int16_t *out, bno_callback_t callback);
 void bno055_gyr_y(int16_t *out, bno_callback_t callback);
 void bno055_gyr_z(int16_t *out, bno_callback_t callback);
@@ -76,13 +75,5 @@ void bno055_gyr_z(int16_t *out, bno_callback_t callback);
 void bno055_eul_x_2(int16_t *out, bno_callback_t callback);
 void bno055_eul_y_2(int16_t *out, bno_callback_t callback);
 void bno055_eul_z_2(int16_t *out, bno_callback_t callback);
-
-void bno055_linear_acc_x(int16_t *out, bno_callback_t callback);
-void bno055_linear_acc_y(int16_t *out, bno_callback_t callback);
-void bno055_linear_acc_z(int16_t *out, bno_callback_t callback);
-
-void bno055_grv_x(int16_t *out, bno_callback_t callback);
-void bno055_grv_y(int16_t *out, bno_callback_t callback);
-void bno055_grv_z(int16_t *out, bno_callback_t callback);
 
 #endif // FLIGHTCONTROLLER_BNO055_H

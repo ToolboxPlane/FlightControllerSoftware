@@ -35,7 +35,7 @@ typedef void (*bno_callback_t)(bno055_response_t);
 
 void bno055_uart_init(void);
 
-void bno055_uart_write_register(uint8_t reg, const uint8_t *data, uint8_t len, bno_callback_t callback, void *result, uint8_t div);
+void bno055_uart_write_register(uint8_t reg, const uint8_t *data, uint8_t len, bno_callback_t callback);
 
 void bno055_uart_read_register(uint8_t reg, uint8_t len, bno_callback_t callback, void *result, uint8_t div);
 

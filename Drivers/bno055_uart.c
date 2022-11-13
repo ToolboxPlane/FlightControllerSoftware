@@ -87,11 +87,8 @@ void bno055_uart_init(void) {
     uart_init(BNO_UART_ID, 115200, NONE, 1, &bno_uart_callback);
 }
 
-void bno055_uart_write_register(uint8_t reg, const uint8_t *data, uint8_t len, bno_callback_t callback, void *result,
-                                uint8_t div) {
+void bno055_uart_write_register(uint8_t reg, const uint8_t *data, uint8_t len, bno_callback_t callback) {
     bno_callback = callback;
-    bno_result_data = result;
-    bno_result_div = div;
 
     uint8_t buf[len + 4];
     buf[0] = 0xAA;

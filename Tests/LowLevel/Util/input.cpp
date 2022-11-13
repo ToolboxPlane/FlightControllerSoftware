@@ -99,9 +99,9 @@ TEST(TEST_NAME, read__full_read) {
         callback(read_success);
     });
 
-    bnoHandle.overrideFunc<bno055_status>([](bno055_status_t *out, bno_callback_t callback) {
-      *out = bno055_status_t::sensor_fusion_algorithm_running;
-      callback(read_success);
+    bnoHandle.overrideFunc<bno055_system_status>([](bno055_status_t *out, bno_callback_t callback) {
+        *out = bno055_status_t::sensor_fusion_algorithm_running;
+        callback(read_success);
     });
 
     bnoHandle.overrideFunc<bno055_calib_stat>([](uint8_t *out, bno_callback_t callback) {
