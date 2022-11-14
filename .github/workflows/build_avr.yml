@@ -1,5 +1,5 @@
 name: Build AVR
-on: [commit]
+on: [push]
 
 jobs:
   GTest:

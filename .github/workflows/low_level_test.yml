@@ -1,5 +1,5 @@
 name: Low Level Tests
-on: [commit]
+on: [push]
 
 jobs:
   GTest:
