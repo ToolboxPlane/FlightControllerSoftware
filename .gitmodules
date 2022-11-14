@@ -1,6 +1,6 @@
 [submodule "HAL"]
 	path = Src/HAL
-	url = git@github.com:ToolboxPlane/AvrHAL.git
+	url = https://github.com/ToolboxPlane/AvrHAL.git
 [submodule "Messages"]
 	path = Src/Messages
-	url = git@github.com:ToolboxPlane/Messages.git
+	url = https://github.com/ToolboxPlane/Messages.git
