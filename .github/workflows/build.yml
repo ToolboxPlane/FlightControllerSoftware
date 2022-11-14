@@ -1,8 +1,8 @@
-name: Build AVR
+name: BuildAVR
 on: [push]
 
 jobs:
-  GTest:
+  BuildAvr:
     runs-on: ubuntu-latest
     strategy:
       fail-fast: false
@@ -14,10 +14,12 @@ jobs:
 
     steps:
       - uses: actions/checkout@v2
+        with:
+          submodules: recursive
       - name: Install dependencies
         run: |
           sudo apt-get update
-          sudo apt-get install -y wget avr-gcc
+          sudo apt-get install -y wget avr-libc binutils-avr gcc-avr
       - name: Set up Build
         run: |
           mkdir build

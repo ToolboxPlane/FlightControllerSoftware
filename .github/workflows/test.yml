@@ -1,8 +1,8 @@
-name: Low Level Tests
+name: Test
 on: [push]
 
 jobs:
-  GTest:
+  LowLevelTests:
     runs-on: ubuntu-latest
     strategy:
       fail-fast: false
@@ -15,6 +15,8 @@ jobs:
 
     steps:
       - uses: actions/checkout@v2
+        with:
+          submodules: recursive
       - name: Install dependencies
         run: |
           sudo apt-get update
@@ -39,8 +41,9 @@ jobs:
           make -j$(nproc) all
       - name: Test
         run: |
+          ./build/Tests/LowLevel/Test_Drivers_bno055_uart ${GTEST_ARGS}
+          ./build/Tests/LowLevel/Test_Drivers_bno055 ${GTEST_ARGS}
+          ./build/Tests/LowLevel/Test_Drivers_sbus ${GTEST_ARGS}
+          ./build/Tests/LowLevel/Test_Components_flightcomputer ${GTEST_ARGS}
           ./build/Tests/LowLevel/Test_Components_imu ${GTEST_ARGS}
           ./build/Tests/LowLevel/Test_Components_remote ${GTEST_ARGS}
-          ./build/Tests/LowLevel/Test_Drivers_bno055 ${GTEST_ARGS}
-          ./build/Tests/LowLevel/Test_Drivers_bno055_uart ${GTEST_ARGS}
-          ./build/Tests/LowLevel/Test_Drivers_sbus ${GTEST_ARGS}

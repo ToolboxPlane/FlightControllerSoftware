@@ -16,9 +16,10 @@ if (${TARGET} STREQUAL AVR)
     add_custom_target(${PROJECT_NAME}.hex ALL
             avr-objcopy -R .eeprom -O ihex "${PROJECT_NAME}.elf" "${PROJECT_NAME}.hex"
             DEPENDS strip)
+
+    add_subdirectory(Drivers)
+    add_subdirectory(HAL)
+    add_subdirectory(Components)
+    add_subdirectory(Messages)
 endif ()
 
-add_subdirectory(Drivers)
-add_subdirectory(HAL)
-add_subdirectory(Components)
-add_subdirectory(Messages)
