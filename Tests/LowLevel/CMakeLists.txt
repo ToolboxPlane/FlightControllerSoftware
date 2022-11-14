@@ -14,7 +14,7 @@ function(make_test file_under_test)
     # Add a executable consisting of the function .c file and the test .cpp file
     add_executable(${TestExecutable}
             main.cpp
-            ${CMAKE_SOURCE_DIR}/${file_under_test}.c
+            ${CMAKE_SOURCE_DIR}/Src/${file_under_test}.c
             ${file_under_test}.cpp)
 
     # Link against GTest libraries
