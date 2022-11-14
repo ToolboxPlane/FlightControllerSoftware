@@ -1,0 +1,29 @@
+name: Build AVR
+on: [commit]
+
+jobs:
+  GTest:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        build: [Release, Debug]
+    env:
+      CC: avr-gcc
+      CXX: avr-g++
+
+    steps:
+      - uses: actions/checkout@v2
+      - name: Install dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y wget avr-gcc
+      - name: Set up Build
+        run: |
+          mkdir build
+          cd build
+          cmake -DCMAKE_BUILD_TYPE=${{ matrix.build }} ..
+      - name: Build
+        run: |
+          cd build
+          make -j$(nproc) all
