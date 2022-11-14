@@ -44,8 +44,11 @@ mock_src.write(
 for return_type, name, args_with_name in functions:
     args = ", ".join([arg[0] for arg in args_with_name])
     args_forward = ", ".join([arg[1] for arg in args_with_name])
+
+    return_statement = "return" if return_type != "void" else ""
+
     mock_src.write(
         f"{return_type} {name} ({args}) {{\n"
-        f"\tmock::{mock_name}.functionCallDelegate<{name}>({args_forward});\n"
+        f"\t{return_statement} mock::{mock_name}.functionCallDelegate<{name}>({args_forward});\n"
         f"}}\n\n"
     )

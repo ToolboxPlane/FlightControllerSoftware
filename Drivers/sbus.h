@@ -15,8 +15,8 @@ typedef struct {
 
 void sbus_init(void);
 
-bool sbus_parse(const uint8_t *data, uint8_t len);
-
 sbus_data_t sbus_get_latest_data(void);
+
+bool sbus_data_available(void);
 
 #endif // FLIGHTCONTROLLER_SBUS_H

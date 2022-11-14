@@ -20,5 +20,8 @@ typedef struct {
 
 void remote_init(void);
 
+remote_data_t remote_get_data(void);
+
+bool remote_data_available(void);
 
 #endif // FLIGHTCONTROLLER_REMOTE_H

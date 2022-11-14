@@ -1,10 +1,4 @@
-/**
- * @file bno055.cpp
- * @author paul
- * @date 08.11.22
- * Description here TODO
- */
-#include <Modules/Drivers/bno055_uart.hpp>
+#include <Mock/Drivers/bno055_uart.hpp>
 #include <gtest/gtest.h>
 
 extern "C" {

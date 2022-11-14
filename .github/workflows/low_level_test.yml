@@ -1,0 +1,46 @@
+name: Low Level Tests
+#on: [pull_request]
+
+jobs:
+  GTest:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        cxx: [g++-9, g++-10, g++-11, clang++-9, clang++-10, clang++11, clang++12, clang++-13, clang++-14]
+        build: [Release, Debug]
+    env:
+      CXX: ${{ matrix.cxx }}
+      GTEST_ARGS: --gtest_repeat=1000 --gtest_shuffle
+
+    steps:
+      - uses: actions/checkout@v2
+      - name: Install dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y wget g++-9 g++-10 g++-11
+          # Taken from https://apt.llvm.org/
+          wget https://apt.llvm.org/llvm.sh
+          chmod +x llvm.sh
+          sudo ./llvm.sh 9
+          sudo ./llvm.sh 10
+          sudo ./llvm.sh 11
+          sudo ./llvm.sh 12
+          sudo ./llvm.sh 13
+          sudo ./llvm.sh 14
+      - name: Set up Build
+        run: |
+          mkdir build
+          cd build
+          cmake -DCMAKE_BUILD_TYPE=${{ matrix.build }} ..
+      - name: Build
+        run: |
+          cd build
+          make -j$(nproc) all
+      - name: Test
+        run: |
+          ./build/Tests/LowLevel/Test_Components_imu ${GTEST_ARGS}
+          ./build/Tests/LowLevel/Test_Components_remote ${GTEST_ARGS}
+          ./build/Tests/LowLevel/Test_Drivers_bno055 ${GTEST_ARGS}
+          ./build/Tests/LowLevel/Test_Drivers_bno055_uart ${GTEST_ARGS}
+          ./build/Tests/LowLevel/Test_Drivers_sbus ${GTEST_ARGS}

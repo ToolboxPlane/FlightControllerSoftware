@@ -26,7 +26,7 @@ if (${TARGET} STREQUAL AVR)
             Util/communication.c
             Util/controller.c
             Util/output.c
-            Interfaces/imu.c
+            Components/imu.c
             Util/math.c)
     target_link_libraries(${PROJECT_NAME} ToolboxPlaneMessages Drivers)
     set_target_properties(${PROJECT_NAME} PROPERTIES OUTPUT_NAME "${PROJECT_NAME}.elf")
@@ -42,5 +42,5 @@ endif ()
 
 add_subdirectory(Drivers)
 add_subdirectory(HAL)
-add_subdirectory(Interfaces)
+add_subdirectory(Components)
 add_subdirectory(Messages)

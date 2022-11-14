@@ -37,9 +37,15 @@ namespace mock {
             // Mark function as called
             funcInfo.calls.emplace_back(args...);
 
-            // Check if function is overriden
-            if (funcInfo.override.has_value()) {
-                funcInfo.override.value()(args...);
+            if constexpr (std::is_same_v<typename std::remove_cvref_t<decltype(funcInfo)>::Ret, void>) {
+                // Check if function is overriden
+                if (funcInfo.override.has_value()) {
+                    funcInfo.override.value()(args...);
+                }
+            } else {
+                // If a function needs to return something it needs to be overriden
+                assert(funcInfo.override.has_value());
+                return funcInfo.override.value()(args...);
             }
         }
 

@@ -1,15 +1,9 @@
-/**
- * @file input.cpp
- * @author paul
- * @date 09.11.22
- * Description here TODO
- */
-#include <Modules/Drivers/bno055.hpp>
-#include <Modules/Tests/Mock/System/util/delay.hpp>
+#include <Mock/Drivers/bno055.hpp>
+#include <Mock/Tests/Mock/System/util/delay.hpp>
 #include <gtest/gtest.h>
 
 extern "C" {
-#include <Interfaces//imu.h>
+#include <Components/imu.h>
 }
 
 TEST(TEST_NAME, init__success) {

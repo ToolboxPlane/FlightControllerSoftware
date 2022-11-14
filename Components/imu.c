@@ -33,12 +33,12 @@ static volatile imu_data_t imu_datas[2];
 static volatile uint8_t current_sample_state_id = 0;
 static volatile bool sampling_complete = false;
 
-void bno_init_callback(bno055_response_t response) {
+static void bno_init_callback(bno055_response_t response) {
     init_response = response;
     callback_ready = true;
 }
 
-void bno_sample_callback(bno055_response_t response) {
+static void bno_sample_callback(bno055_response_t response) {
     static bno055_status_t bno_status;
     static bno055_error_t bno_erro;
     static uint8_t calib_status;

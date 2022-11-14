@@ -1,6 +1,5 @@
-#include <Modules/HAL/uart.hpp>
+#include <Mock/HAL/uart.hpp>
 #include <gtest/gtest.h>
-
 
 extern "C" {
 #include <Drivers/bno055_uart.h>
@@ -32,7 +31,7 @@ TEST(TEST_NAME, write_register__buffer_format) {
          * | Start Byte | Write  | Reg addr | Length | Data 1 | ... | Data n     |
          * | 0xAA       | 0x00   | <..>     | <..>   | <..>   | ... | <..>       |
          */
-        EXPECT_EQ(size, 4+2);
+        EXPECT_EQ(size, 4 + 2);
         EXPECT_EQ(buf[0], 0xAA);
         EXPECT_EQ(buf[1], 0x00);
         EXPECT_EQ(buf[2], 17);
@@ -57,19 +56,19 @@ TEST(TEST_NAME, read_register__buffer_format) {
 
     // Actual test
     handle.overrideFunc<uart_send_buf>([](uint8_t id, const uint8_t *buf, uint16_t size) {
-      EXPECT_EQ(id, BNO_UART_ID);
+        EXPECT_EQ(id, BNO_UART_ID);
 
-      /*
-       * Format [https://cdn-shop.adafruit.com/datasheets/BST_BNO055_DS000_12.pdf P.93]:
-       * | Byte 1     | Byte 2 | Byte 3   | Byte 4 |
-       * | Start Byte | Write  | Reg addr | Length |
-       * | 0xAA       | 0x01   | <..>     | <..>   |
-       */
-      EXPECT_EQ(size, 4);
-      EXPECT_EQ(buf[0], 0xAA);
-      EXPECT_EQ(buf[1], 0x01);
-      EXPECT_EQ(buf[2], 17);
-      EXPECT_EQ(buf[3], 34);
+        /*
+         * Format [https://cdn-shop.adafruit.com/datasheets/BST_BNO055_DS000_12.pdf P.93]:
+         * | Byte 1     | Byte 2 | Byte 3   | Byte 4 |
+         * | Start Byte | Write  | Reg addr | Length |
+         * | 0xAA       | 0x01   | <..>     | <..>   |
+         */
+        EXPECT_EQ(size, 4);
+        EXPECT_EQ(buf[0], 0xAA);
+        EXPECT_EQ(buf[1], 0x01);
+        EXPECT_EQ(buf[2], 17);
+        EXPECT_EQ(buf[3], 34);
     });
 
     bno055_uart_read_register(17, 34, nullptr, nullptr, 0);
@@ -172,7 +171,7 @@ TEST(TEST_NAME, read_register__read_success_8bit_div8) {
 
     ASSERT_TRUE(bnoResponse.has_value());
     EXPECT_EQ(bnoResponse.value(), bno055_response_t::read_success);
-    EXPECT_EQ(result, 128/8);
+    EXPECT_EQ(result, 128 / 8);
 }
 
 TEST(TEST_NAME, read_register__read_success_16bit_div1) {
@@ -193,7 +192,7 @@ TEST(TEST_NAME, read_register__read_success_16bit_div1) {
     uartCallback(0xBB);
     uartCallback(0x02);
     uartCallback(37); // LSB
-    uartCallback(9); // MSB
+    uartCallback(9);  // MSB
 
     ASSERT_TRUE(bnoResponse.has_value());
     EXPECT_EQ(bnoResponse.value(), bno055_response_t::read_success);
@@ -218,11 +217,11 @@ TEST(TEST_NAME, read_register__read_success_16bit_div8) {
     uartCallback(0xBB);
     uartCallback(0x02);
     uartCallback(128); // LSB
-    uartCallback(13); // MSB
+    uartCallback(13);  // MSB
 
     ASSERT_TRUE(bnoResponse.has_value());
     EXPECT_EQ(bnoResponse.value(), bno055_response_t::read_success);
-    EXPECT_EQ(result, (128 + 256*13)/8);
+    EXPECT_EQ(result, (128 + 256 * 13) / 8);
 }
 
 TEST(TEST_NAME, read_register__buffer_invalid) {

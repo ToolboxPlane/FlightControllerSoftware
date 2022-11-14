@@ -12,7 +12,8 @@
 #define SBUS_END_BYTE 0x00
 
 static volatile sbus_data_t sbus_datas[2];
-static uint8_t curr_sampling_data = 0;
+static volatile uint8_t curr_sampling_data = 0;
+static volatile bool sbus_sampling_complete;
 
 static void sbus_uart_callback(uint8_t data) {
     static uint8_t byte_count = 0;
@@ -31,6 +32,7 @@ static void sbus_uart_callback(uint8_t data) {
         case 24: // Endbyte
             if (data == SBUS_END_BYTE) {
                 curr_sampling_data = 1 - curr_sampling_data;
+                sbus_sampling_complete = true;
             }
             byte_count = 0;
             break;
@@ -59,8 +61,14 @@ void sbus_init(void) {
     curr_sampling_data = 0;
     sbus_datas[1 - curr_sampling_data].frame_lost = true;
     sbus_datas[1 - curr_sampling_data].failsave = true;
+    sbus_sampling_complete = false;
 }
 
 sbus_data_t sbus_get_latest_data(void) {
+    sbus_sampling_complete = false;
     return sbus_datas[1 - curr_sampling_data];
+}
+
+bool sbus_data_available(void) {
+    return sbus_sampling_complete;
 }
