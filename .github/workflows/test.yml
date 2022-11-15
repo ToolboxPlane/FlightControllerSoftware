@@ -14,9 +14,10 @@ jobs:
       GTEST_ARGS: --gtest_repeat=1000 --gtest_shuffle
 
     steps:
-      - uses: actions/checkout@v2
-        with:
-          submodules: recursive
+      - name: Checkout FCS
+        uses: actions/checkout@v2
+      - name: Checkout submodules
+        uses: textbook/git-checkout-submodule-action@master
       - name: Install dependencies
         run: |
           sudo apt-get update
