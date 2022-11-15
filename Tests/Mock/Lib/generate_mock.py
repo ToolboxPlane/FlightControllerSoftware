@@ -5,7 +5,7 @@ import sys
 module = sys.argv[1]
 out_dir = sys.argv[2]
 
-header_file = "\n".join(open(f"{module}.h", "r").readlines())
+header_file = "\n".join(open(f"Src/{module}.h", "r").readlines())
 
 matches = re.findall("(\\w+) (\\w+)\\((.+)\\);", header_file)
 functions = []
