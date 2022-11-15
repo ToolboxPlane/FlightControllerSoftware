@@ -13,10 +13,9 @@ jobs:
       CXX: avr-g++
 
     steps:
-      - name: Checkout FCS
-        uses: actions/checkout@v2
-      - name: Checkout submodules
-        uses: textbook/git-checkout-submodule-action@master
+      - uses: actions/checkout@v2
+        with:
+          submodules: recursive
       - name: Install dependencies
         run: |
           sudo apt-get update
