@@ -1,0 +1,25 @@
+# Default CLion config: https://confluence.jetbrains.com/display/CLION/Clang-Tidy+in+CLion%3A+default+configuration
+Checks: 'abseil-*,
+  bugprone-*,
+  boost-*,
+  clang-analyzer-*,
+  cppcoreguidelines-*,
+  google-default-arguments,
+  google-explicit-constructor,
+  google-runtime-operator,
+  hicpp-exception-baseclass,
+  hicpp-multiway-paths-covered,
+  hicpp-signed-bitwise,
+  misc-*,
+  modernize-*,
+  mpi-*,
+  performance-*,
+  portability-*,
+  readability-*,
+  -modernize-use-trailing-return-type'
+
+CheckOptions:
+  - key: misc-non-private-member-variables-in-classes.IgnoreClassesWithAllMemberVariablesBeingPublic
+    value: 1
+
+WarningsAsErrors: '*'

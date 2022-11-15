@@ -6,5 +6,4 @@ extern "C" {
 }
 
 TEST(TEST_NAME, init__success) {
-
 }

@@ -1,0 +1,39 @@
+name: Static Analysis
+on: [pull_request]
+
+jobs:
+  Clang-Tidy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: Install Clang-Tidy
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y clang-tidy
+      - name: Install dependencies
+        run: sudo apt install qttools5-dev qttools5-dev-tools qtdeclarative5-dev
+      - name: Set up Build
+        run: |
+          mkdir build
+          cd build
+          cmake -DCMAKE_EXPORT_COMPILE_COMMANDS=ON -DBUILD_TESTS=OFF  ..
+          cp compile_commands.json ..
+      - name: Run Clang Tidy
+        run: run-clang-tidy -j$(nproc) -quiet | tee clangtidy.log
+      - name: Check Clang Tidy Result
+        run: if grep "error" clangtidy.log; then exit 1; fi;
+
+  Clang-Format:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: Install clang-format
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y clang-tools python3
+          wget 'https://github.com/Sarcasm/run-clang-format/raw/39081c9c42768ab5e8321127a7494ad1647c6a2f/run-clang-format.py'
+      - name: Run Clang-Format
+        run: python3 run-clang-format.py --recursive --exclude ./build --color always .
+
+
+
