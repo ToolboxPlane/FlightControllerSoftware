@@ -23,8 +23,8 @@ foreach(MockedModule ${MockedModules})
             COMMAND python3 ${CMAKE_SOURCE_DIR}/Tests/Mock/Lib/generate_mock.py ${MockedModule} ${MockPath}
             WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
             DEPENDS
-                ${CMAKE_SOURCE_DIR}/${MockedModule}.h
-                ${CMAKE_SOURCE_DIR}/${MockedModule}.c
+                ${CMAKE_SOURCE_DIR}/Src/${MockedModule}.h
+                ${CMAKE_SOURCE_DIR}/Src/${MockedModule}.c
                 Lib/generate_mock.py
             OUTPUT ${MockCpp} ${MockHpp})
 
