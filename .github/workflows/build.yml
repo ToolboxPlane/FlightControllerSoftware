@@ -19,7 +19,7 @@ jobs:
       - name: Install dependencies
         run: |
           sudo apt-get update
-          sudo apt-get install -y wget avr-libc binutils-avr gcc-avr
+          sudo apt-get install -y wget avr-libc binutils-avr gcc-avr protobuf-compiler
       - name: Set up Build
         run: |
           mkdir build
