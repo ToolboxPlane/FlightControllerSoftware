@@ -2,10 +2,11 @@ import os
 import re
 import sys
 
-module = sys.argv[1]
-out_dir = sys.argv[2]
+header_path = sys.argv[1]
+module = sys.argv[2]
+out_dir = sys.argv[3]
 
-header_file = "\n".join(open(f"Src/{module}.h", "r").readlines())
+header_file = "\n".join(open(header_path, "r").readlines())
 
 matches = re.findall("(\\w+) (\\w+)\\((.+)\\);", header_file)
 functions = []

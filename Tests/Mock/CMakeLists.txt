@@ -20,7 +20,7 @@ foreach(MockedModule ${MockedModules})
 
     # Add a target which will autogenerate the mock source files
     add_custom_command(
-            COMMAND python3 ${CMAKE_SOURCE_DIR}/Tests/Mock/Lib/generate_mock.py ${MockedModule} ${MockPath}
+            COMMAND python3 ${CMAKE_SOURCE_DIR}/Tests/Mock/Lib/generate_mock.py ${CMAKE_SOURCE_DIR}/Src/${MockedModule}.h ${MockedModule} ${MockPath}
             WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
             DEPENDS
                 ${CMAKE_SOURCE_DIR}/Src/${MockedModule}.h
