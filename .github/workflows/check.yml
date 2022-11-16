@@ -1,5 +1,5 @@
 name: Static Analysis
-on: [push]
+on: [ push ]
 
 jobs:
   Clang-Tidy:

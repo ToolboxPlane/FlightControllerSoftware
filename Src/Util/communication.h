@@ -11,9 +11,9 @@
 #include <stdbool.h>
 
 #include "../Drivers/sbus.h"
+#include "../Interfaces/imu.h"
 #include "../out_state.h"
 #include "../setpoint.h"
-#include "../Interfaces/imu.h"
 
 /**
  * Initialize the communication, this enables uart0 (usb) and uart2 (sbus)

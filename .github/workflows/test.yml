@@ -1,5 +1,5 @@
 name: Test
-on: [push]
+on: [ push ]
 
 jobs:
   LowLevelTests:
@@ -7,8 +7,8 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        cxx: [g++-9, g++-10, g++-11, clang++-9, clang++-10, clang++11, clang++12, clang++-13, clang++-14]
-        build: [Release, Debug]
+        cxx: [ g++-9, g++-10, g++-11, clang++-9, clang++-10, clang++11, clang++12, clang++-13, clang++-14 ]
+        build: [ Release, Debug ]
     env:
       CXX: ${{ matrix.cxx }}
       GTEST_ARGS: --gtest_repeat=1000 --gtest_shuffle

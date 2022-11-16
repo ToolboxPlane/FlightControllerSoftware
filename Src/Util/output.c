@@ -5,8 +5,10 @@
  * @brief output @TODO
  */
 
-#include <avr/io.h>
 #include "output.h"
+
+#include <avr/io.h>
+
 #include "../HAL/pwm16bit.h"
 
 void output_init(void) {

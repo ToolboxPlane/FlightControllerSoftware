@@ -13,4 +13,4 @@
 float sinus(int16_t x);
 float cosinus(int16_t x);
 
-#endif //FLIGHTCONTROLLER_MATH_H
+#endif // FLIGHTCONTROLLER_MATH_H

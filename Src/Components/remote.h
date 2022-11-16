@@ -7,8 +7,8 @@
 #ifndef FLIGHTCONTROLLER_REMOTE_H
 #define FLIGHTCONTROLLER_REMOTE_H
 
-#include <stdint.h>
 #include <stdbool.h>
+#include <stdint.h>
 
 typedef struct {
     int16_t throttle_mixed, elevon_left_mixed, elevon_right_mixed;

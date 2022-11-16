@@ -121,9 +121,9 @@ int main(void) {
     MCUSR = 0;
 
     communication_init(&setpoint_update, &sbus_event);
-    //controller_init(16);
-    // Runs at 16.384ms interval, the BNO055 provides data at 100Hz, the output can be updated at 50Hz
-    //timer_8bit_init(prescaler_1024, &timer_tick);
+    // controller_init(16);
+    //  Runs at 16.384ms interval, the BNO055 provides data at 100Hz, the output can be updated at 50Hz
+    // timer_8bit_init(prescaler_1024, &timer_tick);
     sei();
 
     wdt_enable(WDTO_250MS);
@@ -141,7 +141,7 @@ int main(void) {
     while (true) {
         curr_state = imu_get_latest_data();
         communication_send_status(&curr_state, &out_state);
-        for (uint8_t c=0; c<10; ++c) {
+        for (uint8_t c = 0; c < 10; ++c) {
             _delay_ms(10);
             wdt_reset();
         }

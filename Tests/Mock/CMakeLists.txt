@@ -10,7 +10,7 @@ set(MockedModules
         HAL/uart
         Tests/Mock/System/util/delay)
 
-foreach(MockedModule ${MockedModules})
+foreach (MockedModule ${MockedModules})
     # For the name generation replace all / in the path with _
     string(REPLACE "/" "_" MockedModuleName ${MockedModule})
     set(MockLibTarget Mock_${MockedModuleName})
@@ -23,15 +23,15 @@ foreach(MockedModule ${MockedModules})
             COMMAND python3 ${CMAKE_SOURCE_DIR}/Tests/Mock/Lib/generate_mock.py ${CMAKE_SOURCE_DIR}/Src/${MockedModule}.h ${MockedModule} ${MockPath}
             WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
             DEPENDS
-                ${CMAKE_SOURCE_DIR}/Src/${MockedModule}.h
-                ${CMAKE_SOURCE_DIR}/Src/${MockedModule}.c
-                Lib/generate_mock.py
+            ${CMAKE_SOURCE_DIR}/Src/${MockedModule}.h
+            ${CMAKE_SOURCE_DIR}/Src/${MockedModule}.c
+            Lib/generate_mock.py
             OUTPUT ${MockCpp} ${MockHpp})
 
     # Add a library for the mocked module
     add_library(${MockLibTarget} STATIC ${MockCpp} ${MockHpp})
     target_link_libraries(${MockLibTarget} PUBLIC MockLib)
     target_include_directories(${MockLibTarget} INTERFACE ${CMAKE_CURRENT_BINARY_DIR}/Mock)
-endforeach()
+endforeach ()
 
 add_subdirectory(Lib)

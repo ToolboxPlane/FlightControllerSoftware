@@ -1,5 +1,5 @@
 name: BuildAVR
-on: [push]
+on: [ push ]
 
 jobs:
   BuildAvr:
@@ -7,7 +7,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        build: [Release, Debug]
+        build: [ Release, Debug ]
     env:
       CC: avr-gcc
       CXX: avr-g++

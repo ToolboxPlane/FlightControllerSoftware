@@ -6,9 +6,10 @@
 #define FLIGHTCONTROLLER_CONTROLLER_H
 
 #include <stdbool.h>
+
 #include "../Interfaces/imu.h"
-#include "../setpoint.h"
 #include "../out_state.h"
+#include "../setpoint.h"
 
 typedef struct controller {
     int16_t target_value, is_value;
@@ -16,7 +17,7 @@ typedef struct controller {
     // Value = Value_num/Value_denom
     uint8_t P_num, P_denom;
     uint8_t I_num, I_denom;
-    uint8_t D_num,D_denom;
+    uint8_t D_num, D_denom;
 
     int16_t i_area, last_is_value;
     int16_t deriv;
@@ -27,4 +28,4 @@ void controller_init(uint16_t delta_t);
 void controller_update(volatile const imu_data_t *state, volatile const setpoint_t *setpoint,
                        volatile out_state_t *out_state);
 
-#endif //FLIGHTCONTROLLER_CONTROLLER_H
+#endif // FLIGHTCONTROLLER_CONTROLLER_H

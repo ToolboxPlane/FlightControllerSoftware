@@ -7,9 +7,8 @@
 
 #include "bno055_uart.h"
 
-#include <stdbool.h>
-
 #include <HAL/uart.h>
+#include <stdbool.h>
 
 #define BNO_UART_ID 1
 
