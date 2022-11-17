@@ -8,6 +8,7 @@
 #define FLIGHTCONTROLLER_MOCKBASE_HPP
 
 #include <cassert>
+#include <stdexcept>
 
 #include "Handler.hpp"
 
@@ -68,7 +69,7 @@ namespace mock {
                     return funcInfo;
                 }
             }
-            assert(false);
+            throw std::runtime_error{"Invalid function!"};
         }
 
         /**
