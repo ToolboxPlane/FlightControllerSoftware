@@ -39,7 +39,7 @@ jobs:
       - name: Build
         run: |
           cd build
-          make -j$(nproc) ${{ test }}
+          make -j$(nproc) ${{ matrix.test }}
       - name: Test
         run: |
-          ./build/Tests/LowLevel/${{ test }} ${GTEST_ARGS}
+          ./build/Tests/LowLevel/${{ matrix.test }} ${GTEST_ARGS}
