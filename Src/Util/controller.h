@@ -7,7 +7,7 @@
 
 #include <stdbool.h>
 
-#include "../Interfaces/imu.h"
+#include "../Components/imu.h"
 #include "../out_state.h"
 #include "../setpoint.h"
 

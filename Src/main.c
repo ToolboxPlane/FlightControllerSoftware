@@ -1,6 +1,3 @@
-#pragma clang diagnostic push
-#pragma clang diagnostic ignored "-Wmissing-noreturn"
-
 #include <avr/interrupt.h>
 #include <avr/wdt.h>
 #include <stdbool.h>
@@ -11,7 +8,7 @@
 #include "HAL/uart.h"
 #include "Util/communication.h"
 #include "Util/controller.h"
-#include "Util/imu_handler.h"
+#include "Components/imu.h"
 #include "Util/output.h"
 
 
@@ -149,5 +146,3 @@ int main(void) {
         output_led(0, toggle);
     }
 }
-
-#pragma clang diagnostic pop

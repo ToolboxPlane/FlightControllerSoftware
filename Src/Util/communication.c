@@ -93,7 +93,7 @@ void communication_handle(void) {
     static uint8_t buf[ToolboxPlaneMessages_Taranis_size + 3];
 
     while (usb_tail != usb_head) {
-        uint8_t data = usb_buff[usb_tail];
+        //uint8_t data = usb_buff[usb_tail];
         usb_tail = (usb_tail + 1) % BUFF_SIZE;
         /*if (rc_lib_decode(&usb_rx_pkg, data)) {
             if (_setpoint_callback != 0) {
