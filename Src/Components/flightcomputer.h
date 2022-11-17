@@ -7,6 +7,9 @@
 #ifndef FLIGHTCONTROLLER_FLIGHTCOMPUTER_H
 #define FLIGHTCONTROLLER_FLIGHTCOMPUTER_H
 
+#include <stdbool.h>
+#include <stdint.h>
+
 typedef struct {
 
 } flightcomputer_send_data_t;
@@ -19,8 +22,8 @@ void flightcomputer_init(void);
 
 void flightcomputer_send(const flightcomputer_send_data_t *data);
 
-bool flightcomputer_data_available();
+bool flightcomputer_data_available(void);
 
-flightcomputer_receive_data_t flightcomputer_get_data();
+flightcomputer_receive_data_t flightcomputer_get_data(void);
 
 #endif // FLIGHTCONTROLLER_FLIGHTCOMPUTER_H
