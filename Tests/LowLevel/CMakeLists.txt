@@ -5,7 +5,7 @@ FetchContent_Declare(
         GIT_REPOSITORY "https://github.com/google/googletest.git"
         GIT_TAG "main"
 )
-FetchContent_Populate(gtest)
+FetchContent_MakeAvailable(gtest)
 
 function(make_test file_under_test)
     string(REPLACE "/" "_" TestSuite ${file_under_test})
