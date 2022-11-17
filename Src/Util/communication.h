@@ -10,8 +10,8 @@
 
 #include <stdbool.h>
 
-#include "../Drivers/sbus.h"
 #include "../Components/imu.h"
+#include "../Drivers/sbus.h"
 #include "../out_state.h"
 #include "../setpoint.h"
 

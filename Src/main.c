@@ -3,12 +3,12 @@
 #include <stdbool.h>
 #include <util/delay.h>
 
+#include "Components/imu.h"
 #include "Drivers/bno055_uart.h"
 #include "HAL/timer8bit.h"
 #include "HAL/uart.h"
 #include "Util/communication.h"
 #include "Util/controller.h"
-#include "Components/imu.h"
 #include "Util/output.h"
 
 
