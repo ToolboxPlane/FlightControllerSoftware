@@ -4,6 +4,9 @@ on: [ push ]
 jobs:
   Clang-Tidy:
     runs-on: ubuntu-latest
+    env:
+      CC: avr-gcc
+      CXX: avr-g++
     steps:
       - uses: actions/checkout@v2
         with:
@@ -11,12 +14,13 @@ jobs:
       - name: Install Clang-Tidy
         run: |
           sudo apt-get update
-          sudo apt-get install -y clang-tidy protobuf-compiler
+          sudo apt-get install -y clang-tidy avr-libc binutils-avr gcc-avr protobuf-compiler
       - name: Set up Build
         run: |
           mkdir build
           cd build
           cmake -DCMAKE_EXPORT_COMPILE_COMMANDS=ON  ..
+          make -j$(nproc) all
           cp compile_commands.json ..
       - name: Run Clang Tidy
         run: run-clang-tidy -j$(nproc) -quiet | tee clangtidy.log
