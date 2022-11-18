@@ -18,7 +18,7 @@ int16_t fix_angle(int16_t angle) {
 
 int16_t update_controller(controller_t *c) {
     int16_t error = fix_angle(c->target_value - c->is_value);
-    int16_t p_val = (int16_t) (error * c->P_num / c->P_denom);
+    int16_t p_val = (int16_t)(error * c->P_num / c->P_denom);
     /*c->i_area += (int16_t)(c->delta_t) * error;
     if (c->last_is_value * c->is_value <= 0) {
         c->i_area = 0;

@@ -25,7 +25,7 @@
  *
  * 1000/(1811-172) = 1000/1639 \approx 1000/1640 = 25/41
  */
-#define NORMALIZE_TARANIS(x) ((uint16_t) (((x) -172) * 25 / 41))
+#define NORMALIZE_TARANIS(x) ((uint16_t)(((x) -172) * 25 / 41))
 
 static void (*_setpoint_callback)(setpoint_t) = 0;
 static void (*_sbus_callback)(sbus_data_t) = 0;

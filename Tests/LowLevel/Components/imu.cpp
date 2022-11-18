@@ -1,5 +1,5 @@
 #include <Mock/Drivers/bno055.hpp>
-#include <Mock/Tests/Mock/System/util/delay.hpp>
+#include <Mock/util/delay.hpp>
 #include <gtest/gtest.h>
 
 extern "C" {

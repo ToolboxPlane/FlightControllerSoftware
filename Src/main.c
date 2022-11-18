@@ -85,8 +85,8 @@ void timer_tick(void) {
             } else {
                 out_state.motor = 0;
             }
-            out_state.elevon_l = (int16_t) (last_valid_sbus_package.channel[1]) - 500;
-            out_state.elevon_r = (int16_t) (last_valid_sbus_package.channel[2]) - 500;
+            out_state.elevon_l = (int16_t)(last_valid_sbus_package.channel[1]) - 500;
+            out_state.elevon_r = (int16_t)(last_valid_sbus_package.channel[2]) - 500;
             output_led(6, on);
             output_led(7, off);
             break;
