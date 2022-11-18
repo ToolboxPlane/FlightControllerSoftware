@@ -7,8 +7,10 @@ set(MockedModules
         HAL/pwm16bit
         HAL/spi
         HAL/timer8bit
-        HAL/uart
-        Tests/Mock/System/util/delay)
+        HAL/uart)
+
+set(MockedSystemModules
+        util/delay)
 
 foreach (MockedModule ${MockedModules})
     # For the name generation replace all / in the path with _
@@ -34,4 +36,57 @@ foreach (MockedModule ${MockedModules})
     target_include_directories(${MockLibTarget} INTERFACE ${CMAKE_CURRENT_BINARY_DIR}/Mock)
 endforeach ()
 
+foreach (MockedModule ${MockedSystemModules})
+    # For the name generation replace all / in the path with _
+    string(REPLACE "/" "_" MockedModuleName ${MockedModule})
+    set(MockLibTarget Mock_${MockedModuleName})
+    set(MockPath ${CMAKE_CURRENT_BINARY_DIR}/Mock/Mock)
+    set(MockCpp ${MockPath}/${MockedModule}.cpp)
+    set(MockHpp ${MockPath}/${MockedModule}.hpp)
+
+    # Add a target which will autogenerate the mock source files
+    add_custom_command(
+            COMMAND python3 ${CMAKE_SOURCE_DIR}/Tests/Mock/Lib/generate_mock.py ${CMAKE_SOURCE_DIR}/Tests/Mock/System/${MockedModule}.h ${MockedModule} ${MockPath}
+            WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
+            DEPENDS
+            ${CMAKE_SOURCE_DIR}/Tests/Mock/System/${MockedModule}.h
+            ${CMAKE_SOURCE_DIR}/Tests/Mock/System/${MockedModule}.c
+            Lib/generate_mock.py
+            OUTPUT ${MockCpp} ${MockHpp})
+
+    # Add a library for the mocked module
+    add_library(${MockLibTarget} STATIC ${MockCpp} ${MockHpp})
+    target_link_libraries(${MockLibTarget} PUBLIC MockLib)
+    target_include_directories(${MockLibTarget} PUBLIC ${CMAKE_SOURCE_DIR}/Tests/Mock/System)
+    target_include_directories(${MockLibTarget} INTERFACE ${CMAKE_CURRENT_BINARY_DIR}/Mock)
+endforeach ()
+
 add_subdirectory(Lib)
+
+include(FetchContent)
+
+FetchContent_Declare(
+        gtest
+        GIT_REPOSITORY "https://github.com/google/googletest.git"
+        GIT_TAG "main"
+)
+FetchContent_MakeAvailable(gtest)
+
+function(make_test file_under_test)
+    string(REPLACE "/" "_" TestSuite ${file_under_test})
+    set(TestExecutable Test_${TestSuite})
+
+    # Add a executable consisting of the function .c file and the test .cpp file
+    add_executable(${TestExecutable}
+            main.cpp
+            ${CMAKE_SOURCE_DIR}/Src/${file_under_test}.c
+            ${file_under_test}.cpp)
+
+    # Link against GTest libraries
+    target_link_libraries(${TestExecutable} PRIVATE gtest gmock pthread)
+
+    # Set the macro TEST_NAME to the name of the tested module
+    string(REPLACE "/" "_" test_name ${file_under_test})
+    target_compile_definitions(${TestExecutable} PRIVATE -DTEST_NAME=${test_name})
+endfunction()
+
