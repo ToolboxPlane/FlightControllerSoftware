@@ -5,11 +5,9 @@ jobs:
   LowLevelTests:
     runs-on: ubuntu-latest
     strategy:
-      fail-fast: false
       matrix:
         compiler: [ { cc: gcc-10, cxx: g++-10 },
                     { cc: gcc-11, cxx: g++-11 },
-                    { cc: clang-9, cxx: clang++-9 },
                     { cc: clang-10, cxx: clang++-10 },
                     { cc: clang-11, cxx: clang++-11 },
                     { cc: clang-12, cxx: clang++-12 },

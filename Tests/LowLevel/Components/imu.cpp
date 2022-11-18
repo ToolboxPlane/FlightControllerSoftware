@@ -28,7 +28,6 @@ TEST(TEST_NAME, init__success) {
             [](bno055_axis_remap_sign_t /*new_x_sign*/, bno055_axis_remap_sign_t /*new_y_sign*/,
                bno055_axis_remap_sign_t /*new_z_sign*/, bno_callback_t callback) { callback(write_success); });
 
-    EXPECT_FALSE(imu_get_latest_data().imu_ok);
     EXPECT_TRUE(imu_init());
     EXPECT_FALSE(imu_get_latest_data().imu_ok);
 
@@ -64,7 +63,6 @@ TEST(TEST_NAME, init__opr_mode_error) {
             [](bno055_axis_remap_sign_t /*new_x_sign*/, bno055_axis_remap_sign_t /*new_y_sign*/,
                bno055_axis_remap_sign_t /*new_z_sign*/, bno_callback_t callback) { callback(write_success); });
 
-    EXPECT_FALSE(imu_get_latest_data().imu_ok);
     EXPECT_FALSE(imu_init());
     EXPECT_FALSE(imu_get_latest_data().imu_ok);
     EXPECT_FALSE(imu_data_available());
@@ -93,8 +91,6 @@ TEST(TEST_NAME, init__self_test_error) {
                bno055_axis_remap_sign_t /*new_z_sign*/, bno_callback_t callback) { callback(write_success); });
 
     EXPECT_FALSE(imu_get_latest_data().imu_ok);
-    EXPECT_FALSE(imu_init());
-    EXPECT_FALSE(imu_get_latest_data().imu_ok);
     EXPECT_FALSE(imu_data_available());
 }
 
@@ -120,7 +116,6 @@ TEST(TEST_NAME, init__self_test_fail) {
             [](bno055_axis_remap_sign_t /*new_x_sign*/, bno055_axis_remap_sign_t /*new_y_sign*/,
                bno055_axis_remap_sign_t /*new_z_sign*/, bno_callback_t callback) { callback(write_success); });
 
-    EXPECT_FALSE(imu_get_latest_data().imu_ok);
     EXPECT_FALSE(imu_init());
     EXPECT_FALSE(imu_get_latest_data().imu_ok);
     EXPECT_FALSE(imu_data_available());
@@ -147,7 +142,6 @@ TEST(TEST_NAME, init__unit_sel_error) {
             [](bno055_axis_remap_sign_t /*new_x_sign*/, bno055_axis_remap_sign_t /*new_y_sign*/,
                bno055_axis_remap_sign_t /*new_z_sign*/, bno_callback_t callback) { callback(write_success); });
 
-    EXPECT_FALSE(imu_get_latest_data().imu_ok);
     EXPECT_FALSE(imu_init());
     EXPECT_FALSE(imu_get_latest_data().imu_ok);
     EXPECT_FALSE(imu_data_available());
@@ -175,7 +169,6 @@ TEST(TEST_NAME, init__remap_fail) {
             [](bno055_axis_remap_sign_t /*new_x_sign*/, bno055_axis_remap_sign_t /*new_y_sign*/,
                bno055_axis_remap_sign_t /*new_z_sign*/, bno_callback_t callback) { callback(write_success); });
 
-    EXPECT_FALSE(imu_get_latest_data().imu_ok);
     EXPECT_FALSE(imu_init());
     EXPECT_FALSE(imu_get_latest_data().imu_ok);
     EXPECT_FALSE(imu_data_available());
@@ -203,7 +196,6 @@ TEST(TEST_NAME, init__remap_sign_fail) {
             [](bno055_axis_remap_sign_t /*new_x_sign*/, bno055_axis_remap_sign_t /*new_y_sign*/,
                bno055_axis_remap_sign_t /*new_z_sign*/, bno_callback_t callback) { callback(write_fail); });
 
-    EXPECT_FALSE(imu_get_latest_data().imu_ok);
     EXPECT_FALSE(imu_init());
     EXPECT_FALSE(imu_get_latest_data().imu_ok);
 }
@@ -212,7 +204,6 @@ TEST(TEST_NAME, init__timeout) {
     auto bnoHandle = mock::bno055.getHandle();
     auto delayHandle = mock::delay.getHandle();
 
-    EXPECT_FALSE(imu_get_latest_data().imu_ok);
     EXPECT_FALSE(imu_init());
     EXPECT_FALSE(imu_get_latest_data().imu_ok);
     EXPECT_FALSE(imu_data_available());

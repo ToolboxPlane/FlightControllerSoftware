@@ -13,7 +13,7 @@ TEST(TEST_NAME, init) {
      * The BNO055 supports UART interface with the following settings: 115200 bps, 8N1 (8 data bits, no parity bit, one
      * stop bit) [https://cdn-shop.adafruit.com/datasheets/BST_BNO055_DS000_12.pdf P. 93]
      */
-    EXPECT_TRUE(handle.functionGotCalled<uart_init>(BNO_UART_ID, 115200U, uart_parity_t::NONE, 1, std::ignore));
+    EXPECT_TRUE(handle.functionGotCalled<uart_init>(1, 115200U, uart_parity_t::NONE, 1, std::ignore));
 }
 
 TEST(TEST_NAME, write_register__buffer_format) {
@@ -23,7 +23,7 @@ TEST(TEST_NAME, write_register__buffer_format) {
     uint8_t data[] = {38, 45};
 
     handle.overrideFunc<uart_send_buf>([](uint8_t id, const uint8_t *buf, uint16_t size) {
-        EXPECT_EQ(id, BNO_UART_ID);
+        EXPECT_EQ(id, 1);
 
         /*
          * Format [https://cdn-shop.adafruit.com/datasheets/BST_BNO055_DS000_12.pdf P.93]:
@@ -56,7 +56,7 @@ TEST(TEST_NAME, read_register__buffer_format) {
 
     // Actual test
     handle.overrideFunc<uart_send_buf>([](uint8_t id, const uint8_t *buf, uint16_t size) {
-        EXPECT_EQ(id, BNO_UART_ID);
+        EXPECT_EQ(id, 1);
 
         /*
          * Format [https://cdn-shop.adafruit.com/datasheets/BST_BNO055_DS000_12.pdf P.93]:

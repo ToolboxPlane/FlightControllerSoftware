@@ -5,7 +5,6 @@ jobs:
   BuildAvr:
     runs-on: ubuntu-latest
     strategy:
-      fail-fast: false
       matrix:
         build: [ Release, Debug ]
     env:

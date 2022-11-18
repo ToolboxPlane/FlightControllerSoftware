@@ -116,6 +116,11 @@ static void bno_sample_callback(bno055_response_t response) {
 }
 
 bool imu_init(void) {
+    imu_datas[0].imu_ok = false;
+    imu_datas[1].imu_ok = false;
+
+    current_sample_state_id = 0;
+
     bno055_init();
 
     // Set to config mode
@@ -177,8 +182,6 @@ bool imu_init(void) {
     if (!callback_ready || init_response != write_success) {
         return false;
     }
-
-    current_sample_state_id = 0;
 
     return true;
 }
