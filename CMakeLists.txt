@@ -4,7 +4,7 @@ project(FlightController)
 set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_C_STANDARD 17)
 
-set(SHARED_FLAGS "-Wall -Wextra -Werror ")
+set(SHARED_FLAGS "-Wall -Wextra")
 set(CMAKE_C_FLAGS "${SHARED_FLAGS} -Wstrict-prototypes")
 set(CMAKE_CXX_FLAGS "${SHARED_FLAGS}")
 add_definitions(-DF_CPU=16000000ul)

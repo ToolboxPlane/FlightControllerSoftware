@@ -65,15 +65,12 @@ add_subdirectory(Lib)
 
 include(FetchContent)
 
-set(OLD_CMAKE_CXX ${CMAKE_CXX_FLAGS}) # Clang murks
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wno-error=implicit-int-float-conversion")
 FetchContent_Declare(
         gtest
         GIT_REPOSITORY "https://github.com/google/googletest.git"
         GIT_TAG "main"
 )
 FetchContent_MakeAvailable(gtest)
-set(CMAKE_CXX_FLAGS ${OLD_CMAKE_CXX_FLAGS})
 
 function(make_test file_under_test)
     string(REPLACE "/" "_" TestSuite ${file_under_test})
