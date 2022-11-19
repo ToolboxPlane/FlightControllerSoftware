@@ -1,3 +1,5 @@
+add_subdirectory(Lib)
+
 set(MockedModules
         Drivers/bno055
         Drivers/bno055_uart
@@ -7,11 +9,14 @@ set(MockedModules
         HAL/pwm16bit
         HAL/spi
         HAL/timer8bit
-        HAL/uart)
+        HAL/uart
+        Messages/MessageEncoding
+        Messages/MessageDecoding)
 
 set(MockedSystemModules
         util/delay)
 
+# Build mock sources and target for module mocks
 foreach (MockedModule ${MockedModules})
     # For the name generation replace all / in the path with _
     string(REPLACE "/" "_" MockedModuleName ${MockedModule})
@@ -36,6 +41,10 @@ foreach (MockedModule ${MockedModules})
     target_include_directories(${MockLibTarget} INTERFACE ${CMAKE_CURRENT_BINARY_DIR}/Mock)
 endforeach ()
 
+target_link_libraries(Mock_Messages_MessageEncoding PUBLIC ToolboxPlaneMessageDefs)
+target_link_libraries(Mock_Messages_MessageDecoding PUBLIC ToolboxPlaneMessageDefs)
+
+# Build mock sources and target for system mocks
 foreach (MockedModule ${MockedSystemModules})
     # For the name generation replace all / in the path with _
     string(REPLACE "/" "_" MockedModuleName ${MockedModule})
@@ -61,10 +70,8 @@ foreach (MockedModule ${MockedSystemModules})
     target_include_directories(${MockLibTarget} INTERFACE ${CMAKE_CURRENT_BINARY_DIR}/Mock)
 endforeach ()
 
-add_subdirectory(Lib)
-
+# Download GTest
 include(FetchContent)
-
 FetchContent_Declare(
         gtest
         GIT_REPOSITORY "https://github.com/google/googletest.git"
@@ -72,6 +79,7 @@ FetchContent_Declare(
 )
 FetchContent_MakeAvailable(gtest)
 
+# Function to build a mock test for a module
 function(make_test file_under_test)
     string(REPLACE "/" "_" TestSuite ${file_under_test})
     set(TestExecutable Test_${TestSuite})

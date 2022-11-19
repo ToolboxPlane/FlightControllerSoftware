@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 3.9)
 project(FlightController)
 
-if (${TARGET} STREQUAL AVR)
+if (${CMAKE_C_COMPILER} MATCHES "avr")
     add_executable(${PROJECT_NAME} main.c
             Util/communication.c
             Util/controller.c
@@ -17,9 +17,8 @@ if (${TARGET} STREQUAL AVR)
             avr-objcopy -R .eeprom -O ihex "${PROJECT_NAME}.elf" "${PROJECT_NAME}.hex"
             DEPENDS strip)
 
-    add_subdirectory(Drivers)
-    add_subdirectory(HAL)
-    add_subdirectory(Components)
-    add_subdirectory(Messages)
 endif ()
-
+add_subdirectory(Drivers)
+add_subdirectory(HAL)
+add_subdirectory(Components)
+add_subdirectory(Messages)

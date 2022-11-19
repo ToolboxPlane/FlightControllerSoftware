@@ -14,7 +14,13 @@ jobs:
                     { cc: clang-13, cxx: clang++-13 },
                     { cc: clang-14, cxx: clang++-14 } ]
         build: [ Release, Debug ]
-        test: [ Test_Drivers_bno055_uart, Test_Drivers_bno055, Test_Drivers_sbus, Test_Components_flightcomputer, Test_Components_imu, Test_Components_remote ]
+        test: [ Test_Drivers_bno055_uart,
+                Test_Drivers_bno055,
+                Test_Drivers_sbus,
+                Test_Drivers_protobuf,
+                Test_Components_flightcomputer,
+                Test_Components_imu,
+                Test_Components_remote ]
     env:
       CC: ${{ matrix.compiler.cc }}
       CXX: ${{ matrix.compiler.cxx }}
