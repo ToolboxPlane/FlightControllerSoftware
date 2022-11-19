@@ -90,6 +90,7 @@ TEST(TEST_NAME, init__self_test_error) {
             [](bno055_axis_remap_sign_t /*new_x_sign*/, bno055_axis_remap_sign_t /*new_y_sign*/,
                bno055_axis_remap_sign_t /*new_z_sign*/, bno_callback_t callback) { callback(write_success); });
 
+    EXPECT_FALSE(imu_init());
     EXPECT_FALSE(imu_get_latest_data().imu_ok);
     EXPECT_FALSE(imu_data_available());
 }
