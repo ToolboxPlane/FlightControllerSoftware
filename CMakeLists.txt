@@ -13,10 +13,12 @@ include_directories(${CMAKE_SOURCE_DIR}/Src)
 
 add_subdirectory(Src)
 if (${CMAKE_C_COMPILER} MATCHES "avr")
+    message(STATUS "Building for AVR")
     set(AVR_FLAGS "-funsigned-char -funsigned-bitfields -fpack-struct -fshort-enums -O3 -mmcu=atmega2560")
     set(CMAKE_C_FLAGS "${CMAKE_CXX_FLAGS} ${AVR_FLAGS}")
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${AVR_FLAGS}")
 else ()
+    message(STATUS "Not building for AVR")
     add_subdirectory(Tests)
 endif ()
 
