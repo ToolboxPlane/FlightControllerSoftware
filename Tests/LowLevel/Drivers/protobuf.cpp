@@ -97,6 +97,28 @@ TEST(TEST_NAME, send_taranis) {
     EXPECT_TRUE(uartHandle.functionGotCalled<uart_send_buf>());
 }
 
+TEST(TEST_NAME, receive_buffer) {
+    auto uartHandle = mock::uart.getHandle();
+    auto decodeHandle = mock::MessageDecoding.getHandle();
+    uart_callback_t uartCallback;
+    uartHandle.overrideFunc<uart_init>([&uartCallback](uint8_t /*id*/, uint16_t /*baud*/, uart_parity_t /*parity*/,
+                                                       uint8_t /*stop_bits*/,
+                                                       uart_callback_t callback) { uartCallback = callback; });
+    decodeHandle.overrideFunc<message_decode>([](message_decoding_data_t * /*messageDecodingData*/, uint8_t /*data*/,
+                                                 pb_istream_s * /*istream*/) -> bool { return false; });
+
+    protobuf_init();
+
+    uint8_t bufData;
+
+    for (auto c = 0; c < 10; ++c) {
+        bufData = c * 11;
+        uartCallback(bufData);
+        protobuf_setpoint_available();
+        EXPECT_TRUE(decodeHandle.functionGotCalled<message_decode>(std::ignore, bufData, std::ignore));
+    }
+}
+
 TEST(TEST_NAME, receive_pb_decode) {
     auto uartHandle = mock::uart.getHandle();
     auto decodeHandle = mock::MessageDecoding.getHandle();
@@ -131,7 +153,7 @@ TEST(TEST_NAME, receive_pb_decode) {
     for (; dataSendIndex < callbackData.size(); ++dataSendIndex) {
         EXPECT_FALSE(protobuf_setpoint_available());
         uartCallback(callbackData[dataSendIndex]);
-        if (dataSendIndex == callbackData.size()-1) {
+        if (dataSendIndex == callbackData.size() - 1) {
             EXPECT_TRUE(protobuf_setpoint_available());
 
             auto setpoint = protobuf_get_setpoint();
