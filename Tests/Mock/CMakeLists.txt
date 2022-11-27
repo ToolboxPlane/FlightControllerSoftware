@@ -15,7 +15,8 @@ set(MockedModules
         Messages/MessageDecoding)
 
 set(MockedSystemModules
-        util/delay)
+        util/delay
+        avr/io)
 
 # Build mock sources and target for module mocks
 foreach (MockedModule ${MockedModules})
@@ -61,7 +62,6 @@ foreach (MockedModule ${MockedSystemModules})
             WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
             DEPENDS
             ${CMAKE_SOURCE_DIR}/Tests/Mock/System/${MockedModule}.h
-            ${CMAKE_SOURCE_DIR}/Tests/Mock/System/${MockedModule}.c
             Lib/generate_mock.py
             OUTPUT ${MockCpp} ${MockHpp})
 

@@ -38,6 +38,10 @@ namespace mock::util {
         }
     }
 
+    constexpr auto removeDuplicatesImpl(std::tuple<>) {
+        return std::tuple<>{};
+    }
+
     template<typename Tuple>
     using removeDuplicates = decltype(removeDuplicatesImpl(std::declval<Tuple>()));
 
@@ -61,13 +65,15 @@ namespace mock::util {
         using FunctionInfos = std::tuple<std::vector<GetFunctionInfo<mockedFunctions>>...>;
         using UniqueFunctionInfos = removeDuplicates<FunctionInfos>;
         UniqueFunctionInfos functionInfos;
-        insertFunctions<mockedFunctions...>(functionInfos);
+        if constexpr (sizeof...(mockedFunctions) > 0) {
+            insertFunctions<mockedFunctions...>(functionInfos);
+        }
         return functionInfos;
     }
 
     template<std::size_t i = 0>
     auto argsMatch(auto callTuple, auto arg, auto... args) {
-        bool currentMatches;
+        bool currentMatches = false;
         if constexpr (std::is_same_v<std::remove_cvref_t<decltype(arg)>, std::remove_cvref_t<decltype(std::ignore)>>) {
             currentMatches = true;
         } else {

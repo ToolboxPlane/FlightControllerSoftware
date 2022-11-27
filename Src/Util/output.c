@@ -22,9 +22,6 @@ void output_init(void) {
     pwm_init(4, prescaler_8, 40000);
 #endif
 
-    DDRB |= 0b11100000u;
-    DDRE |= 0b00111000u;
-    DDRH |= 0b00111000u;
     DDRL = 0xFFu; // All as outputs
 }
 
