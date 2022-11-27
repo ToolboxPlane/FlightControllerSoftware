@@ -28,23 +28,20 @@ void ppm_init(void) {
 void ppm_channel_set(uint8_t channel_id, uint16_t setpoint) {
     uint16_t compare_value = (setpoint + 1000U) * 2U;
     switch (channel_id) {
-        case 0:
+        case 1:
             pwm_set_out_a(3, compare_value);
             break;
-        case 1:
+        case 2:
             pwm_set_out_b(3, compare_value);
             break;
-        case 2:
+        case 3:
             pwm_set_out_c(3, compare_value);
             break;
-        case 3:
+        case 4:
             pwm_set_out_a(4, compare_value);
             break;
-        case 4:
-            pwm_set_out_b(4, compare_value);
-            break;
         case 5:
-            pwm_set_out_c(4, compare_value);
+            pwm_set_out_b(4, compare_value);
             break;
         case 6:
             pwm_set_out_a(1, compare_value);
