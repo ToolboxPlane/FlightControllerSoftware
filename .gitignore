@@ -8,4 +8,5 @@ Src/Backup/
 build/
 /Inc/Backup/
 .idea/*
-.doxy_out
+doxy_out
+
