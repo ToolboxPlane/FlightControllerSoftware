@@ -10,20 +10,20 @@
 #include <stdbool.h>
 #include <stdint.h>
 
+#include "imu.h"
+#include "remote.h"
+
 typedef struct {
-
-} flightcomputer_send_data_t;
-
-typedef struct {
-
-} flightcomputer_receive_data_t;
+    uint16_t motor;
+    int16_t pitch, roll;
+} flightcomputer_setpoint_data_t;
 
 void flightcomputer_init(void);
 
-void flightcomputer_send(const flightcomputer_send_data_t *data);
+void flightcomputer_send(const imu_data_t *imu_data, const remote_data_t *remote_data);
 
 bool flightcomputer_data_available(void);
 
-flightcomputer_receive_data_t flightcomputer_get_data(void);
+flightcomputer_setpoint_data_t flightcomputer_get_data(void);
 
 #endif // FLIGHTCONTROLLER_FLIGHTCOMPUTER_H

@@ -20,5 +20,5 @@ make_test(Components/remote)
 target_link_libraries(Test_Components_remote PRIVATE Mock_Drivers_sbus)
 
 make_test(Components/flightcomputer)
-target_link_libraries(Test_Components_flightcomputer PRIVATE Mock_HAL_uart)
+target_link_libraries(Test_Components_flightcomputer PRIVATE Mock_Drivers_protobuf)
 

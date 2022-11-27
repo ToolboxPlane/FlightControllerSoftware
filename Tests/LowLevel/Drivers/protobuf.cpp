@@ -57,47 +57,7 @@ TEST(TEST_NAME, send_fc) {
     EXPECT_TRUE(uartHandle.functionGotCalled<uart_send_buf>());
 }
 
-TEST(TEST_NAME, send_taranis) {
-    auto uartHandle = mock::uart.getHandle();
-    auto encodingHandle = mock::MessageEncoding.getHandle();
-
-    protobuf_init();
-
-    taranis_message_t to_send{};
-
-    encodingHandle.overrideFunc<message_encode>(
-            [&to_send](uint8_t *buf, uint16_t size, const pb_msgdesc_t *fields, const void *message, uint8_t id) {
-                EXPECT_GE(size, ToolboxPlaneMessages_Taranis_size + 3);
-                EXPECT_FALSE(buf == nullptr);
-                EXPECT_EQ(fields, &ToolboxPlaneMessages_Taranis_msg);
-                EXPECT_EQ(message, &to_send);
-                EXPECT_EQ(id, 0x20);
-
-                buf[0] = 201;
-                buf[1] = 202;
-                buf[2] = 203;
-                buf[3] = 204;
-                buf[4] = 205;
-                return 5;
-            });
-
-    uartHandle.overrideFunc<uart_send_buf>([](uint8_t id, const uint8_t *data, uint16_t size) {
-        EXPECT_EQ(id, 0);
-        EXPECT_EQ(size, 5);
-        EXPECT_EQ(data[0], 201);
-        EXPECT_EQ(data[1], 202);
-        EXPECT_EQ(data[2], 203);
-        EXPECT_EQ(data[3], 204);
-        EXPECT_EQ(data[4], 205);
-    });
-
-    protobuf_send_taranis(&to_send);
-
-    EXPECT_TRUE(encodingHandle.functionGotCalled<message_encode>());
-    EXPECT_TRUE(uartHandle.functionGotCalled<uart_send_buf>());
-}
-
-TEST(TEST_NAME, receive_buffer) {
+TEST(TEST_NAME, receive_singler_buffer) {
     auto uartHandle = mock::uart.getHandle();
     auto decodeHandle = mock::MessageDecoding.getHandle();
     uart_callback_t uartCallback;
@@ -117,6 +77,38 @@ TEST(TEST_NAME, receive_buffer) {
         protobuf_setpoint_available();
         EXPECT_TRUE(decodeHandle.functionGotCalled<message_decode>(std::ignore, bufData, std::ignore));
     }
+}
+
+TEST(TEST_NAME, receive_200bytes) {
+    auto uartHandle = mock::uart.getHandle();
+    auto decodeHandle = mock::MessageDecoding.getHandle();
+    uart_callback_t uartCallback;
+    uartHandle.overrideFunc<uart_init>([&uartCallback](uint8_t /*id*/, uint16_t /*baud*/, uart_parity_t /*parity*/,
+                                                       uint8_t /*stop_bits*/,
+                                                       uart_callback_t callback) { uartCallback = callback; });
+    int receiveIndex = 10U;
+    decodeHandle.overrideFunc<message_decode>([&receiveIndex](message_decoding_data_t * /*messageDecodingData*/,
+                                                              uint8_t data, pb_istream_s * /*istream*/) -> bool {
+        EXPECT_EQ(receiveIndex, data);
+        receiveIndex += 1;
+        return false;
+    });
+
+    protobuf_init();
+
+    for (auto c=10U; c<210U; ++c) {
+        uartCallback(c);
+    }
+    protobuf_setpoint_available();
+    EXPECT_EQ(receiveIndex, 210U);
+
+
+    for (auto c=20U; c<220U; ++c) {
+        uartCallback(c);
+    }
+    receiveIndex = 20U;
+    protobuf_setpoint_available();
+    EXPECT_EQ(receiveIndex, 220U);
 }
 
 TEST(TEST_NAME, receive_pb_decode) {

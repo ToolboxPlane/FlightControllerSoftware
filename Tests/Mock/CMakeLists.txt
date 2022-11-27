@@ -3,6 +3,7 @@ add_subdirectory(Lib)
 set(MockedModules
         Drivers/bno055
         Drivers/bno055_uart
+        Drivers/protobuf
         Drivers/sbus
         HAL/adc
         HAL/i2c
@@ -43,6 +44,7 @@ endforeach ()
 
 target_link_libraries(Mock_Messages_MessageEncoding PUBLIC ToolboxPlaneMessageDefs)
 target_link_libraries(Mock_Messages_MessageDecoding PUBLIC ToolboxPlaneMessageDefs)
+target_link_libraries(Mock_Drivers_protobuf PUBLIC ToolboxPlaneMessageDefs)
 
 # Build mock sources and target for system mocks
 foreach (MockedModule ${MockedSystemModules})

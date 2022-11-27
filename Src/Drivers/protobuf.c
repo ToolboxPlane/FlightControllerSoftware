@@ -42,12 +42,6 @@ void protobuf_send_fc(const fc_message_t *message) {
     uart_send_buf(UART_ID, buf, len);
 }
 
-void protobuf_send_taranis(const taranis_message_t *message) {
-    static uint8_t buf[ToolboxPlaneMessages_Taranis_size + 3];
-    uint8_t len = message_encode(buf, sizeof(buf), &ToolboxPlaneMessages_Taranis_msg, message, SBUS_ID);
-    uart_send_buf(UART_ID, buf, len);
-}
-
 bool protobuf_setpoint_available(void) {
     pb_istream_t istream;
     bool res = false;

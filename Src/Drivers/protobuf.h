@@ -8,18 +8,14 @@
 #define FLIGHTCONTROLLER_PROTOBUF_H
 
 #include "FlightController.pb.h"
-#include "Taranis.pb.h"
 #include "FlightControllerSetpoint.pb.h"
 
 typedef ToolboxPlaneMessages_FlightController fc_message_t;
-typedef ToolboxPlaneMessages_Taranis taranis_message_t;
 typedef ToolboxPlaneMessages_FlightControllerSetpoint setpoint_message_t;
 
 void protobuf_init(void);
 
 void protobuf_send_fc(const fc_message_t *message);
-
-void protobuf_send_taranis(const taranis_message_t *message);
 
 bool protobuf_setpoint_available(void);
 
