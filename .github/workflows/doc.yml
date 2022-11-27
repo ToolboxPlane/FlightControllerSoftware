@@ -12,12 +12,5 @@ jobs:
         run: |
           sudo apt-get update
           sudo apt-get install -y doxygen
-      - name: Set up Build
-        run: |
-          mkdir build
-          cd build
-          cmake -DCMAKE_BUILD_TYPE=${{ matrix.build }} ..
-      - name: Build
-        run: |
-          cd build
-          make -j$(nproc) all
+      - name: Run doxygen
+        run: doxygen

@@ -16,8 +16,9 @@ jobs:
         build: [ Release, Debug ]
         test: [ Test_Drivers_bno055_uart,
                 Test_Drivers_bno055,
-                Test_Drivers_sbus,
+                Test_Drivers_ppm,
                 Test_Drivers_protobuf,
+                Test_Drivers_sbus,
                 Test_Components_flightcomputer,
                 Test_Components_imu,
                 Test_Components_remote ]
