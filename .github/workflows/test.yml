@@ -5,13 +5,14 @@ jobs:
   LowLevelTests:
     runs-on: ubuntu-latest
     strategy:
+      fail-fast: false
       matrix:
         compiler: [ { cc: gcc-10, cxx: g++-10 },
-                    { cc: gcc-11, cxx: g++-11 },
-                    { cc: clang-10, cxx: clang++-10 },
-                    { cc: clang-11, cxx: clang++-11 },
-                    { cc: clang-12, cxx: clang++-12 },
-                    { cc: clang-13, cxx: clang++-13 },
+                    #{ cc: gcc-11, cxx: g++-11 },
+                    #{ cc: clang-10, cxx: clang++-10 },
+                    #{ cc: clang-11, cxx: clang++-11 },
+                    #{ cc: clang-12, cxx: clang++-12 },
+                    #{ cc: clang-13, cxx: clang++-13 },
                     { cc: clang-14, cxx: clang++-14 } ]
         build: [ Release, Debug ]
         test: [ Test_Drivers_bno055_uart,
