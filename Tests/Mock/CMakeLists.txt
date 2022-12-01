@@ -96,6 +96,10 @@ function(make_test file_under_test)
     # Link against GTest libraries
     target_link_libraries(${TestExecutable} PRIVATE gtest gmock pthread)
 
+    # Enable coverage tracking
+    target_compile_options(${TestExecutable} PRIVATE --coverage)
+    target_link_options(${TestExecutable} PRIVATE --coverage)
+
     # Set the macro TEST_NAME to the name of the tested module
     string(REPLACE "/" "_" test_name ${file_under_test})
     target_compile_definitions(${TestExecutable} PRIVATE -DTEST_NAME=${test_name})
