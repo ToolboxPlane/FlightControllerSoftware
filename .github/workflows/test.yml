@@ -66,6 +66,9 @@ jobs:
     runs-on: ubuntu-latest
     needs: LowLevelTests
     steps:
+      - uses: actions/checkout@v2
+        with:
+          submodules: recursive
       - uses: actions/download-artifact@v3
         with:
           name: report
