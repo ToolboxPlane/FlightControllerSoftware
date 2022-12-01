@@ -5,6 +5,7 @@ set(MockedModules
         Drivers/bno055_uart
         Drivers/protobuf
         Drivers/sbus
+        Drivers/ppm
         HAL/adc
         HAL/i2c
         HAL/pwm16bit

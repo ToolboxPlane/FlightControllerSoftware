@@ -3,10 +3,8 @@ project(FlightController)
 
 if (${CMAKE_C_COMPILER} MATCHES "avr")
     add_executable(${PROJECT_NAME} main.c
-            Util/communication.c
-            Util/controller.c
-            Util/output.c
-            Components/imu.c
+            Application/controller.c
+            Application/error_handler.c
             Util/math.c)
     target_link_libraries(${PROJECT_NAME} ToolboxPlaneMessages Drivers)
     set_target_properties(${PROJECT_NAME} PROPERTIES OUTPUT_NAME "${PROJECT_NAME}.elf")

@@ -11,7 +11,6 @@ add_definitions(-DF_CPU=16000000ul)
 
 include_directories(${CMAKE_SOURCE_DIR}/Src)
 
-add_subdirectory(Src)
 if (${CMAKE_C_COMPILER} MATCHES "avr")
     message(STATUS "Building for AVR")
     set(AVR_FLAGS "-funsigned-char -funsigned-bitfields -fpack-struct -fshort-enums -O3 -mmcu=atmega2560")
@@ -22,5 +21,4 @@ else ()
     add_subdirectory(Tests)
 endif ()
 
-
-
+add_subdirectory(Src)

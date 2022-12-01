@@ -21,12 +21,12 @@ jobs:
                 Test_Drivers_sbus,
                 Test_Components_flightcomputer,
                 Test_Components_imu,
+                Test_Components_servo_motor
                 Test_Components_remote ]
     env:
       CC: ${{ matrix.compiler.cc }}
       CXX: ${{ matrix.compiler.cxx }}
-      GTEST_ARGS: --gtest_repeat=1000 --gtest_shuffle
-
+      GTEST_ARGS: --gtest_repeat=1000 --gtest_shuffle --gtest_output=${{ matrix.test }}.xml
     steps:
       - uses: actions/checkout@v2
         with:
@@ -56,3 +56,29 @@ jobs:
       - name: Test
         run: |
           valgrind ./build/Tests/LowLevel/${{ matrix.test }} ${GTEST_ARGS}
+           - name: Archive production artifacts
+      - uses: actions/upload-artifact@v3
+        with:
+          name: report
+          path: ${{ matrix.test }}.xml
+
+  ConsolidateResults:
+    runs-on: ubuntu-latest
+    needs: LowLevelTests
+    steps:
+      - uses: actions/download-artifact@v3
+        with:
+          name: report
+      - uses: actions/setup-node@v2
+      - name: Install report merger
+        run: npm install -g junit-report-merger
+      - name: Merge Results
+        run: jrm combined.xml "*.xml"
+      - uses: dorny/test-reporter@v1
+        if: always()
+        with:
+            path: combined.xml
+            reporter: java-junit
+            fail-on-error: true
+
+

@@ -26,3 +26,6 @@ target_link_libraries(Test_Components_remote PRIVATE Mock_Drivers_sbus)
 make_test(Components/flightcomputer)
 target_link_libraries(Test_Components_flightcomputer PRIVATE Mock_Drivers_protobuf)
 
+make_test(Components/servo_motor)
+target_link_libraries(Test_Components_servo_motor PRIVATE Mock_Drivers_ppm)
+
