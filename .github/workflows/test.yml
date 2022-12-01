@@ -27,7 +27,7 @@ jobs:
     env:
       CC: ${{ matrix.compiler.cc }}
       CXX: ${{ matrix.compiler.cxx }}
-      GTEST_ARGS: --gtest_repeat=1000 --gtest_shuffle --gtest_output=${{ matrix.test }}.xml
+      GTEST_ARGS: --gtest_repeat=1000 --gtest_shuffle --gtest_output=xml:${{ matrix.test }}.xml
     steps:
       - uses: actions/checkout@v2
         with:

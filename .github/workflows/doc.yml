@@ -19,5 +19,5 @@ jobs:
         with:
           GITHUB_TOKEN: ${{ secrets.GITHUBTOKEN }}
           BRANCH: gh-pages
-          FOLDER: deploy
+          FOLDER: doxy_out/html
           CLEAN: true
