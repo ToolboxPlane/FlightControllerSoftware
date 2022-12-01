@@ -1,8 +1,8 @@
-name: BuildAVR
+name: Documentation
 on: [ push ]
 
 jobs:
-  BuildAvr:
+  Build Doxygen:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
@@ -14,3 +14,10 @@ jobs:
           sudo apt-get install -y doxygen
       - name: Run doxygen
         run: doxygen
+      - name: Deploy
+        uses: JamesIves/github-pages-deploy-action@3.7.1
+        with:
+          GITHUB_TOKEN: ${{ secrets.GITHUBTOKEN }}
+          BRANCH: gh-pages
+          FOLDER: deploy
+          CLEAN: true

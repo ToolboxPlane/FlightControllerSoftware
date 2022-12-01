@@ -40,7 +40,7 @@ JTAG and OCD. The brownout detection level is set to 1.8V.
 avrdude -p m2560 -B 10 -c avrisp2 -U lfuse:w:0xef:m -U hfuse:w:0xc1:m -U efuse:w:0xfe:m
 ```
 
-## LEDs
+## LEDs TODO old
 
 Under normal use all leds should be either on or blinking.
 By inverting most imu_datas one can be sure that all leds are working.
@@ -59,11 +59,11 @@ If only a single led is off for a longer time, there is a some kind of problem
 | 6 | Use Flightcomputer as a setpoint source |
 | 7 | Not Failsave |
 
-## Package format
+## Package format TODO old
 
 The UART-Baud Rate is 115200.
 
-### FlightController Output (Transmitter ID 23)
+### FlightController Output (Transmitter ID 23) TODO old
 
 The output package is a 10 bit, 16 Channel Package with the following data:
 
@@ -88,11 +88,11 @@ The axis are according to DIN-9300.
 | 14 | Servo-Elevon-Left + 500 |
 | 15 | Servo-Elevon-Right + 500|
 
-### SBus Output (Transmitter ID 56)
+### SBus Output (Transmitter ID 56) TOOD old
 
 The package is a 11 bit, 16 Channel Package, with the same information as the sbus package.
 
-## What are all these different structs?
+## What are all these different structs? TODO old
 
 * `state`: The current state of the airplane as measured by the BNO055
 * `out_state`: The (desired) state of the outputs (servos and motors)

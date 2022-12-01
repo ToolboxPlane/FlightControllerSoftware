@@ -1,8 +1,8 @@
-name: BuildAVR
+name: Build
 on: [ push ]
 
 jobs:
-  BuildAvr:
+  Build:
     runs-on: ubuntu-latest
     strategy:
       matrix:

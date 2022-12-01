@@ -15,13 +15,13 @@ jobs:
                     { cc: clang-14, cxx: clang++-14 } ]
         build: [ Release, Debug ]
         test: [ Test_Drivers_bno055_uart,
-                Test_Drivers_bno055,
-                Test_Drivers_ppm,
-                Test_Drivers_protobuf,
-                Test_Drivers_sbus,
-                Test_Components_flightcomputer,
-                Test_Components_imu,
-                Test_Components_servo_motor
+                #Test_Drivers_bno055,
+                #Test_Drivers_ppm,
+                #Test_Drivers_protobuf,
+                #Test_Drivers_sbus,
+                #Test_Components_flightcomputer,
+                #Test_Components_imu,
+                #Test_Components_servo_motor
                 Test_Components_remote ]
     env:
       CC: ${{ matrix.compiler.cc }}
@@ -56,7 +56,6 @@ jobs:
       - name: Test
         run: |
           valgrind ./build/Tests/LowLevel/${{ matrix.test }} ${GTEST_ARGS}
-           - name: Archive production artifacts
       - uses: actions/upload-artifact@v3
         with:
           name: report
