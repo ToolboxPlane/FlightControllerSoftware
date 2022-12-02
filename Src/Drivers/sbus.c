@@ -6,10 +6,9 @@
 
 #include <HAL/uart.h>
 
-#define SBUS_UART 2
-
-#define SBUS_START_BYTE 0x0F
-#define SBUS_END_BYTE 0x00
+enum { SBUS_UART = 2 };
+enum { SBUS_START_BYTE = 0x0F };
+enum { SBUS_END_BYTE = 0x00 };
 
 static volatile sbus_data_t sbus_datas[2];
 static volatile uint8_t curr_sampling_data = 0;
@@ -33,6 +32,8 @@ static void sbus_uart_callback(uint8_t data) {
             if (data == SBUS_END_BYTE) {
                 curr_sampling_data = 1 - curr_sampling_data;
                 sbus_sampling_complete = true;
+            } else {
+                // TODO warning
             }
             byte_count = 0;
             break;

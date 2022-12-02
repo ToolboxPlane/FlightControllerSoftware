@@ -149,7 +149,7 @@ TEST(TEST_NAME, receive_pb_decode) {
             EXPECT_TRUE(protobuf_setpoint_available());
 
             auto setpoint = protobuf_get_setpoint();
-            EXPECT_EQ(setpoint.power, 1337);
+            EXPECT_EQ(setpoint.motor, 1337);
             EXPECT_EQ(setpoint.pitch, 17);
             EXPECT_EQ(setpoint.roll, 34);
         } else {
