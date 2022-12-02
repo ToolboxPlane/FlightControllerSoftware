@@ -1,11 +1,24 @@
 name: Documentation
 on: [ push ]
 
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+# Allow one concurrent deployment
+concurrency:
+  group: "pages"
+  cancel-in-progress: true
+
 jobs:
   BuildDoxygen:
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
         with:
           submodules: recursive
       - name: Install dependencies
@@ -14,10 +27,13 @@ jobs:
           sudo apt-get install -y doxygen
       - name: Run doxygen
         run: doxygen
-      - name: Deploy
-        uses: JamesIves/github-pages-deploy-action@3.7.1 # https://docs.github.com/en/pages/getting-started-with-github-pages/configuring-a-publishing-source-for-your-github-pages-site#creating-a-custom-github-actions-workflow-to-publish-your-site
+      - name: Setup Pages
+        uses: actions/configure-pages@v2
+      - name: Upload artifact
+        uses: actions/upload-pages-artifact@v1
         with:
-          GITHUB_TOKEN: ${{ secrets.GITHUBTOKEN }}
-          BRANCH: gh-pages
-          FOLDER: doxy_out/html
-          CLEAN: true
+          # Upload entire repository
+          path: doxy_out/html
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v1

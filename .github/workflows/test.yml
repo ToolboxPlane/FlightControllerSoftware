@@ -27,7 +27,8 @@ jobs:
     env:
       CC: ${{ matrix.compiler.cc }}
       CXX: ${{ matrix.compiler.cxx }}
-      GTEST_ARGS: --gtest_repeat=1000 --gtest_shuffle --gtest_output=xml:${{ matrix.test }}.xml
+      REPORT_FILE: ${{ matrix.cc }}_${{ matrix.build }}_${{ matrix.test }}.xml
+      GTEST_ARGS: --gtest_repeat=1000 --gtest_shuffle --gtest_output=xml:${{ REPORT_FILE }}
     steps:
       - uses: actions/checkout@v2
         with:
@@ -56,15 +57,16 @@ jobs:
           make -j$(nproc) ${{ matrix.test }}
       - name: Test
         run: |
-          valgrind ./build/Tests/LowLevel/${{ matrix.test }} ${GTEST_ARGS}
+          valgrind ./build/Tests/LowLevel/${{ matrix.test }} ${{ GTEST_ARGS }}
       - uses: actions/upload-artifact@v3
         with:
           name: report
-          path: ${{ matrix.test }}.xml
+          path: ${{ REPORT_FILE }}
 
   ConsolidateResults:
     runs-on: ubuntu-latest
     needs: LowLevelTests
+    if: ${{ always() }}
     steps:
       - uses: actions/checkout@v2
         with:

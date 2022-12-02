@@ -102,6 +102,9 @@ function(make_test file_under_test)
 
     # Set the macro TEST_NAME to the name of the tested module
     string(REPLACE "/" "_" test_name ${file_under_test})
+    string(REPLACE "." "_" compiler_version ${CMAKE_C_COMPILER_VERSION})
+    set(test_name "${CMAKE_C_COMPILER_ID}_${compiler_version}_${CMAKE_BUILD_TYPE}_${test_name}")
+    message(STATUS ${test_name})
     target_compile_definitions(${TestExecutable} PRIVATE -DTEST_NAME=${test_name})
 endfunction()
 
