@@ -8,12 +8,12 @@ jobs:
       fail-fast: false
       matrix:
         compiler: [ { cc: gcc-10, cxx: g++-10 },
-                    { cc: gcc-11, cxx: g++-11 },
-                    { cc: clang-10, cxx: clang++-10 },
-                    { cc: clang-11, cxx: clang++-11 },
-                    { cc: clang-12, cxx: clang++-12 },
-                    { cc: clang-13, cxx: clang++-13 },
-                    { cc: clang-14, cxx: clang++-14 } ]
+                    { cc: gcc-11, cxx: g++-11 } ]
+                   # { cc: clang-10, cxx: clang++-10 },
+                   # { cc: clang-11, cxx: clang++-11 },
+                   # { cc: clang-12, cxx: clang++-12 },
+                   # { cc: clang-13, cxx: clang++-13 },
+                   # { cc: clang-14, cxx: clang++-14 } ]
         build: [ Release, Debug ]
         test: [ Test_Drivers_bno055_uart,
                 Test_Drivers_bno055,
@@ -38,13 +38,13 @@ jobs:
           sudo apt-get update
           sudo apt-get install -y wget g++-9 g++-10 g++-11 protobuf-compiler valgrind
           # Taken from https://apt.llvm.org/
-          wget https://apt.llvm.org/llvm.sh
-          chmod +x llvm.sh
-          sudo ./llvm.sh 10
-          sudo ./llvm.sh 11
-          sudo ./llvm.sh 12
-          sudo ./llvm.sh 13
-          sudo ./llvm.sh 14
+          #wget https://apt.llvm.org/llvm.sh
+          #chmod +x llvm.sh
+          #sudo ./llvm.sh 10
+          #sudo ./llvm.sh 11
+          #sudo ./llvm.sh 12
+          #sudo ./llvm.sh 13
+          #sudo ./llvm.sh 14
       - name: Set up Build
         run: |
           mkdir build

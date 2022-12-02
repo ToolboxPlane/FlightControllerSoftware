@@ -1,12 +1,12 @@
 /**
- * @file input.h
+ * @file imu.h
  * @author paul
  * @date 18.04.19
  * @brief input @TODO
  */
 
-#ifndef FLIGHTCONTROLLER_INPUT_H
-#define FLIGHTCONTROLLER_INPUT_H
+#ifndef FLIGHTCONTROLLER_IMU_H
+#define FLIGHTCONTROLLER_IMU_H
 
 #include <stdbool.h>
 #include <stdint.h>
@@ -23,4 +23,4 @@ void imu_start_sampling(void);
 imu_data_t imu_get_latest_data(void);
 bool imu_data_available(void);
 
-#endif // FLIGHTCONTROLLER_INPUT_H
+#endif // FLIGHTCONTROLLER_IMU_H
