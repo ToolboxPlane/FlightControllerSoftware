@@ -36,21 +36,21 @@ TEST(TEST_NAME, read_system_status) {
     auto bnoUartHandle = mock::bno055_uart.getHandle();
     bno055_read_system_status(nullptr, nullptr);
     // [https://cdn-shop.adafruit.com/datasheets/BST_BNO055_DS000_12.pdf P.51]
-    EXPECT_TRUE(bnoUartHandle.functionGotCalled<bno055_uart_read_register>(0x39, 1, nullptr, nullptr, 1));
+    EXPECT_TRUE(bnoUartHandle.functionGotCalled<bno055_uart_read_register>(0x39, 1, nullptr, nullptr));
 }
 
 TEST(TEST_NAME, read_system_error) {
     auto bnoUartHandle = mock::bno055_uart.getHandle();
     bno055_read_system_error(nullptr, nullptr);
     // [https://cdn-shop.adafruit.com/datasheets/BST_BNO055_DS000_12.pdf P.51]
-    EXPECT_TRUE(bnoUartHandle.functionGotCalled<bno055_uart_read_register>(0x3A, 1, nullptr, nullptr, 1));
+    EXPECT_TRUE(bnoUartHandle.functionGotCalled<bno055_uart_read_register>(0x3A, 1, nullptr, nullptr));
 }
 
 TEST(TEST_NAME, read_calib_status) {
     auto bnoUartHandle = mock::bno055_uart.getHandle();
     bno055_read_calib_status(nullptr, nullptr);
     // [https://cdn-shop.adafruit.com/datasheets/BST_BNO055_DS000_12.pdf P.51]
-    EXPECT_TRUE(bnoUartHandle.functionGotCalled<bno055_uart_read_register>(0x35, 1, nullptr, nullptr, 1));
+    EXPECT_TRUE(bnoUartHandle.functionGotCalled<bno055_uart_read_register>(0x35, 1, nullptr, nullptr));
 }
 
 TEST(TEST_NAME, write_opr_mode) {
@@ -121,68 +121,26 @@ TEST(TEST_NAME, read_self_test) {
     auto bnoUartHandle = mock::bno055_uart.getHandle();
     bno055_read_self_test(nullptr, nullptr);
     // [https://cdn-shop.adafruit.com/datasheets/BST_BNO055_DS000_12.pdf P.51]
-    EXPECT_TRUE(bnoUartHandle.functionGotCalled<bno055_uart_read_register>(0x36, 1, nullptr, nullptr, 1));
+    EXPECT_TRUE(bnoUartHandle.functionGotCalled<bno055_uart_read_register>(0x36, 1, nullptr, nullptr));
 }
 
-TEST(TEST_NAME, read_acc_x_mul_100) {
+TEST(TEST_NAME, read_acc_xyz_mul_100) {
     auto bnoUartHandle = mock::bno055_uart.getHandle();
-    bno055_read_acc_x_mul_100(nullptr, nullptr);
+    bno055_read_acc_xyz_mul_100(nullptr, nullptr);
     // [https://cdn-shop.adafruit.com/datasheets/BST_BNO055_DS000_12.pdf P.51]
-    EXPECT_TRUE(bnoUartHandle.functionGotCalled<bno055_uart_read_register>(0x08, 2, nullptr, nullptr, 1));
-}
-
-TEST(TEST_NAME, read_acc_y_mul_100) {
-    auto bnoUartHandle = mock::bno055_uart.getHandle();
-    bno055_read_acc_y_mul_100(nullptr, nullptr);
-    // [https://cdn-shop.adafruit.com/datasheets/BST_BNO055_DS000_12.pdf P.51]
-    EXPECT_TRUE(bnoUartHandle.functionGotCalled<bno055_uart_read_register>(0x0A, 2, nullptr, nullptr, 1));
-}
-
-TEST(TEST_NAME, read_acc_z_mul_100) {
-    auto bnoUartHandle = mock::bno055_uart.getHandle();
-    bno055_read_acc_z_mul_100(nullptr, nullptr);
-    // [https://cdn-shop.adafruit.com/datasheets/BST_BNO055_DS000_12.pdf P.51]
-    EXPECT_TRUE(bnoUartHandle.functionGotCalled<bno055_uart_read_register>(0x0C, 2, nullptr, nullptr, 1));
+    EXPECT_TRUE(bnoUartHandle.functionGotCalled<bno055_uart_read_register>(0x08, 6, nullptr, nullptr));
 }
 
 TEST(TEST_NAME, read_gyr_x_mul_16) {
     auto bnoUartHandle = mock::bno055_uart.getHandle();
-    bno055_read_gyr_x_mul_16(nullptr, nullptr);
+    bno055_read_gyr_xyz_mul_16(nullptr, nullptr);
     // [https://cdn-shop.adafruit.com/datasheets/BST_BNO055_DS000_12.pdf P.51]
-    EXPECT_TRUE(bnoUartHandle.functionGotCalled<bno055_uart_read_register>(0x14, 2, nullptr, nullptr, 1));
-}
-
-TEST(TEST_NAME, read_gyr_y_mul_16) {
-    auto bnoUartHandle = mock::bno055_uart.getHandle();
-    bno055_read_gyr_y_mul_16(nullptr, nullptr);
-    // [https://cdn-shop.adafruit.com/datasheets/BST_BNO055_DS000_12.pdf P.51]
-    EXPECT_TRUE(bnoUartHandle.functionGotCalled<bno055_uart_read_register>(0x16, 2, nullptr, nullptr, 1));
-}
-
-TEST(TEST_NAME, read_gyr_z_mul_16) {
-    auto bnoUartHandle = mock::bno055_uart.getHandle();
-    bno055_read_gyr_z_mul_16(nullptr, nullptr);
-    // [https://cdn-shop.adafruit.com/datasheets/BST_BNO055_DS000_12.pdf P.51]
-    EXPECT_TRUE(bnoUartHandle.functionGotCalled<bno055_uart_read_register>(0x18, 2, nullptr, nullptr, 1));
+    EXPECT_TRUE(bnoUartHandle.functionGotCalled<bno055_uart_read_register>(0x14, 6, nullptr, nullptr));
 }
 
 TEST(TEST_NAME, read_eul_x_2_mul_16) {
     auto bnoUartHandle = mock::bno055_uart.getHandle();
-    bno055_read_eul_x_2_mul_16(nullptr, nullptr);
+    bno055_read_eul_xyz_2_mul_16(nullptr, nullptr);
     // [https://cdn-shop.adafruit.com/datasheets/BST_BNO055_DS000_12.pdf P.51]
-    EXPECT_TRUE(bnoUartHandle.functionGotCalled<bno055_uart_read_register>(0x1A, 2, nullptr, nullptr, 1));
-}
-
-TEST(TEST_NAME, read_eul_y_2_mul_16) {
-    auto bnoUartHandle = mock::bno055_uart.getHandle();
-    bno055_read_eul_y_2_mul_16(nullptr, nullptr);
-    // [https://cdn-shop.adafruit.com/datasheets/BST_BNO055_DS000_12.pdf P.51]
-    EXPECT_TRUE(bnoUartHandle.functionGotCalled<bno055_uart_read_register>(0x1C, 2, nullptr, nullptr, 1));
-}
-
-TEST(TEST_NAME, read_eul_z_2_mul_16) {
-    auto bnoUartHandle = mock::bno055_uart.getHandle();
-    bno055_read_eul_z_2_mul_16(nullptr, nullptr);
-    // [https://cdn-shop.adafruit.com/datasheets/BST_BNO055_DS000_12.pdf P.51]
-    EXPECT_TRUE(bnoUartHandle.functionGotCalled<bno055_uart_read_register>(0x1E, 2, nullptr, nullptr, 1));
+    EXPECT_TRUE(bnoUartHandle.functionGotCalled<bno055_uart_read_register>(0x1A, 6, nullptr, nullptr));
 }

@@ -12,10 +12,11 @@
 
 void error_handler_init(void) {
     DDRL = 0xFF;
+    PORTL = 0;
 }
 
 void error_handler_handle_error(error_group_t group, uint8_t error_id) {
-    uint8_t code = (group & 0x0F) << 4 | (error_id & 0x0F);
+    uint8_t code = (error_id & 0x0F) << 4 | (group & 0x0F);
     PORTL = code;
     while (true) {
         wdt_reset();
@@ -23,6 +24,6 @@ void error_handler_handle_error(error_group_t group, uint8_t error_id) {
 }
 
 void error_handler_handle_warning(error_group_t group, uint8_t error_id) {
-    uint8_t code = (group & 0x0F) << 4 | (error_id & 0x0F);
+    uint8_t code = (error_id & 0x0F) << 4 | (group & 0x0F);
     PORTL = code;
 }

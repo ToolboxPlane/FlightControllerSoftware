@@ -13,7 +13,9 @@ set(MockedModules
         HAL/timer8bit
         HAL/uart
         Messages/MessageEncoding
-        Messages/MessageDecoding)
+        Messages/MessageDecoding
+        Application/controller
+        Application/error_handler)
 
 set(MockedSystemModules
         util/delay

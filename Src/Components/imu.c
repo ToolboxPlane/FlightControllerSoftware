@@ -7,21 +7,16 @@
 
 #include "imu.h"
 
+#include <Application/error_handler.h>
 #include <Drivers/bno055.h>
 #include <util/delay.h>
 
 enum { INIT_RESPONSE_TIMEOUT_MS = 20 };
 
 typedef enum {
-    ROLL,
-    PITCH,
-    HEADING,
-    D_ROLL,
-    D_PITCH,
-    D_HEADING,
-    ACC_X,
-    ACC_Y,
-    ACC_Z,
+    EUL,
+    GYR,
+    ACC,
     STATUS,
     ERROR_REG,
     CALIB_STAT,
@@ -42,54 +37,30 @@ static void bno_init_callback(bno055_response_t response) {
 
 static void bno_sample_callback(bno055_response_t response) {
     static bno055_status_t bno_status;
-    static bno055_error_t bno_erro;
+    static bno055_error_t bno_error;
     static uint8_t calib_status;
 
     imu_data_t *imu_data = (imu_data_t *) (&imu_datas[current_sample_state_id]);
     if (response == read_success) {
         switch (bno_sampling_state) {
-            case ROLL:
-                bno_sampling_state = PITCH;
-                bno055_read_eul_y_2_mul_16(&imu_data->pitch_mul_16, bno_sample_callback);
+            case EUL:
+                bno_sampling_state = GYR;
+                bno055_read_gyr_xyz_mul_16(&imu_data->d_heading_mul_16, bno_sample_callback);
                 break;
-            case PITCH:
-                bno_sampling_state = HEADING;
-                bno055_read_eul_z_2_mul_16(&imu_data->roll_mul_16, bno_sample_callback); // Roll is actually heading
+            case GYR:
+                bno_sampling_state = ACC;
+                bno055_read_acc_xyz_mul_100(&imu_data->acc_x_mul_100, bno_sample_callback);
                 break;
-            case HEADING:
-                bno_sampling_state = D_ROLL;
-                bno055_read_gyr_x_mul_16(&imu_data->d_heading_mul_16, bno_sample_callback);
-                break;
-            case D_ROLL:
-                bno_sampling_state = D_PITCH;
-                bno055_read_gyr_y_mul_16(&imu_data->d_pitch_mul_16, bno_sample_callback);
-                break;
-            case D_PITCH:
-                bno_sampling_state = D_HEADING;
-                bno055_read_gyr_z_mul_16(&imu_data->d_roll_mul_16, bno_sample_callback);
-                break;
-            case D_HEADING:
-                bno_sampling_state = ACC_X;
-                bno055_read_acc_x_mul_100(&imu_data->acc_x_mul_100, bno_sample_callback);
-                break;
-            case ACC_X:
-                bno_sampling_state = ACC_Y;
-                bno055_read_acc_y_mul_100(&imu_data->acc_y_mul_100, bno_sample_callback);
-                break;
-            case ACC_Y:
-                bno_sampling_state = ACC_Z;
-                bno055_read_acc_z_mul_100(&imu_data->acc_z_mul_100, bno_sample_callback);
-                break;
-            case ACC_Z:
+            case ACC:
                 bno_sampling_state = STATUS;
                 bno055_read_system_status(&bno_status, bno_sample_callback);
                 break;
             case STATUS:
                 if (bno_status != sensor_fusion_algorithm_running) {
+                    error_handler_handle_error(IMU, IMU_ERROR_STATUS);
                     imu_data->imu_ok = false;
                     bno_sampling_state = ERROR_REG;
-                    // TODO warning
-                    bno055_read_system_error(&bno_erro, bno_sample_callback);
+                    bno055_read_system_error(&bno_error, bno_sample_callback);
                 } else {
                     imu_data->imu_ok = true;
                     bno_sampling_state = CALIB_STAT;
@@ -99,25 +70,25 @@ static void bno_sample_callback(bno055_response_t response) {
             case ERROR_REG:
                 bno_sampling_state = CALIB_STAT;
                 bno055_read_calib_status(&calib_status, bno_sample_callback);
-                // TODO warning
+                // TODO handling
                 break;
             case CALIB_STAT:
                 current_sample_state_id = 1 - current_sample_state_id;
                 sampling_complete = true;
-                imu_start_sampling();
+                //imu_start_sampling();
                 break;
             default:
-                // TODO error
+                error_handler_handle_error(IMU, IMU_ERROR_DEFAULT);
                 imu_data->imu_ok = false;
                 current_sample_state_id = 1 - current_sample_state_id;
                 imu_start_sampling();
                 break;
         }
     } else {
+        error_handler_handle_error(IMU, IMU_ERROR_UART);
         imu_data->imu_ok = false;
         current_sample_state_id = 1 - current_sample_state_id;
         imu_start_sampling();
-        // TODO warning
     }
 }
 
@@ -134,7 +105,7 @@ void imu_init(void) {
     bno055_write_opr_mode(config_mode, bno_init_callback);
     _delay_ms(INIT_RESPONSE_TIMEOUT_MS);
     if (!callback_ready || init_response != write_success) {
-        // TODO error
+        error_handler_handle_error(IMU, IMU_ERROR_INIT_CONFIG_MODE);
         return;
     }
 
@@ -144,11 +115,11 @@ void imu_init(void) {
     bno055_read_self_test(&self_test_result, bno_init_callback);
     _delay_ms(INIT_RESPONSE_TIMEOUT_MS);
     if (!callback_ready || init_response != read_success) {
-        // TODO error
+        error_handler_handle_error(IMU, IMU_ERROR_INIT_SELF_TEST_WRITE);
         return;
     }
     if (self_test_result != 0xF) {
-        // TODO error
+        error_handler_handle_error(IMU, IMU_ERROR_INIT_SELF_TEST);
         return;
     }
 
@@ -157,7 +128,7 @@ void imu_init(void) {
     bno055_write_unit_selection(mps2, dps, degrees, celsius, windows, bno_init_callback);
     _delay_ms(INIT_RESPONSE_TIMEOUT_MS);
     if (!callback_ready || init_response != write_success) {
-        // TODO error
+        error_handler_handle_error(IMU, IMU_ERROR_INIT_UNIT_SEL);
         return;
     }
 
@@ -175,7 +146,7 @@ void imu_init(void) {
     bno055_write_remap_axis(y_axis, x_axis, z_axis, bno_init_callback);
     _delay_ms(INIT_RESPONSE_TIMEOUT_MS);
     if (!callback_ready || init_response != write_success) {
-        // TODO error
+        error_handler_handle_error(IMU, IMU_ERROR_INIT_REMAP_AXIS);
         return;
     }
 
@@ -183,7 +154,7 @@ void imu_init(void) {
     bno055_write_remap_axis_sign(positive, positive, neg, bno_init_callback);
     _delay_ms(INIT_RESPONSE_TIMEOUT_MS);
     if (!callback_ready || init_response != write_success) {
-        // TODO error
+        error_handler_handle_error(IMU, IMU_ERROR_INIT_REMAP_AXIS_SIGN);
         return;
     }
 
@@ -192,15 +163,15 @@ void imu_init(void) {
     bno055_write_opr_mode(ndof_fmc_off, bno_init_callback);
     _delay_ms(INIT_RESPONSE_TIMEOUT_MS);
     if (!callback_ready || init_response != write_success) {
-        // TODO error
+        error_handler_handle_error(IMU, IMU_ERROR_INIT_NDOF_FMC_OFF);
         return;
     }
 }
 
 void imu_start_sampling(void) {
-    bno_sampling_state = ROLL;
+    bno_sampling_state = EUL;
     imu_data_t *imu_data = (imu_data_t *) (&imu_datas[current_sample_state_id]);
-    bno055_read_eul_x_2_mul_16(&imu_data->heading_mul_16, bno_sample_callback); // Heading is actually roll
+    bno055_read_eul_xyz_2_mul_16(&imu_data->heading_mul_16, bno_sample_callback);
 }
 
 imu_data_t imu_get_latest_data(void) {

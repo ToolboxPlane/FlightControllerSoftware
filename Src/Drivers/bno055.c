@@ -140,15 +140,15 @@ void bno055_write_reset(bno_callback_t callback) {
 }
 
 void bno055_read_system_status(bno055_status_t *out, bno_callback_t callback) {
-    bno055_uart_read_register(BNO055_SYS_STAT_ADDR, 1, callback, out, 1);
+    bno055_uart_read_register(BNO055_SYS_STAT_ADDR, 1, callback, out);
 }
 
 void bno055_read_system_error(bno055_error_t *out, bno_callback_t callback) {
-    bno055_uart_read_register(BNO055_SYS_ERR_ADDR, 1, callback, out, 1);
+    bno055_uart_read_register(BNO055_SYS_ERR_ADDR, 1, callback, out);
 }
 
 void bno055_read_calib_status(uint8_t *out, bno_callback_t callback) {
-    bno055_uart_read_register(BNO055_CALIB_STAT_ADDR, 1, callback, out, 1);
+    bno055_uart_read_register(BNO055_CALIB_STAT_ADDR, 1, callback, out);
 }
 
 void bno055_write_remap_axis(bno055_axis_remap_axis_t new_x, bno055_axis_remap_axis_t new_y,
@@ -164,41 +164,17 @@ void bno055_write_remap_axis_sign(bno055_axis_remap_sign_t new_x_sign, bno055_ax
 }
 
 void bno055_read_self_test(uint8_t *out, bno_callback_t callback) {
-    bno055_uart_read_register(BNO055_SELFTEST_RESULT_ADDR, 1, callback, out, 1);
+    bno055_uart_read_register(BNO055_SELFTEST_RESULT_ADDR, 1, callback, out);
 }
 
-void bno055_read_acc_x_mul_100(int16_t *out, bno_callback_t callback) {
-    bno055_uart_read_register(BNO055_ACCEL_DATA_X_LSB_ADDR, 2, callback, out, 1);
+void bno055_read_acc_xyz_mul_100(int16_t *out, bno_callback_t callback) {
+    bno055_uart_read_register(BNO055_ACCEL_DATA_X_LSB_ADDR, 2 * 3, callback, out);
 }
 
-void bno055_read_acc_y_mul_100(int16_t *out, bno_callback_t callback) {
-    bno055_uart_read_register(BNO055_ACCEL_DATA_Y_LSB_ADDR, 2, callback, out, 1);
+void bno055_read_gyr_xyz_mul_16(int16_t *out, bno_callback_t callback) {
+    bno055_uart_read_register(BNO055_GYRO_DATA_X_LSB_ADDR, 2 * 3, callback, out);
 }
 
-void bno055_read_acc_z_mul_100(int16_t *out, bno_callback_t callback) {
-    bno055_uart_read_register(BNO055_ACCEL_DATA_Z_LSB_ADDR, 2, callback, out, 1);
-}
-
-void bno055_read_gyr_x_mul_16(int16_t *out, bno_callback_t callback) {
-    bno055_uart_read_register(BNO055_GYRO_DATA_X_LSB_ADDR, 2, callback, out, 1);
-}
-
-void bno055_read_gyr_y_mul_16(int16_t *out, bno_callback_t callback) {
-    bno055_uart_read_register(BNO055_GYRO_DATA_Y_LSB_ADDR, 2, callback, out, 1);
-}
-
-void bno055_read_gyr_z_mul_16(int16_t *out, bno_callback_t callback) {
-    bno055_uart_read_register(BNO055_GYRO_DATA_Z_LSB_ADDR, 2, callback, out, 1);
-}
-
-void bno055_read_eul_x_2_mul_16(int16_t *out, bno_callback_t callback) {
-    bno055_uart_read_register(BNO055_EULER_X_LSB_ADDR, 2, callback, out, 1);
-}
-
-void bno055_read_eul_y_2_mul_16(int16_t *out, bno_callback_t callback) {
-    bno055_uart_read_register(BNO055_EULER_Y_LSB_ADDR, 2, callback, out, 1);
-}
-
-void bno055_read_eul_z_2_mul_16(int16_t *out, bno_callback_t callback) {
-    bno055_uart_read_register(BNO055_EULER_Z_LSB_ADDR, 2, callback, out, 1);
+void bno055_read_eul_xyz_2_mul_16(int16_t *out, bno_callback_t callback) {
+    bno055_uart_read_register(BNO055_EULER_X_LSB_ADDR, 2 * 3, callback, out);
 }

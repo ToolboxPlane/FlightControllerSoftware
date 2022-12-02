@@ -6,6 +6,7 @@
  */
 #include "system.h"
 
+#include <Application/error_handler.h>
 #include <HAL/timer8bit.h>
 #include <avr/interrupt.h>
 #include <avr/wdt.h>
@@ -16,25 +17,28 @@ static void internal_timer_callbacK(void) {
     callback();
     uint8_t time = timer_8bit_get_count();
     if (time > 200) {
-        // TODO warn, find number
+        error_handler_handle_warning(SYSTEM, SYSTEM_ERROR_TIMER_RUNTIME);
     }
 }
 
-void system_init(timer_callback_t timer_callback) {
+void system_pre_init(timer_callback_t timer_callback) {
     callback = timer_callback;
 
     cli();
-    // Watchdog
     if (MCUSR & (1U << WDRF)) {
-        //error_handler_handle_warning(SYSTEM, 1);
-    } else if (MCUSR & (1U << BORF)) { // Brownout
-        //error_handler_handle_warning(SYSTEM, 2);
+        error_handler_handle_warning(SYSTEM, SYSTEM_ERROR_WATCHDOG);
+    } else if (MCUSR & (1U << BORF)) {
+        error_handler_handle_warning(SYSTEM, SYSTEM_ERROR_BROWNOUT);
     }
     MCUSR = 0;
 
+    wdt_enable(WDTO_250MS);
+    sei();
+}
+
+void system_post_init(void) {
     //  Runs at 16.384ms interval, the BNO055 provides data at 100Hz, the output can be updated at 50Hz
     timer_8bit_init(prescaler_1024, &internal_timer_callbacK);
-    sei();
 
     wdt_enable(WDTO_30MS);
 }

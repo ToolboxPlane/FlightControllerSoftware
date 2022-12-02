@@ -26,7 +26,6 @@ typedef enum {
 
     // From Library
     callback_buffer_invalid,
-    callback_length_invalid,
     invalid_sync
 } bno055_response_t;
 
@@ -36,7 +35,7 @@ void bno055_uart_init(void);
 
 void bno055_uart_write_register(uint8_t reg, const uint8_t *data, uint8_t len, bno_callback_t callback);
 
-void bno055_uart_read_register(uint8_t reg, uint8_t len, bno_callback_t callback, void *result, uint8_t div);
+void bno055_uart_read_register(uint8_t reg, uint8_t len, bno_callback_t callback, void *result);
 
 
 #endif // FLIGHTCONTROLLER_BNO055_UART_H

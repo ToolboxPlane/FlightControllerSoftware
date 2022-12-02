@@ -19,6 +19,7 @@ target_link_libraries(Test_Drivers_protobuf PRIVATE Mock_Messages_MessageEncodin
 make_test(Components/imu)
 target_link_libraries(Test_Components_imu PRIVATE Mock_Drivers_bno055)
 target_link_libraries(Test_Components_imu PRIVATE Mock_util_delay)
+target_link_libraries(Test_Components_imu PRIVATE Mock_Application_error_handler)
 
 make_test(Components/remote)
 target_link_libraries(Test_Components_remote PRIVATE Mock_Drivers_sbus)

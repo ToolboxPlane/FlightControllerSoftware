@@ -1,3 +1,4 @@
+#include <Mock/Application/error_handler.hpp>
 #include <Mock/Drivers/bno055.hpp>
 #include <Mock/util/delay.hpp>
 #include <gtest/gtest.h>
@@ -28,7 +29,7 @@ TEST(TEST_NAME, init__success) {
             [](bno055_axis_remap_sign_t /*new_x_sign*/, bno055_axis_remap_sign_t /*new_y_sign*/,
                bno055_axis_remap_sign_t /*new_z_sign*/, bno_callback_t callback) { callback(write_success); });
 
-    EXPECT_TRUE(imu_init());
+    imu_init();
     EXPECT_FALSE(imu_get_latest_data().imu_ok);
 
     EXPECT_TRUE(bnoHandle.functionGotCalled<bno055_init>());
@@ -44,6 +45,7 @@ TEST(TEST_NAME, init__success) {
 TEST(TEST_NAME, init__opr_mode_error) {
     auto bnoHandle = mock::bno055.getHandle();
     auto delayHandle = mock::delay.getHandle();
+    auto errorHandlerHandle = mock::error_handler.getHandle();
 
     bnoHandle.overrideFunc<bno055_write_opr_mode>(
             [](auto /*op_mode*/, bno_callback_t callback) { callback(write_fail); });
@@ -63,7 +65,8 @@ TEST(TEST_NAME, init__opr_mode_error) {
             [](bno055_axis_remap_sign_t /*new_x_sign*/, bno055_axis_remap_sign_t /*new_y_sign*/,
                bno055_axis_remap_sign_t /*new_z_sign*/, bno_callback_t callback) { callback(write_success); });
 
-    EXPECT_FALSE(imu_init());
+    imu_init();
+    EXPECT_TRUE(errorHandlerHandle.functionGotCalled<error_handler_handle_error>(IMU, IMU_ERROR_INIT_CONFIG_MODE));
     EXPECT_FALSE(imu_get_latest_data().imu_ok);
     EXPECT_FALSE(imu_data_available());
 }
@@ -71,6 +74,7 @@ TEST(TEST_NAME, init__opr_mode_error) {
 TEST(TEST_NAME, init__self_test_error) {
     auto bnoHandle = mock::bno055.getHandle();
     auto delayHandle = mock::delay.getHandle();
+    auto errorHandlerHandle = mock::error_handler.getHandle();
 
     bnoHandle.overrideFunc<bno055_write_opr_mode>(
             [](auto /*op_mode*/, bno_callback_t callback) { callback(write_success); });
@@ -90,7 +94,8 @@ TEST(TEST_NAME, init__self_test_error) {
             [](bno055_axis_remap_sign_t /*new_x_sign*/, bno055_axis_remap_sign_t /*new_y_sign*/,
                bno055_axis_remap_sign_t /*new_z_sign*/, bno_callback_t callback) { callback(write_success); });
 
-    EXPECT_FALSE(imu_init());
+    imu_init();
+    EXPECT_TRUE(errorHandlerHandle.functionGotCalled<error_handler_handle_error>(IMU, IMU_ERROR_INIT_CONFIG_MODE));
     EXPECT_FALSE(imu_get_latest_data().imu_ok);
     EXPECT_FALSE(imu_data_available());
 }
@@ -98,6 +103,7 @@ TEST(TEST_NAME, init__self_test_error) {
 TEST(TEST_NAME, init__self_test_fail) {
     auto bnoHandle = mock::bno055.getHandle();
     auto delayHandle = mock::delay.getHandle();
+    auto errorHandlerHandle = mock::error_handler.getHandle();
 
     bnoHandle.overrideFunc<bno055_write_opr_mode>(
             [](auto /*op_mode*/, bno_callback_t callback) { callback(write_success); });
@@ -117,7 +123,8 @@ TEST(TEST_NAME, init__self_test_fail) {
             [](bno055_axis_remap_sign_t /*new_x_sign*/, bno055_axis_remap_sign_t /*new_y_sign*/,
                bno055_axis_remap_sign_t /*new_z_sign*/, bno_callback_t callback) { callback(write_success); });
 
-    EXPECT_FALSE(imu_init());
+    imu_init();
+    EXPECT_TRUE(errorHandlerHandle.functionGotCalled<error_handler_handle_error>(IMU, IMU_ERROR_INIT_CONFIG_MODE));
     EXPECT_FALSE(imu_get_latest_data().imu_ok);
     EXPECT_FALSE(imu_data_available());
 }
@@ -125,6 +132,7 @@ TEST(TEST_NAME, init__self_test_fail) {
 TEST(TEST_NAME, init__unit_sel_error) {
     auto bnoHandle = mock::bno055.getHandle();
     auto delayHandle = mock::delay.getHandle();
+    auto errorHandlerHandle = mock::error_handler.getHandle();
 
     bnoHandle.overrideFunc<bno055_write_opr_mode>(
             [](auto /*op_mode*/, bno_callback_t callback) { callback(write_success); });
@@ -143,7 +151,8 @@ TEST(TEST_NAME, init__unit_sel_error) {
             [](bno055_axis_remap_sign_t /*new_x_sign*/, bno055_axis_remap_sign_t /*new_y_sign*/,
                bno055_axis_remap_sign_t /*new_z_sign*/, bno_callback_t callback) { callback(write_success); });
 
-    EXPECT_FALSE(imu_init());
+    imu_init();
+    EXPECT_TRUE(errorHandlerHandle.functionGotCalled<error_handler_handle_error>(IMU, IMU_ERROR_INIT_CONFIG_MODE));
     EXPECT_FALSE(imu_get_latest_data().imu_ok);
     EXPECT_FALSE(imu_data_available());
 }
@@ -151,6 +160,7 @@ TEST(TEST_NAME, init__unit_sel_error) {
 TEST(TEST_NAME, init__remap_fail) {
     auto bnoHandle = mock::bno055.getHandle();
     auto delayHandle = mock::delay.getHandle();
+    auto errorHandlerHandle = mock::error_handler.getHandle();
 
     bnoHandle.overrideFunc<bno055_write_opr_mode>(
             [](auto /*op_mode*/, bno_callback_t callback) { callback(write_success); });
@@ -170,7 +180,8 @@ TEST(TEST_NAME, init__remap_fail) {
             [](bno055_axis_remap_sign_t /*new_x_sign*/, bno055_axis_remap_sign_t /*new_y_sign*/,
                bno055_axis_remap_sign_t /*new_z_sign*/, bno_callback_t callback) { callback(write_success); });
 
-    EXPECT_FALSE(imu_init());
+    imu_init();
+    EXPECT_TRUE(errorHandlerHandle.functionGotCalled<error_handler_handle_error>(IMU, IMU_ERROR_INIT_CONFIG_MODE));
     EXPECT_FALSE(imu_get_latest_data().imu_ok);
     EXPECT_FALSE(imu_data_available());
 }
@@ -178,6 +189,7 @@ TEST(TEST_NAME, init__remap_fail) {
 TEST(TEST_NAME, init__remap_sign_fail) {
     auto bnoHandle = mock::bno055.getHandle();
     auto delayHandle = mock::delay.getHandle();
+    auto errorHandlerHandle = mock::error_handler.getHandle();
 
     bnoHandle.overrideFunc<bno055_write_opr_mode>(
             [](auto /*op_mode*/, bno_callback_t callback) { callback(write_success); });
@@ -197,15 +209,18 @@ TEST(TEST_NAME, init__remap_sign_fail) {
             [](bno055_axis_remap_sign_t /*new_x_sign*/, bno055_axis_remap_sign_t /*new_y_sign*/,
                bno055_axis_remap_sign_t /*new_z_sign*/, bno_callback_t callback) { callback(write_fail); });
 
-    EXPECT_FALSE(imu_init());
+    imu_init();
+    EXPECT_TRUE(errorHandlerHandle.functionGotCalled<error_handler_handle_error>(IMU, IMU_ERROR_INIT_CONFIG_MODE));
     EXPECT_FALSE(imu_get_latest_data().imu_ok);
 }
 
 TEST(TEST_NAME, init__timeout) {
     auto bnoHandle = mock::bno055.getHandle();
     auto delayHandle = mock::delay.getHandle();
+    auto errorHandlerHandle = mock::error_handler.getHandle();
 
-    EXPECT_FALSE(imu_init());
+    imu_init();
+    EXPECT_TRUE(errorHandlerHandle.functionGotCalled<error_handler_handle_error>(IMU, IMU_ERROR_INIT_CONFIG_MODE));
     EXPECT_FALSE(imu_get_latest_data().imu_ok);
     EXPECT_FALSE(imu_data_available());
 }
@@ -214,52 +229,28 @@ TEST(TEST_NAME, read__full_read) {
     auto bnoHandle = mock::bno055.getHandle();
     bool alreadyCalled = false;
 
-    bnoHandle.overrideFunc<bno055_read_eul_x_2_mul_16>([&alreadyCalled](int16_t *out, bno_callback_t callback) {
+    bnoHandle.overrideFunc<bno055_read_eul_xyz_2_mul_16>([&alreadyCalled](int16_t *out, bno_callback_t callback) {
         if (not alreadyCalled) {
-            *out = 101;
+            out[0] = 101;
+            out[1] = 102;
+            out[2] = 103;
             alreadyCalled = true;
             callback(read_success);
         }
         // Break the sampling process
     });
 
-    bnoHandle.overrideFunc<bno055_read_eul_y_2_mul_16>([](int16_t *out, bno_callback_t callback) {
-        *out = 102;
+    bnoHandle.overrideFunc<bno055_read_gyr_xyz_mul_16>([](int16_t *out, bno_callback_t callback) {
+        out[0] = 104;
+        out[1] = 105;
+        out[2] = 106;
         callback(read_success);
     });
 
-    bnoHandle.overrideFunc<bno055_read_eul_z_2_mul_16>([](int16_t *out, bno_callback_t callback) {
-        *out = 103;
-        callback(read_success);
-    });
-
-    bnoHandle.overrideFunc<bno055_read_gyr_x_mul_16>([](int16_t *out, bno_callback_t callback) {
-        *out = 104;
-        callback(read_success);
-    });
-
-    bnoHandle.overrideFunc<bno055_read_gyr_y_mul_16>([](int16_t *out, bno_callback_t callback) {
-        *out = 105;
-        callback(read_success);
-    });
-
-    bnoHandle.overrideFunc<bno055_read_gyr_z_mul_16>([](int16_t *out, bno_callback_t callback) {
-        *out = 106;
-        callback(read_success);
-    });
-
-    bnoHandle.overrideFunc<bno055_read_acc_x_mul_100>([](int16_t *out, bno_callback_t callback) {
-        *out = 107;
-        callback(read_success);
-    });
-
-    bnoHandle.overrideFunc<bno055_read_acc_y_mul_100>([](int16_t *out, bno_callback_t callback) {
-        *out = 108;
-        callback(read_success);
-    });
-
-    bnoHandle.overrideFunc<bno055_read_acc_z_mul_100>([](int16_t *out, bno_callback_t callback) {
-        *out = 109;
+    bnoHandle.overrideFunc<bno055_read_acc_xyz_mul_100>([](int16_t *out, bno_callback_t callback) {
+        out[0] = 107;
+        out[1] = 108;
+        out[2] = 109;
         callback(read_success);
     });
 

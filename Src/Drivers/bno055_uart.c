@@ -16,7 +16,6 @@
 static volatile uint8_t receive_buf[512];
 static volatile bno_callback_t bno_callback;
 static volatile void *bno_result_data;
-static volatile uint8_t bno_result_div;
 
 static void bno_uart_handle_response(volatile const uint8_t *data, uint8_t len, bno055_response_t response) {
     if (response == read_success) {
@@ -28,15 +27,8 @@ static void bno_uart_handle_response(volatile const uint8_t *data, uint8_t len, 
                 return;
             }
 
-            if (len == 1) {
-                volatile uint8_t *result8 = (volatile uint8_t *) bno_result_data;
-                *result8 = (*data) / bno_result_div;
-            } else if (len == 2) {
-                volatile uint16_t *result16 = (volatile uint16_t *) bno_result_data;
-                *result16 = (data[1] << 8u | data[0]) / bno_result_div;
-            } else {
-                bno_callback(callback_length_invalid);
-                return;
+            for (uint8_t c=0; c<len; ++c) {
+                ((uint8_t *)bno_result_data)[c] = data[c];
             }
         }
         bno_callback(response);
@@ -101,10 +93,9 @@ void bno055_uart_write_register(uint8_t reg, const uint8_t *data, uint8_t len, b
     uart_send_buf(BNO_UART_ID, buf, len + 4);
 }
 
-void bno055_uart_read_register(uint8_t reg, uint8_t len, bno_callback_t callback, void *result, uint8_t div) {
+void bno055_uart_read_register(uint8_t reg, uint8_t len, bno_callback_t callback, void *result) {
     bno_callback = callback;
     bno_result_data = result;
-    bno_result_div = div;
 
     uint8_t buf[4] = {0xAA, 0x01, reg, len};
     uart_send_buf(BNO_UART_ID, buf, 4);

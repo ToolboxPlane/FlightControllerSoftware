@@ -80,16 +80,10 @@ void bno055_write_remap_axis_sign(bno055_axis_remap_sign_t new_x_sign, bno055_ax
 void bno055_read_self_test(uint8_t *out, bno_callback_t callback);
 
 
-void bno055_read_acc_x_mul_100(int16_t *out, bno_callback_t callback);
-void bno055_read_acc_y_mul_100(int16_t *out, bno_callback_t callback);
-void bno055_read_acc_z_mul_100(int16_t *out, bno_callback_t callback);
+void bno055_read_acc_xyz_mul_100(int16_t *out, bno_callback_t callback);
 
-void bno055_read_gyr_x_mul_16(int16_t *out, bno_callback_t callback);
-void bno055_read_gyr_y_mul_16(int16_t *out, bno_callback_t callback);
-void bno055_read_gyr_z_mul_16(int16_t *out, bno_callback_t callback);
+void bno055_read_gyr_xyz_mul_16(int16_t *out, bno_callback_t callback);
 
-void bno055_read_eul_x_2_mul_16(int16_t *out, bno_callback_t callback);
-void bno055_read_eul_y_2_mul_16(int16_t *out, bno_callback_t callback);
-void bno055_read_eul_z_2_mul_16(int16_t *out, bno_callback_t callback);
+void bno055_read_eul_xyz_2_mul_16(int16_t *out, bno_callback_t callback);
 
 #endif // FLIGHTCONTROLLER_BNO055_H
