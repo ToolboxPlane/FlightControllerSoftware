@@ -1,4 +1,5 @@
 # FlightController
+[Documentation](https://toolboxplane.github.io/FlightControllerSoftware/)
 
 ## Building and deploy
 

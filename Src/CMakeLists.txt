@@ -6,7 +6,7 @@ if (${CMAKE_C_COMPILER} MATCHES "avr")
             Application/controller.c
             Application/error_handler.c
             Util/math.c)
-    target_link_libraries(${PROJECT_NAME} ToolboxPlaneMessages Drivers Components)
+    target_link_libraries(${PROJECT_NAME} Components)
     set_target_properties(${PROJECT_NAME} PROPERTIES OUTPUT_NAME "${PROJECT_NAME}.elf")
     add_custom_target(strip ALL
             avr-strip "${PROJECT_NAME}.elf"

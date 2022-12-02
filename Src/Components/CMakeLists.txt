@@ -5,4 +5,4 @@ add_library(${PROJECT_NAME} STATIC
         flightcomputer.c
         servo_motor.c
         system.c)
-link_libraries(${PROJECT_NAME} PRIVATE Drivers)
+target_link_libraries(${PROJECT_NAME} PUBLIC Drivers)
