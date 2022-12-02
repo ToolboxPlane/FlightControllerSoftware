@@ -1,5 +1,5 @@
 /**
- * @file bno_055_uart.c
+ * @file bno055_uart.c
  * @author paul
  * @date 17.04.19
  * @brief bno_055_uart @TODO

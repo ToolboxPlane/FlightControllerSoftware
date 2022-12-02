@@ -18,7 +18,7 @@ typedef struct {
     bool imu_ok;
 } imu_data_t;
 
-bool imu_init(void);
+void imu_init(void);
 void imu_start_sampling(void);
 imu_data_t imu_get_latest_data(void);
 bool imu_data_available(void);

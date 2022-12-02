@@ -7,8 +7,6 @@
 #include "Components/servo_motor.h"
 #include "Components/system.h"
 
-// TODO: Timer, LED, PPM, WDT, Error Handler
-
 void timer_tick(void) {
     if (!imu_data_available()) {
         error_handler_handle_warning(IMU, 14);
@@ -37,13 +35,14 @@ void timer_tick(void) {
 
 int main(void) {
     system_init(timer_tick);
+    error_handler_init();
 
-    if (!imu_init()) {
-        error_handler_handle_error(IMU, 15);
-    }
+    imu_init();
+    remote_init();
+    flightcomputer_init();
+    servo_motor_init();
 
     imu_start_sampling();
-
 
 #pragma clang diagnostic push
 #pragma ide diagnostic ignored "EndlessLoop"

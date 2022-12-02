@@ -9,7 +9,7 @@
 
 #include <stdint.h>
 
-typedef enum { SYSTEM, IMU, FLIGHTCOMPUTER, REMOTE } error_group_t;
+typedef enum { APPLICATION, SYSTEM, IMU, FLIGHTCOMPUTER, REMOTE } error_group_t;
 
 void error_handler_init(void);
 

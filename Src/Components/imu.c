@@ -10,6 +10,8 @@
 #include <Drivers/bno055.h>
 #include <util/delay.h>
 
+enum { INIT_RESPONSE_TIMEOUT_MS = 20 };
+
 typedef enum {
     ROLL,
     PITCH,
@@ -86,6 +88,7 @@ static void bno_sample_callback(bno055_response_t response) {
                 if (bno_status != sensor_fusion_algorithm_running) {
                     imu_data->imu_ok = false;
                     bno_sampling_state = ERROR_REG;
+                    // TODO warning
                     bno055_read_system_error(&bno_erro, bno_sample_callback);
                 } else {
                     imu_data->imu_ok = true;
@@ -96,6 +99,7 @@ static void bno_sample_callback(bno055_response_t response) {
             case ERROR_REG:
                 bno_sampling_state = CALIB_STAT;
                 bno055_read_calib_status(&calib_status, bno_sample_callback);
+                // TODO warning
                 break;
             case CALIB_STAT:
                 current_sample_state_id = 1 - current_sample_state_id;
@@ -103,6 +107,7 @@ static void bno_sample_callback(bno055_response_t response) {
                 imu_start_sampling();
                 break;
             default:
+                // TODO error
                 imu_data->imu_ok = false;
                 current_sample_state_id = 1 - current_sample_state_id;
                 imu_start_sampling();
@@ -112,10 +117,11 @@ static void bno_sample_callback(bno055_response_t response) {
         imu_data->imu_ok = false;
         current_sample_state_id = 1 - current_sample_state_id;
         imu_start_sampling();
+        // TODO warning
     }
 }
 
-bool imu_init(void) {
+void imu_init(void) {
     imu_datas[0].imu_ok = false;
     imu_datas[1].imu_ok = false;
 
@@ -126,29 +132,33 @@ bool imu_init(void) {
     // Set to config mode
     callback_ready = false;
     bno055_write_opr_mode(config_mode, bno_init_callback);
-    _delay_ms(20);
+    _delay_ms(INIT_RESPONSE_TIMEOUT_MS);
     if (!callback_ready || init_response != write_success) {
-        return false;
+        // TODO error
+        return;
     }
 
     // Run Self Test
     callback_ready = false;
-    uint8_t self_test_result;
+    uint8_t self_test_result = 0;
     bno055_read_self_test(&self_test_result, bno_init_callback);
-    _delay_ms(20);
+    _delay_ms(INIT_RESPONSE_TIMEOUT_MS);
     if (!callback_ready || init_response != read_success) {
-        return false;
+        // TODO error
+        return;
     }
-    if (self_test_result != 0b1111) {
-        return false;
+    if (self_test_result != 0xF) {
+        // TODO error
+        return;
     }
 
     // Set unit selection
     callback_ready = false;
     bno055_write_unit_selection(mps2, dps, degrees, celsius, windows, bno_init_callback);
-    _delay_ms(20);
+    _delay_ms(INIT_RESPONSE_TIMEOUT_MS);
     if (!callback_ready || init_response != write_success) {
-        return false;
+        // TODO error
+        return;
     }
 
     /*
@@ -163,27 +173,28 @@ bool imu_init(void) {
      */
     callback_ready = false;
     bno055_write_remap_axis(y_axis, x_axis, z_axis, bno_init_callback);
-    _delay_ms(20);
+    _delay_ms(INIT_RESPONSE_TIMEOUT_MS);
     if (!callback_ready || init_response != write_success) {
-        return false;
+        // TODO error
+        return;
     }
 
     callback_ready = false;
     bno055_write_remap_axis_sign(positive, positive, neg, bno_init_callback);
-    _delay_ms(20);
+    _delay_ms(INIT_RESPONSE_TIMEOUT_MS);
     if (!callback_ready || init_response != write_success) {
-        return false;
+        // TODO error
+        return;
     }
 
     // Set to NDOF-FMC-OFF
     callback_ready = false;
     bno055_write_opr_mode(ndof_fmc_off, bno_init_callback);
-    _delay_ms(20);
+    _delay_ms(INIT_RESPONSE_TIMEOUT_MS);
     if (!callback_ready || init_response != write_success) {
-        return false;
+        // TODO error
+        return;
     }
-
-    return true;
 }
 
 void imu_start_sampling(void) {

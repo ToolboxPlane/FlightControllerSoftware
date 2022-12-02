@@ -25,9 +25,9 @@ void system_init(timer_callback_t timer_callback) {
 
     cli();
     // Watchdog
-    if (MCUSR & (1u << WDRF)) {
+    if (MCUSR & (1U << WDRF)) {
         //error_handler_handle_warning(SYSTEM, 1);
-    } else if (MCUSR & (1u << BORF)) { // Brownout
+    } else if (MCUSR & (1U << BORF)) { // Brownout
         //error_handler_handle_warning(SYSTEM, 2);
     }
     MCUSR = 0;

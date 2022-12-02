@@ -18,6 +18,10 @@ typedef struct {
     int16_t pitch, roll;
 } flightcomputer_setpoint_t;
 
+/*typedef enum {
+
+} flightcomputer_error_t;*/
+
 void flightcomputer_init(void);
 
 void flightcomputer_send(const imu_data_t *imu_data, const remote_data_t *remote_data);

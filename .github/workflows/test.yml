@@ -36,7 +36,7 @@ jobs:
       - name: Install dependencies
         run: |
           sudo apt-get update
-          sudo apt-get install -y wget g++-9 g++-10 g++-11 protobuf-compiler valgrind
+          sudo apt-get install -y wget g++-9 g++-10 g++-11 protobuf-compiler valgrind python3-protobuf
           # Taken from https://apt.llvm.org/
           #wget https://apt.llvm.org/llvm.sh
           #chmod +x llvm.sh
