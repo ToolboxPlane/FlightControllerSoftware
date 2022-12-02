@@ -41,6 +41,24 @@ jobs:
       - name: Run Clang-Format
         run: python3 run-clang-format.py --recursive --exclude ./build --color always .
 
+  CheckDoc:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          submodules: recursive
+      - name: Install dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y doxygen
+      - name: Prepare Doxyfile
+        run: |
+          echo "WARN_IF_UNDOCUMENTED = YES" >> Doxyfile
+          echo "WARN_IF_DOC_ERROR = YES" >> Doxyfile
+          echo "WARN_NO_PARAMDOC = YES" >> Doxyfile
+          echo "WARN_AS_ERROR = YES" >> Doxyfile
+      - name: Run doxygen
+        run: doxygen
 
 
 
