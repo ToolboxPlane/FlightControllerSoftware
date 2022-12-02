@@ -18,7 +18,7 @@ jobs:
       - name: Install dependencies
         run: |
           sudo apt-get update
-          sudo apt-get install -y wget avr-libc binutils-avr gcc-avr protobuf-compiler
+          sudo apt-get install -y wget avr-libc binutils-avr gcc-avr protobuf-compiler python3-protobuf
       - name: Set up Build
         run: |
           mkdir build
