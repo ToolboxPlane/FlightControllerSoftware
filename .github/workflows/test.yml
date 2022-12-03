@@ -57,6 +57,7 @@ jobs:
       - name: Test
         run: |
           valgrind ./build/Tests/LowLevel/${{ matrix.test }} ${{ env.GTEST_ARGS }}
+        continue-on-error: true
       - uses: actions/upload-artifact@v3
         with:
           name: report
