@@ -32,15 +32,15 @@ void system_pre_init(timer_callback_t timer_callback) {
     }
     MCUSR = 0;
 
-    wdt_enable(WDTO_250MS);
+    wdt_enable(WDTO_1S);
     sei();
 }
 
 void system_post_init(void) {
+    wdt_enable(WDTO_1S);
+
     //  Runs at 16.384ms interval, the BNO055 provides data at 100Hz, the output can be updated at 50Hz
     timer_8bit_init(prescaler_1024, &internal_timer_callbacK);
-
-    wdt_enable(WDTO_30MS);
 }
 
 void system_reset_watchdog(void) {

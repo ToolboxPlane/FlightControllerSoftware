@@ -28,7 +28,7 @@ static void uart_callback(uint8_t data) {
 }
 
 void protobuf_init(void) {
-    uart_init(UART_ID, 115200U, ODD, 1, uart_callback);
+    uart_init(UART_ID, 115200U, NONE, 1, uart_callback);
     rx_head = 0;
     rx_tail = 0;
     message_decoding_data.len = 0;
@@ -38,7 +38,7 @@ void protobuf_init(void) {
 
 void protobuf_send_fc(const fc_message_t *message) {
     static uint8_t buf[ToolboxPlaneMessages_FlightController_size + 3];
-    uint8_t len = message_encode(buf, sizeof(buf), &ToolboxPlaneMessages_FlightController_msg, message, FC_ID);
+    uint16_t len = message_encode(buf, sizeof(buf), ToolboxPlaneMessages_FlightController_fields, message, FC_ID);
     uart_send_buf(UART_ID, buf, len);
 }
 

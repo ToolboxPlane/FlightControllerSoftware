@@ -18,7 +18,6 @@ typedef enum {
     GYR,
     ACC,
     STATUS,
-    ERROR_REG,
     CALIB_STAT,
 } bno_sampling_state_t;
 
@@ -27,6 +26,8 @@ static volatile bool callback_ready;
 static volatile bno_sampling_state_t bno_sampling_state;
 
 static volatile imu_data_t imu_datas[2];
+static uint8_t calib_status;
+static bno055_status_t bno_status;
 static volatile uint8_t current_sample_state_id = 0;
 static volatile bool sampling_complete = false;
 
@@ -36,59 +37,44 @@ static void bno_init_callback(bno055_response_t response) {
 }
 
 static void bno_sample_callback(bno055_response_t response) {
-    static bno055_status_t bno_status;
-    static bno055_error_t bno_error;
-    static uint8_t calib_status;
-
     imu_data_t *imu_data = (imu_data_t *) (&imu_datas[current_sample_state_id]);
     if (response == read_success) {
         switch (bno_sampling_state) {
             case EUL:
                 bno_sampling_state = GYR;
-                bno055_read_gyr_xyz_mul_16(&imu_data->d_heading_mul_16, bno_sample_callback);
                 break;
             case GYR:
                 bno_sampling_state = ACC;
-                bno055_read_acc_xyz_mul_100(&imu_data->acc_x_mul_100, bno_sample_callback);
                 break;
             case ACC:
                 bno_sampling_state = STATUS;
-                bno055_read_system_status(&bno_status, bno_sample_callback);
                 break;
             case STATUS:
                 if (bno_status != sensor_fusion_algorithm_running) {
-                    error_handler_handle_error(IMU, IMU_ERROR_STATUS);
+                    error_handler_handle_warning(IMU, IMU_ERROR_STATUS);
                     imu_data->imu_ok = false;
-                    bno_sampling_state = ERROR_REG;
-                    bno055_read_system_error(&bno_error, bno_sample_callback);
                 } else {
                     imu_data->imu_ok = true;
-                    bno_sampling_state = CALIB_STAT;
-                    bno055_read_calib_status(&calib_status, bno_sample_callback);
                 }
-                break;
-            case ERROR_REG:
                 bno_sampling_state = CALIB_STAT;
-                bno055_read_calib_status(&calib_status, bno_sample_callback);
-                // TODO handling
                 break;
             case CALIB_STAT:
                 current_sample_state_id = 1 - current_sample_state_id;
                 sampling_complete = true;
-                //imu_start_sampling();
+                bno_sampling_state = EUL;
                 break;
             default:
-                error_handler_handle_error(IMU, IMU_ERROR_DEFAULT);
+                error_handler_handle_warning(IMU, IMU_ERROR_DEFAULT);
                 imu_data->imu_ok = false;
                 current_sample_state_id = 1 - current_sample_state_id;
-                imu_start_sampling();
+                bno_sampling_state = EUL;
                 break;
         }
-    } else {
-        error_handler_handle_error(IMU, IMU_ERROR_UART);
+    } else if (response != bus_over_run_error) { // Bus overrun just happens...
+        error_handler_handle_warning(IMU, IMU_ERROR_UART);
         imu_data->imu_ok = false;
         current_sample_state_id = 1 - current_sample_state_id;
-        imu_start_sampling();
+        bno_sampling_state = EUL;
     }
 }
 
@@ -166,12 +152,29 @@ void imu_init(void) {
         error_handler_handle_error(IMU, IMU_ERROR_INIT_NDOF_FMC_OFF);
         return;
     }
+
+    bno_sampling_state = EUL;
 }
 
 void imu_start_sampling(void) {
-    bno_sampling_state = EUL;
     imu_data_t *imu_data = (imu_data_t *) (&imu_datas[current_sample_state_id]);
-    bno055_read_eul_xyz_2_mul_16(&imu_data->heading_mul_16, bno_sample_callback);
+    switch (bno_sampling_state) {
+        case EUL:
+            bno055_read_eul_xyz_2_mul_16(&imu_data->heading_mul_16, bno_sample_callback);
+            break;
+        case GYR:
+            bno055_read_gyr_xyz_mul_16(&imu_data->d_heading_mul_16, bno_sample_callback);
+            break;
+        case ACC:
+            bno055_read_acc_xyz_mul_100(&imu_data->acc_x_mul_100, bno_sample_callback);
+            break;
+        case STATUS:
+            bno055_read_system_status(&bno_status, bno_sample_callback);
+            break;
+        case CALIB_STAT:
+            bno055_read_calib_status(&calib_status, bno_sample_callback);
+            break;
+    }
 }
 
 imu_data_t imu_get_latest_data(void) {

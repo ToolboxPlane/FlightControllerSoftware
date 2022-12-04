@@ -38,8 +38,8 @@ void flightcomputer_send(const imu_data_t *imu_data, const remote_data_t *remote
                                        .overrideActive = remote_data->override_active,
                                        .remote_ok = remote_data->remote_ok},
                             .motor = 0,
-                            .servoLeft = 0,
-                            .servoRight = 0};
+                            .servoLeft = 500,
+                            .servoRight = 500};
 
     protobuf_send_fc(&message);
 }

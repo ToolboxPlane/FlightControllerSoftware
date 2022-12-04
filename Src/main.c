@@ -31,13 +31,12 @@ void timer_tick(void) {
         imu_timeout_counter += 1;
     } else {
         imu_timeout_counter = 0;
-        imu_start_sampling();
     }
     bool imu_active = true;
     if (imu_timeout_counter >= IMU_TIMEOUT) {
         imu_timeout_counter = IMU_TIMEOUT;
         imu_active = false;
-        error_handler_handle_warning(APPLICATION, APPLICATION_ERROR_NO_IMU_DATA);
+        //error_handler_handle_warning(APPLICATION, APPLICATION_ERROR_NO_IMU_DATA);
     }
     imu_data_t imu_data = imu_get_latest_data();
 
@@ -121,6 +120,11 @@ void timer_tick(void) {
         flightcomputer_send(&imu_data, &remote_data);
         fcps_send_mux = 0;
     }
+
+    /*
+     * Read the next IMU data
+     */
+    imu_start_sampling();
 }
 
 int main(void) {
