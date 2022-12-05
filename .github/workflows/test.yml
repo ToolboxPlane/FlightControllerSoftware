@@ -65,7 +65,7 @@ jobs:
       - uses: actions/upload-artifact@v3
         with:
           name: build
-          path: build
+          path: build/Tests/LowLevel/CMakeFiles
 
   ConsolidateResults:
     runs-on: ubuntu-latest
@@ -89,7 +89,7 @@ jobs:
             name: LowLevel
             path: combined.xml
             reporter: java-junit
-            fail-on-error: true
+            fail-on-error: false
 
   Coverage:
     runs-on: ubuntu-latest

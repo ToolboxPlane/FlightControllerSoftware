@@ -30,3 +30,10 @@ target_link_libraries(Test_Components_flightcomputer PRIVATE Mock_Drivers_protob
 make_test(Components/servo_motor)
 target_link_libraries(Test_Components_servo_motor PRIVATE Mock_Drivers_ppm)
 
+make_test(Components/system)
+#target_link_libraries(Test_Components_servo_motor PRIVATE Mock_Drivers_ppm)
+
+make_test(Application/controller)
+
+make_test(Application/error_handler)
+target_link_libraries(Test_Application_error_handler PRIVATE Mock_avr_io)

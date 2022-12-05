@@ -1,5 +1,5 @@
 # FlightController
-[Documentation](https://toolboxplane.github.io/FlightControllerSoftware/)
+[Documentation](https://toolboxplane.github.io/FlightControllerSoftware/doxygen)
 
 ## Building and deploy
 
