@@ -27,12 +27,16 @@ jobs:
           sudo apt-get install -y doxygen
       - name: Run doxygen
         run: doxygen
+      - name: Move output
+        run: |
+          mkdir -p deploy/doxygen
+          cp doxy_out/html/* deploy/doxygen
       - name: Setup Pages
         uses: actions/configure-pages@v2
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v1
         with:
-          path: doxy_out/html
+          path: deploy
       - name: Deploy to GitHub Pages
         id: deployment
         uses: actions/deploy-pages@v1
