@@ -1,10 +1,10 @@
 name: DeployPages
 on:
   workflow_run:
-    workflows: [Documentation, LowLevelTests]
-    #branches: [main]
-    types:
-      - completed
+    workflows: ["Documentation", "LowLevelTests"]
+    types: [requested]
+    branches:
+      - Protobuf
 
 permissions:
   contents: read
