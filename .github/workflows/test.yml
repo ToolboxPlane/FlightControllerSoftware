@@ -7,13 +7,13 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        compiler: [ { cc: gcc-10, cxx: g++-10 },
-                    { cc: gcc-11, cxx: g++-11 } ]
-                   # { cc: clang-10, cxx: clang++-10 },
-                   # { cc: clang-11, cxx: clang++-11 },
-                   # { cc: clang-12, cxx: clang++-12 },
-                   # { cc: clang-13, cxx: clang++-13 },
-                   # { cc: clang-14, cxx: clang++-14 } ]
+        compiler: [ { cc: gcc-10, cxx: g++-10 } ]#,
+                    #{ cc: gcc-11, cxx: g++-11 } ]
+                    #{ cc: clang-10, cxx: clang++-10 },
+                    #{ cc: clang-11, cxx: clang++-11 },
+                    #{ cc: clang-12, cxx: clang++-12 },
+                    #{ cc: clang-13, cxx: clang++-13 },
+                    #{ cc: clang-14, cxx: clang++-14 } ]
         build: [ Release, Debug ]
         test: [ Test_Drivers_bno055_uart,
                 Test_Drivers_bno055,
@@ -47,13 +47,10 @@ jobs:
           #sudo ./llvm.sh 14
       - name: Set up Build
         run: |
-          mkdir build
-          cd build
-          cmake -DCMAKE_BUILD_TYPE=${{ matrix.build }} ..
+          cmake -B build -DCMAKE_BUILD_TYPE=${{ matrix.build }} ..
       - name: Build
         run: |
-          cd build
-          make -j$(nproc) ${{ matrix.test }}
+          cmake --build build --target ${{ matrix.test }}
       - name: Test
         run: |
           valgrind ./build/Tests/LowLevel/${{ matrix.test }} ${{ env.GTEST_ARGS }}
@@ -65,7 +62,7 @@ jobs:
       - uses: actions/upload-artifact@v3
         with:
           name: build
-          path: .
+          path: build/Tests/LowLevel/CMakeFiles/
 
   ConsolidateResults:
     runs-on: ubuntu-latest
@@ -102,14 +99,19 @@ jobs:
       - uses: actions/download-artifact@v3
         with:
           name: build
+      - name: Move artifacts
+        run: tree
       - name: tree
         run: tree
       - name: Install dependencies
         run: |
           sudo apt-get update
           sudo apt-get install -y lcov
+      - name: Set up Build
+        run: |
+          cmake -B build
       - name: Run LCOV
-        run: lcov --capture --directory build --output-file coverage.info
+        run: lcov --capture --directory . --output-file coverage.info
       - name: Gen HTML
         run: genhtml coverage.info --output-directory coverage
       - name: Setup Pages
