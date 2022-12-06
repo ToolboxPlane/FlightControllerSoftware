@@ -1,7 +1,7 @@
 name: DeployPages
 on:
   workflow_run:
-    workflows: ["Documentation", "LowLevelTests"]
+    workflows: [Documentation]
     types: [requested]
     branches:
       - Protobuf
