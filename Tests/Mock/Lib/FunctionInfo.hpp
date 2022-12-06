@@ -31,7 +31,7 @@ namespace mock {
 
 
     template<typename Ret, typename... Args>
-    constexpr auto getFunctionInfoImpl(Ret (*/*ptr*/)(Args...)) {
+    constexpr auto getFunctionInfoImpl(Ret (* /*ptr*/)(Args...)) {
         return FunctionInfo<Ret, Args...>{};
     }
 

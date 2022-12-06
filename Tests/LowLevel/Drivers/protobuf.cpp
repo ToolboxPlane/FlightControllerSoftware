@@ -96,14 +96,14 @@ TEST(TEST_NAME, receive_200bytes) {
 
     protobuf_init();
 
-    for (auto c=10U; c<210U; ++c) {
+    for (auto c = 10U; c < 210U; ++c) {
         uartCallback(c);
     }
     protobuf_setpoint_available();
     EXPECT_EQ(receiveIndex, 210U);
 
 
-    for (auto c=20U; c<220U; ++c) {
+    for (auto c = 20U; c < 220U; ++c) {
         uartCallback(c);
     }
     receiveIndex = 20U;
