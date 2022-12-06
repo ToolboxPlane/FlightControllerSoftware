@@ -1,3 +1,6 @@
+name: Build
+on: [ push ]
+
 permissions:
   contents: read
   pages: write
