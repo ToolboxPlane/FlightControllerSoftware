@@ -1,3 +1,10 @@
+/**
+ * @file remote.c
+ * @author Paul Nykiel
+ * @date 13.11.22
+ * Description here TODO
+ */
+
 #include "remote.h"
 
 #include <Drivers/sbus.h>

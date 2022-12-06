@@ -1,6 +1,6 @@
 /**
  * @file flightcomputer.c
- * @author paul
+ * @author Paul Nykiel
  * @date 14.11.22
  * Description here TODO
  */

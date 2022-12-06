@@ -1,6 +1,6 @@
 /**
  * @file remote.h
- * @author paul
+ * @author Paul Nykiel
  * @date 13.11.22
  * Description here TODO
  */

@@ -1,3 +1,9 @@
+/**
+ * @file main.c
+ * @author Paul Nykiel
+ * @date 12.04.19
+ * Description here TODO
+ */
 #include "Application/error_handler.h"
 #include "Components/flightcomputer.h"
 #include "Components/imu.h"
@@ -14,7 +20,7 @@ enum {
 typedef enum { SPS_FLIGHTCOMPUTER, SPS_REMOTE, SPS_STABILISED_FAILSAVE, SPS_FAILSAVE } setpoint_source_t;
 
 enum {
-    IMU_TIMEOUT = 6*10,            // 6 * 16.384 \approx 100ms
+    IMU_TIMEOUT = 6,            // 6 * 16.384 \approx 100ms
     FLIGHTCOMPUTER_TIMOUT = 12, // 12 * 16.384 \approx 200ms
     REMOTE_TIMEOUT = 12         // 12 * 16.384 \approx 200ms
 };
@@ -36,7 +42,7 @@ void timer_tick(void) {
     if (imu_timeout_counter >= IMU_TIMEOUT) {
         imu_timeout_counter = IMU_TIMEOUT;
         imu_active = false;
-        //error_handler_handle_warning(APPLICATION, APPLICATION_ERROR_NO_IMU_DATA);
+        // error_handler_handle_warning(APPLICATION, APPLICATION_ERROR_NO_IMU_DATA);
     }
     imu_data_t imu_data = imu_get_latest_data();
 
@@ -49,7 +55,7 @@ void timer_tick(void) {
     if (remote_timeout_counter >= REMOTE_TIMEOUT) {
         remote_timeout_counter = REMOTE_TIMEOUT;
         remote_active = false;
-        //error_handler_handle_warning(APPLICATION, APPLICATION_ERROR_NO_REMOTE_DATA);
+        // error_handler_handle_warning(APPLICATION, APPLICATION_ERROR_NO_REMOTE_DATA);
     }
     remote_data_t remote_data = remote_get_data();
 
@@ -62,7 +68,7 @@ void timer_tick(void) {
     if (flightcomputer_timeout_counter >= FLIGHTCOMPUTER_TIMOUT) {
         flightcomputer_timeout_counter = FLIGHTCOMPUTER_TIMOUT;
         flightcomputer_active = false;
-        //error_handler_handle_warning(APPLICATION, APPLICATION_ERROR_NO_FCP_DATA);
+        // error_handler_handle_warning(APPLICATION, APPLICATION_ERROR_NO_FCP_DATA);
     }
     flightcomputer_setpoint_t flightcomputer_setpoint = flightcomputer_get_setpoint();
 

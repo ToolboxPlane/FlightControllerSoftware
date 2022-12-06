@@ -1,6 +1,6 @@
 /**
  * @file system.h
- * @author paul
+ * @author Paul Nykiel
  * @date 01.12.22
  * Description here TODO
  */

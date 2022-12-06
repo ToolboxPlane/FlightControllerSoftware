@@ -1,6 +1,6 @@
 /**
  * @file imu.c
- * @author paul
+ * @author Paul Nykiel
  * @date 18.04.19
  * @brief input @TODO
  */
