@@ -73,7 +73,7 @@ jobs:
 
   Consolidate-Results:
     runs-on: ubuntu-latest
-    needs: LowLevelTests
+    needs: Run-Tests
     if: ${{ always() }}
     steps:
       - uses: actions/checkout@v2
@@ -97,7 +97,7 @@ jobs:
 
   Coverage:
     runs-on: ubuntu-latest
-    needs: LowLevelTests
+    needs: Run-Tests
     if: ${{ always() }}
     steps:
       - uses: actions/checkout@v2
