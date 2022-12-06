@@ -1,15 +1,6 @@
 name: LowLevelTests
 on: [ push ]
 
-permissions:
-  contents: read
-  pages: write
-  id-token: write
-
-concurrency:
-  group: "pages"
-  cancel-in-progress: true
-
 jobs:
   Run-Tests:
     name: Run Tests
@@ -118,16 +109,15 @@ jobs:
         run: |
           cmake -B build
       - name: Run LCOV
-        run: lcov --capture --directory . --output-file coverage.info
+        run: lcov --no-external --capture --directory . --output-file coverage.info
       - name: Gen HTML
         run: genhtml coverage.info --output-directory coverage
-      - name: Setup Pages
-        uses: actions/configure-pages@v2
-      - name: Upload artifact
-        uses: actions/upload-pages-artifact@v1
+      - name: Move HTML
+        run: |
+          mkdir -p out/
+          mv coverage out/coverage
+      - uses: actions/upload-artifact@v3
         with:
-          path: coverage
-      - name: Deploy to GitHub Pages
-        id: deployment
-        uses: actions/deploy-pages@v1
+          name: llt-coverage
+          path: out
 

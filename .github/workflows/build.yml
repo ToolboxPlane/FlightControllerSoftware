@@ -20,10 +20,6 @@ jobs:
           sudo apt-get update
           sudo apt-get install -y wget avr-libc binutils-avr gcc-avr protobuf-compiler python3-protobuf
       - name: Set up Build
-        run: |
-          cmake -B build -DCMAKE_BUILD_TYPE=${{ matrix.build }}
-          cmake --build build --target FlightController.hex
+        run: cmake -B build -DCMAKE_BUILD_TYPE=${{ matrix.build }}
       - name: Build
-        run: |
-          cd build
-          make -j$(nproc) all
+        run: cmake --build build --target FlightController.hex

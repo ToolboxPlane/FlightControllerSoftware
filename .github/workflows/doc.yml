@@ -1,15 +1,6 @@
 name: Documentation
 on: [ push ]
 
-permissions:
-  contents: read
-  pages: write
-  id-token: write
-
-concurrency:
-  group: "pages"
-  cancel-in-progress: true
-
 jobs:
   Build-Doxygen:
     environment:
@@ -28,14 +19,9 @@ jobs:
         run: doxygen
       - name: Move output
         run: |
-          mkdir -p deploy/doxygen
-          cp -r doxy_out/html/* deploy/doxygen
-      - name: Setup Pages
-        uses: actions/configure-pages@v2
-      - name: Upload artifact
-        uses: actions/upload-pages-artifact@v1
+          mkdir -p out/doxygen
+          mv doxy_out/html out/doxygen
+      - uses: actions/upload-artifact@v3
         with:
-          path: deploy
-      - name: Deploy to GitHub Pages
-        id: deployment
-        uses: actions/deploy-pages@v1
+          name: doxygen
+          path: out
