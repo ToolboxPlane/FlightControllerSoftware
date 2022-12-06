@@ -22,7 +22,7 @@ jobs:
       - name: Set up Build
         run: |
           cmake -B build -DCMAKE_BUILD_TYPE=${{ matrix.build }}
-          cmake --build build --target all
+          cmake --build build --target FlightController.hex
       - name: Build
         run: |
           cd build
