@@ -1,5 +1,10 @@
 name: DeployPages
-on: [ push ]
+on:
+  workflow_run:
+    workflows: [Documentation, LowLevelTests]
+    #branches: [main]
+    types:
+      - completed
 
 permissions:
   contents: read
@@ -12,7 +17,7 @@ concurrency:
 
 
 jobs:
-  Build-Doxygen:
+  DeployPages:
     environment:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
