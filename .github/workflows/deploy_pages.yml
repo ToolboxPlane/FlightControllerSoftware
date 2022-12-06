@@ -2,9 +2,9 @@ name: DeployPages
 on:
   workflow_run:
     workflows: [Documentation]
-    types: [requested]
-    branches:
-      - Protobuf
+    #types: [requested]
+    #branches:
+    #  - Protobuf
 
 permissions:
   contents: read
