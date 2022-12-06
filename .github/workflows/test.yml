@@ -65,7 +65,7 @@ jobs:
       - uses: actions/upload-artifact@v3
         with:
           name: build
-          path: build/Tests/LowLevel/
+          path: .
 
   ConsolidateResults:
     runs-on: ubuntu-latest
@@ -109,7 +109,7 @@ jobs:
           sudo apt-get update
           sudo apt-get install -y lcov
       - name: Run LCOV
-        run: lcov --capture --directory CMakeFiles  --output-file coverage.info
+        run: lcov --capture --directory build --output-file coverage.info
       - name: Gen HTML
         run: genhtml coverage.info --output-directory coverage
       - name: Setup Pages
