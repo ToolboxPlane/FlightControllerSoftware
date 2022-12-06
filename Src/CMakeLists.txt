@@ -4,8 +4,7 @@ project(FlightController)
 if (${CMAKE_C_COMPILER} MATCHES "avr")
     add_executable(${PROJECT_NAME} main.c
             Application/controller.c
-            Application/error_handler.c
-            Util/math.c)
+            Application/error_handler.c)
     target_link_libraries(${PROJECT_NAME} Components)
     set_target_properties(${PROJECT_NAME} PROPERTIES OUTPUT_NAME "${PROJECT_NAME}.elf")
     add_custom_target(strip ALL
