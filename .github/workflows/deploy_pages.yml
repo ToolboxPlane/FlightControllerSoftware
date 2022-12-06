@@ -1,8 +1,10 @@
 name: DeployPages
 on:
   workflow_run:
-    workflows: [Documentation]
-    #types: [requested]
+    workflows:
+      - Documentation
+    types:
+      - completed
     #branches:
     #  - Protobuf
 
