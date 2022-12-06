@@ -46,14 +46,11 @@ jobs:
           #sudo ./llvm.sh 13
           #sudo ./llvm.sh 14
       - name: Set up Build
-        run: |
-          cmake -B build -DCMAKE_BUILD_TYPE=${{ matrix.build }} ..
+        run: cmake -B build -DCMAKE_BUILD_TYPE=${{ matrix.build }}
       - name: Build
-        run: |
-          cmake --build build --target ${{ matrix.test }}
+        run:  cmake --build build --target ${{ matrix.test }}
       - name: Test
-        run: |
-          valgrind ./build/Tests/LowLevel/${{ matrix.test }} ${{ env.GTEST_ARGS }}
+        run: valgrind ./build/Tests/LowLevel/${{ matrix.test }} ${{ env.GTEST_ARGS }}
         continue-on-error: true
       - uses: actions/upload-artifact@v3
         with:

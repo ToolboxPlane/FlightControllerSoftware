@@ -21,9 +21,8 @@ jobs:
           sudo apt-get install -y wget avr-libc binutils-avr gcc-avr protobuf-compiler python3-protobuf
       - name: Set up Build
         run: |
-          mkdir build
-          cd build
-          cmake -DCMAKE_BUILD_TYPE=${{ matrix.build }} ..
+          cmake -B build -DCMAKE_BUILD_TYPE=${{ matrix.build }}
+          cmake --build build --target all
       - name: Build
         run: |
           cd build

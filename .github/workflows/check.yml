@@ -17,10 +17,8 @@ jobs:
           sudo apt-get install -y clang-tidy avr-libc binutils-avr gcc-avr protobuf-compiler python3-protobuf
       - name: Set up Build
         run: |
-          mkdir build
-          cd build
-          cmake -DCMAKE_EXPORT_COMPILE_COMMANDS=ON  ..
-          make -j$(nproc) all
+          cmake -B build -DCMAKE_EXPORT_COMPILE_COMMANDS=ON
+          cmake --build build --target all
           cp compile_commands.json ..
       - name: Run Clang Tidy
         run: run-clang-tidy -j$(nproc) -quiet | tee clangtidy.log
@@ -58,7 +56,7 @@ jobs:
           echo "WARN_NO_PARAMDOC = YES" >> Doxyfile
           echo "WARN_AS_ERROR = YES" >> Doxyfile
       - name: Run doxygen
-        run: doxygen
+        run: doxygen | grep error
 
 
 
