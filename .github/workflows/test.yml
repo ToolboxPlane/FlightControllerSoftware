@@ -102,6 +102,8 @@ jobs:
       - uses: actions/download-artifact@v3
         with:
           name: build
+      - name: tree
+        run: tree
       - name: Install dependencies
         run: |
           sudo apt-get update
