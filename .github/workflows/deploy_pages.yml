@@ -1,4 +1,4 @@
-name: Build
+name: DeployPages
 on: [ push ]
 
 permissions:
@@ -21,13 +21,11 @@ jobs:
       - name: Setup Pages
         uses: actions/configure-pages@v2
       - name: Download Doxygen
-        id: download-artifact
         uses: dawidd6/action-download-artifact@v2
         with:
           workflow: "doc.yml"
           name: doxygen
       - name: Download Low-Level-Coverage
-        id: download-artifact
         uses: dawidd6/action-download-artifact@v2
         with:
           workflow: "low_level_tests.yml"
