@@ -1,8 +1,8 @@
 /**
  * @file bno055_uart.h
- * @author paul
+ * @author Paul Nykiel
  * @date 17.04.19
- * @brief bno_055_uart @TODO
+ * @brief Definition of the library functions for the UART communication with the Bosch Sensortec BNO-055.
  */
 
 #ifndef FLIGHTCONTROLLER_BNO055_UART_H

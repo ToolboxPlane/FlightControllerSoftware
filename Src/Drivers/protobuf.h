@@ -1,8 +1,8 @@
 /**
  * @file protobuf.h
- * @author paul
+ * @author Paul Nykiel
  * @date 19.11.22
- * Description here TODO
+ * @brief Definition of the library functions for protobuf encoding, transmission and reception.
  */
 #ifndef FLIGHTCONTROLLER_PROTOBUF_H
 #define FLIGHTCONTROLLER_PROTOBUF_H

@@ -1,8 +1,8 @@
 /**
  * @file bno055_uart.c
- * @author paul
+ * @author Paul Nykiel
  * @date 17.04.19
- * @brief bno_055_uart @TODO
+ * @brief Implementation of the library functions for the UART communication with the Bosch Sensortec BNO-055.
  */
 
 #include "bno055_uart.h"
@@ -10,7 +10,11 @@
 #include <HAL/uart.h>
 #include <stdbool.h>
 
-#define BNO_UART_ID 1
+enum { BNO_UART_ID = 1 };
+enum { BNO_BAUD = 115200U };
+enum { BNO_SEND_START = 0xAA };
+enum { BNO_RECEIVE_START = 0xBB };
+enum { BNO_RECEIVE_ERROR = 0xEE };
 
 
 static volatile uint8_t receive_buf[512];
@@ -27,8 +31,8 @@ static void bno_uart_handle_response(volatile const uint8_t *data, uint8_t len, 
                 return;
             }
 
-            for (uint8_t c=0; c<len; ++c) {
-                ((uint8_t *)bno_result_data)[c] = data[c];
+            for (uint8_t index = 0; index < len; ++index) {
+                ((uint8_t *) bno_result_data)[index] = data[index];
             }
         }
         bno_callback(response);
@@ -44,10 +48,10 @@ static void bno_uart_callback(uint8_t data) {
 
     switch (byte_in_message) {
         case 0: // Header
-            if (data == 0xEE) {
+            if (data == BNO_RECEIVE_ERROR) {
                 acknowledge_or_failure = true;
                 byte_in_message = 1;
-            } else if (data == 0xBB) {
+            } else if (data == BNO_RECEIVE_START) {
                 acknowledge_or_failure = false;
                 byte_in_message = 1;
             } else {
@@ -76,19 +80,19 @@ static void bno_uart_callback(uint8_t data) {
 }
 
 void bno055_uart_init(void) {
-    uart_init(BNO_UART_ID, 115200, NONE, 1, &bno_uart_callback);
+    uart_init(BNO_UART_ID, BNO_BAUD, NONE, 1, &bno_uart_callback);
 }
 
 void bno055_uart_write_register(uint8_t reg, const uint8_t *data, uint8_t len, bno_callback_t callback) {
     bno_callback = callback;
 
     uint8_t buf[len + 4];
-    buf[0] = 0xAA;
+    buf[0] = BNO_SEND_START;
     buf[1] = 0x00;
     buf[2] = reg;
     buf[3] = len;
-    for (uint8_t c = 0; c < len; c++) {
-        buf[c + 4] = data[c];
+    for (uint8_t index = 0; index < len; index++) {
+        buf[index + 4] = data[index];
     }
     uart_send_buf(BNO_UART_ID, buf, len + 4);
 }
@@ -97,6 +101,6 @@ void bno055_uart_read_register(uint8_t reg, uint8_t len, bno_callback_t callback
     bno_callback = callback;
     bno_result_data = result;
 
-    uint8_t buf[4] = {0xAA, 0x01, reg, len};
+    uint8_t buf[4] = {BNO_SEND_START, 0x01, reg, len};
     uart_send_buf(BNO_UART_ID, buf, 4);
 }

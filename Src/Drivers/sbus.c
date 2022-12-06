@@ -1,6 +1,9 @@
-//
-// Created by paul on 14.04.18.
-//
+/**
+ * @file sbus.c
+ * @author Paul Nykiel
+ * @date 14.04.18
+ * @brief Implementation of the library functions for sbus reception and decoding.
+ */
 
 #include "sbus.h"
 
@@ -24,8 +27,8 @@ static void sbus_uart_callback(uint8_t data) {
             if (data == SBUS_START_BYTE) {
                 byte_count = 1;
             }
-            for (uint8_t c = 0; c < 16; ++c) {
-                sbus_data->channel[c] = 0;
+            for (uint8_t index = 0; index < 16; ++index) {
+                sbus_data->channel[index] = 0;
             }
             break;
         case 24: // Endbyte
@@ -46,10 +49,10 @@ static void sbus_uart_callback(uint8_t data) {
         {
             uint16_t startBitNum = (byte_count - 1) * 8;
 
-            for (uint8_t b = 0; b < 8; b++) {
-                uint8_t channelNumber = (startBitNum + b) / 11;
-                uint8_t bitInChannel = ((startBitNum + b) % 11);
-                uint8_t bit = (data >> b) & 1u;
+            for (uint8_t bit_index = 0; bit_index < 8; bit_index++) {
+                uint8_t channelNumber = (startBitNum + bit_index) / 11;
+                uint8_t bitInChannel = ((startBitNum + bit_index) % 11);
+                uint8_t bit = (data >> bit_index) & 1u;
                 sbus_data->channel[channelNumber] |= bit << bitInChannel;
             }
             byte_count++;

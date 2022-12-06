@@ -1,8 +1,8 @@
 /**
  * @file bno055.c
- * @author paul
+ * @author Paul Nykiel
  * @date 01.11.22
- * Description here TODO
+ * Implementation of the interface independent library functions for the Bosch Sensortec BNO-055.
  */
 #include "bno055.h"
 
@@ -153,13 +153,13 @@ void bno055_read_calib_status(uint8_t *out, bno_callback_t callback) {
 
 void bno055_write_remap_axis(bno055_axis_remap_axis_t new_x, bno055_axis_remap_axis_t new_y,
                              bno055_axis_remap_axis_t new_z, bno_callback_t callback) {
-    uint8_t remap_reg = (new_z << 4) | (new_y << 2) | new_x;
+    uint8_t remap_reg = (new_z << 4U) | (new_y << 2U) | new_x;
     bno055_uart_write_register(BNO055_AXIS_MAP_CONFIG_ADDR, &remap_reg, 1, callback);
 }
 
 void bno055_write_remap_axis_sign(bno055_axis_remap_sign_t new_x_sign, bno055_axis_remap_sign_t new_y_sign,
                                   bno055_axis_remap_sign_t new_z_sign, bno_callback_t callback) {
-    uint8_t remap_reg = (new_x_sign << 2) | (new_y_sign << 1) | new_z_sign;
+    uint8_t remap_reg = (new_x_sign << 2U) | (new_y_sign << 1U) | new_z_sign;
     bno055_uart_write_register(BNO055_AXIS_MAP_SIGN_ADDR, &remap_reg, 1, callback);
 }
 

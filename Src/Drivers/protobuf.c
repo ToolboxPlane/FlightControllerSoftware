@@ -1,8 +1,8 @@
 /**
  * @file protobuf.c
- * @author paul
+ * @author Paul Nykiel
  * @date 19.11.22
- * Description here TODO
+ * @brief Implementations of the library functions for protobuf encoding, transmission and reception.
  */
 #include "protobuf.h"
 

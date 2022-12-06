@@ -1,13 +1,16 @@
 /**
  * @file ppm.c
- * @author paul
+ * @author Paul Nykiel
  * @date 27.11.22
- * Description here TODO
+ * @brief Implementation of the library functions for the PPM pins on the FC.
  */
 #include "ppm.h"
 
 #include <HAL/pwm16bit.h>
 #include <avr/io.h>
+
+enum { PPM_MAX_VAL = 40000U };
+enum { PPM_ZERO_VAL = 1000U };
 
 void ppm_init(void) {
     // All PWM pins as outputs
@@ -20,13 +23,13 @@ void ppm_init(void) {
      * Thus, a max value of 40000 yields a period of 20ms and each LSB corresponds
      * to 0.5us
      */
-    pwm_init(1, prescaler_8, 40000);
-    pwm_init(3, prescaler_8, 40000);
-    pwm_init(4, prescaler_8, 40000);
+    pwm_init(1, prescaler_8, PPM_MAX_VAL);
+    pwm_init(3, prescaler_8, PPM_MAX_VAL);
+    pwm_init(4, prescaler_8, PPM_MAX_VAL);
 }
 
 void ppm_channel_set(uint8_t channel_id, uint16_t setpoint) {
-    uint16_t compare_value = (setpoint + 1000U) * 2U;
+    uint16_t compare_value = (setpoint + PPM_ZERO_VAL) * 2U;
     switch (channel_id) {
         case 1:
             pwm_set_out_a(3, compare_value);

@@ -1,6 +1,6 @@
 /**
  * @file error_handler.h
- * @author paul
+ * @author Paul Nykiel
  * @date 27.11.22
  * Description here TODO
  */

@@ -1,8 +1,8 @@
 /**
  * @file bno055.h
- * @author paul
+ * @author Paul Nykiel
  * @date 01.11.22
- * Description here TODO
+ * Definition of the interface independent library functions for the Bosch Sensortec BNO-055.
  */
 #ifndef FLIGHTCONTROLLER_BNO055_H
 #define FLIGHTCONTROLLER_BNO055_H

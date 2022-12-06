@@ -1,6 +1,9 @@
-//
-// Created by paul on 14.04.18.
-//
+/**
+ * @file sbus.c
+ * @author Paul Nykiel
+ * @date 14.04.18
+ * @brief Definition of the library functions for sbus reception and decoding.
+ */
 
 #ifndef FLIGHTCONTROLLER_SBUS_H
 #define FLIGHTCONTROLLER_SBUS_H
