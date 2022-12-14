@@ -9,22 +9,25 @@ jobs:
       fail-fast: false
       matrix:
         compiler: [ { cc: gcc-10, cxx: g++-10 } ]#,
-                    #{ cc: gcc-11, cxx: g++-11 } ]
-                    #{ cc: clang-10, cxx: clang++-10 },
-                    #{ cc: clang-11, cxx: clang++-11 },
-                    #{ cc: clang-12, cxx: clang++-12 },
-                    #{ cc: clang-13, cxx: clang++-13 },
-                    #{ cc: clang-14, cxx: clang++-14 } ]
+                    { cc: gcc-11, cxx: g++-11 } ]
+                    { cc: clang-10, cxx: clang++-10 },
+                    { cc: clang-11, cxx: clang++-11 },
+                    { cc: clang-12, cxx: clang++-12 },
+                    { cc: clang-13, cxx: clang++-13 },
+                    { cc: clang-14, cxx: clang++-14 } ]
         build: [ Release, Debug ]
-        test: [ Test_Drivers_bno055_uart,
-                Test_Drivers_bno055,
-                Test_Drivers_ppm,
-                Test_Drivers_protobuf,
-                Test_Drivers_sbus,
+        test: [ Test_Application_controllerm
+                Test_Application_error_handler,
                 Test_Components_flightcomputer,
                 Test_Components_imu,
+                Test_Components_remote
                 Test_Components_servo_motor
-                Test_Components_remote ]
+                Test_Components_system,
+                Test_Drivers_bno055,
+                Test_Drivers_bno055_uart,
+                Test_Drivers_ppm,
+                Test_Drivers_protobuf,
+                Test_Drivers_sbus]
     env:
       CC: ${{ matrix.compiler.cc }}
       CXX: ${{ matrix.compiler.cxx }}
