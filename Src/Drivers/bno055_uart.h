@@ -10,6 +10,9 @@
 
 #include <stdint.h>
 
+/**
+ * Possible results transmitted by the sensor.
+ */
 typedef enum {
     // From BNO
     read_success = 0x00,
@@ -29,12 +32,43 @@ typedef enum {
     invalid_sync
 } bno055_response_t;
 
+/**
+ * Type of the function called after a transaction is completed.
+ */
 typedef void (*bno_callback_t)(bno055_response_t);
 
+/**
+ * Initialize the uart interface of the sensor.
+ *
+ * The initialization of the sensor itself (operation mode, units...) is not
+ * done here as it is application dependent.
+ */
 void bno055_uart_init(void);
 
+/**
+ * Write to a register of the sensor via UART.
+ *
+ * This will build the uart message, send it and report the result
+ * with the provided callback.
+ *
+ * @param reg the address of the register
+ * @param data pointer to the data to write
+ * @param len the number of bytes to write
+ * @param callback a function to call once the sensor sends a reply
+ */
 void bno055_uart_write_register(uint8_t reg, const uint8_t *data, uint8_t len, bno_callback_t callback);
 
+/**
+ * Read data from a register via UART.
+ *
+ * This will build the uart message, send it, decode the incoming
+ * response, write the result to the provided address and then call the callback.
+ *
+ * @param reg the address of the register to read from
+ * @param len the number of bytes to read
+ * @param callback a function to call once the transaction is finished
+ * @param result the location at which to write the result
+ */
 void bno055_uart_read_register(uint8_t reg, uint8_t len, bno_callback_t callback, void *result);
 
 

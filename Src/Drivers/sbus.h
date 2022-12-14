@@ -1,5 +1,5 @@
 /**
- * @file sbus.c
+ * @file sbus.h
  * @author Paul Nykiel
  * @date 14.04.18
  * @brief Definition of the library functions for sbus reception and decoding.
