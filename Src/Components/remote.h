@@ -2,7 +2,7 @@
  * @file remote.h
  * @author Paul Nykiel
  * @date 13.11.22
- * Description here TODO
+ * @brief Declaration of the remote interface component.
  */
 #ifndef FLIGHTCONTROLLER_REMOTE_H
 #define FLIGHTCONTROLLER_REMOTE_H

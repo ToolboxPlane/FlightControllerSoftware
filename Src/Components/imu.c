@@ -2,7 +2,7 @@
  * @file imu.c
  * @author Paul Nykiel
  * @date 18.04.19
- * @brief input @TODO
+ * @brief Declaration of the IMU interface component.
  */
 
 #include "imu.h"

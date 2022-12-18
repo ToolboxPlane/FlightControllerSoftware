@@ -2,7 +2,7 @@
  * @file main.c
  * @author Paul Nykiel
  * @date 12.04.19
- * Description here TODO
+ * @brief Main file of the Flightcontroller firmware.
  */
 #include "Application/error_handler.h"
 #include "Components/flightcomputer.h"
@@ -20,9 +20,10 @@ enum {
 typedef enum { SPS_FLIGHTCOMPUTER, SPS_REMOTE, SPS_STABILISED_FAILSAVE, SPS_FAILSAVE } setpoint_source_t;
 
 enum {
-    IMU_TIMEOUT = 6,            // 6 * 16.384 \approx 100ms
-    FLIGHTCOMPUTER_TIMOUT = 12, // 12 * 16.384 \approx 200ms
-    REMOTE_TIMEOUT = 12         // 12 * 16.384 \approx 200ms
+    IMU_TIMEOUT = 6,                // 6 * 16.384 \approx 100ms
+    FLIGHTCOMPUTER_TIMOUT = 12,     // 12 * 16.384 \approx 200ms
+    REMOTE_TIMEOUT = 12,            // 12 * 16.384 \approx 200ms
+    FLIGHTCOMPUTER_SEND_PERIOD = 6, // 6 * 16.384 \approx 100ms
 };
 
 void timer_tick(void) {
@@ -122,7 +123,7 @@ void timer_tick(void) {
      */
     static volatile uint8_t fcps_send_mux = 0;
     fcps_send_mux += 1;
-    if (fcps_send_mux >= 6) {
+    if (fcps_send_mux >= FLIGHTCOMPUTER_SEND_PERIOD) {
         flightcomputer_send(&imu_data, &remote_data, &servo_motor_cmd);
         fcps_send_mux = 0;
     }

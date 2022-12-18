@@ -2,7 +2,7 @@
  * @file bno055.c
  * @author Paul Nykiel
  * @date 01.11.22
- * Implementation of the interface independent library functions for the Bosch Sensortec BNO-055.
+ * @brief Implementation of the interface independent library functions for the Bosch Sensortec BNO-055.
  */
 #include "bno055.h"
 

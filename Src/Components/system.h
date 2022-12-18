@@ -2,7 +2,7 @@
  * @file system.h
  * @author Paul Nykiel
  * @date 01.12.22
- * Description here TODO
+ * @brief Declaration of the system interface component.
  */
 #ifndef FLIGHTCONTROLLER_SYSTEM_H
 #define FLIGHTCONTROLLER_SYSTEM_H

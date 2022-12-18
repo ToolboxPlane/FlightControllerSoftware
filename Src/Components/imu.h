@@ -2,7 +2,7 @@
  * @file imu.h
  * @author Paul Nykiel
  * @date 18.04.19
- * @brief input @TODO
+ * @brief Implementation of the IMU interface component.
  */
 
 #ifndef FLIGHTCONTROLLER_IMU_H

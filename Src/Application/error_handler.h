@@ -2,7 +2,7 @@
  * @file error_handler.h
  * @author Paul Nykiel
  * @date 27.11.22
- * Description here TODO
+ * @brief Declaration of the error handler application.
  */
 #ifndef FLIGHTCONTROLLER_ERROR_HANDLER_H
 #define FLIGHTCONTROLLER_ERROR_HANDLER_H

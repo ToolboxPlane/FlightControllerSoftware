@@ -2,7 +2,7 @@
  * @file flightcomputer.c
  * @author Paul Nykiel
  * @date 14.11.22
- * Description here TODO
+ * @brief Implementation of the Flight-Computer interface component.
  */
 #include "flightcomputer.h"
 

@@ -2,7 +2,7 @@
  * @file servo_motor.h
  * @author Paul Nykiel
  * @date 27.11.22
- * Description here TODO
+ * @brief Declaration of the servo and motor interface component.
  */
 #ifndef FLIGHTCONTROLLER_SERVO_MOTOR_H
 #define FLIGHTCONTROLLER_SERVO_MOTOR_H

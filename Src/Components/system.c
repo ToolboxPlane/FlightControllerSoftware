@@ -2,7 +2,7 @@
  * @file system.c
  * @author Paul Nykiel
  * @date 01.12.22
- * Description here TODO
+ * @brief Implementation of the system interface component.
  */
 #include "system.h"
 

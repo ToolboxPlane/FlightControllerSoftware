@@ -2,7 +2,7 @@
  * @file controller.h
  * @author Paul Nykiel
  * @date 27.11.22
- * Description here TODO
+ * @brief Declaration of the controller application.
  */
 #ifndef FLIGHTCONTROLLER_CONTROLLER_H
 #define FLIGHTCONTROLLER_CONTROLLER_H

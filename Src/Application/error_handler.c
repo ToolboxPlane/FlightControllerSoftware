@@ -2,7 +2,7 @@
  * @file error_handler.c
  * @author Paul Nykiel
  * @date 27.11.22
- * Description here TODO
+ * @brief Implementation of the error handler application.
  */
 #include "error_handler.h"
 

@@ -2,7 +2,7 @@
  * @file remote.c
  * @author Paul Nykiel
  * @date 13.11.22
- * Description here TODO
+ * @brief Implementation of the remote interface component.
  */
 
 #include "remote.h"

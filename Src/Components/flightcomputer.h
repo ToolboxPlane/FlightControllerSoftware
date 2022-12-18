@@ -2,7 +2,7 @@
  * @file flightcomputer.h
  * @author Paul Nykiel
  * @date 14.11.22
- * Description here TODO
+ * @brief Declaration of the Flight-Computer interface component.
  */
 #ifndef FLIGHTCONTROLLER_FLIGHTCOMPUTER_H
 #define FLIGHTCONTROLLER_FLIGHTCOMPUTER_H
@@ -18,10 +18,6 @@ typedef struct {
     uint16_t motor;
     int16_t pitch, roll;
 } flightcomputer_setpoint_t;
-
-/*typedef enum {
-
-} flightcomputer_error_t;*/
 
 void flightcomputer_init(void);
 
