@@ -51,7 +51,9 @@ bool flightcomputer_setpoint_available(void) {
 
 flightcomputer_setpoint_t flightcomputer_get_setpoint(void) {
     setpoint_message_t message = protobuf_get_setpoint();
-    flightcomputer_setpoint_t setpoint = {.motor = message.motor, .pitch = message.pitch, .roll = message.roll};
+    flightcomputer_setpoint_t setpoint = {.motor = message.motor,
+                                          .pitch = (int16_t) message.pitch,
+                                          .roll = (int16_t) message.roll};
 
     return setpoint;
 }

@@ -12,6 +12,7 @@
 #include <util/delay.h>
 
 enum { INIT_RESPONSE_TIMEOUT_MS = 20 };
+enum { SELF_TEST_PASSED = 0xF };
 
 typedef enum {
     EUL,
@@ -108,7 +109,7 @@ void imu_init(void) {
         error_handler_handle_error(IMU, IMU_ERROR_INIT_SELF_TEST_WRITE);
         return;
     }
-    if (self_test_result != 0xF) {
+    if (self_test_result != SELF_TEST_PASSED) {
         error_handler_handle_error(IMU, IMU_ERROR_INIT_SELF_TEST);
         return;
     }

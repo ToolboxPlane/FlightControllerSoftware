@@ -18,7 +18,7 @@ jobs:
       - name: Set up Build
         run: |
           cmake -B build -DCMAKE_EXPORT_COMPILE_COMMANDS=ON
-          cmake --build build --target all
+          cmake --build build --target FlightController.hex
           cp compile_commands.json ..
       - name: Run Clang Tidy
         run: run-clang-tidy -j$(nproc) -quiet | tee clangtidy.log
