@@ -1,3 +1,5 @@
+add_subdirectory(Mock)
+
 make_test(Drivers/bno055_uart)
 target_link_libraries(Test_Drivers_bno055_uart PRIVATE Mock_HAL_uart)
 

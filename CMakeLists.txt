@@ -18,7 +18,7 @@ if (${CMAKE_C_COMPILER} MATCHES "avr")
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${AVR_FLAGS}")
 else ()
     message(STATUS "Not building for AVR")
-    add_subdirectory(Tests)
 endif ()
 
+add_subdirectory(Tests)
 add_subdirectory(Src)
