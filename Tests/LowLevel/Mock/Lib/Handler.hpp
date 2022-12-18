@@ -26,6 +26,14 @@ namespace mock {
             releaseFunc{std::move(releaseFunc)} {
         }
 
+        Handler(const Handler<mockedFunctions...> &) = delete;
+
+        Handler(Handler<mockedFunctions...> &&) = delete;
+
+        auto operator=(const Handler<mockedFunctions...> &) = delete;
+
+        auto operator=(Handler<mockedFunctions...> &&) = delete;
+
         ~Handler() {
             releaseFunc();
         }
@@ -72,7 +80,7 @@ namespace mock {
                     return funcInfo;
                 }
             }
-            assert(false);
+            throw std::runtime_error{"Function not part of the argument list!"};
         }
 
         /**
