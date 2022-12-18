@@ -41,6 +41,10 @@ TEST(TEST_NAME, send) {
         EXPECT_EQ(message->remote.isArmed, true);
         EXPECT_EQ(message->remote.overrideActive, false);
         EXPECT_EQ(message->remote.remote_ok, true);
+
+        EXPECT_EQ(message->motor, 17);
+        EXPECT_EQ(message->servoLeft, 18);
+        EXPECT_EQ(message->servoRight, 19);
     });
 
     imu_data_t imuData = {.heading_mul_16 = 1,
@@ -62,7 +66,12 @@ TEST(TEST_NAME, send) {
                                 .is_armed = true,
                                 .override_active = false,
                                 .remote_ok = true};
-    flightcomputer_send(&imuData, &remoteData);
+    servo_motor_cmd_t servoMotorCmd = {
+            .motor = 17,
+            .servo_left = 18,
+            .servo_right = 19
+    };
+    flightcomputer_send(&imuData, &remoteData, &servoMotorCmd);
 
     EXPECT_TRUE(handle.functionGotCalled<protobuf_send_fc>());
 }

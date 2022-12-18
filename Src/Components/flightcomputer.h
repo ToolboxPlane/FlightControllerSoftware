@@ -12,6 +12,7 @@
 
 #include "imu.h"
 #include "remote.h"
+#include "servo_motor.h"
 
 typedef struct {
     uint16_t motor;
@@ -24,7 +25,8 @@ typedef struct {
 
 void flightcomputer_init(void);
 
-void flightcomputer_send(const imu_data_t *imu_data, const remote_data_t *remote_data);
+void flightcomputer_send(const imu_data_t *imu_data, const remote_data_t *remote_data,
+                         const servo_motor_cmd_t *servo_motor_cmd);
 
 bool flightcomputer_setpoint_available(void);
 

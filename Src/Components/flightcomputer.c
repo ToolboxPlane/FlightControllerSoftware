@@ -12,7 +12,8 @@ void flightcomputer_init(void) {
     protobuf_init();
 }
 
-void flightcomputer_send(const imu_data_t *imu_data, const remote_data_t *remote_data) {
+void flightcomputer_send(const imu_data_t *imu_data, const remote_data_t *remote_data,
+                         const servo_motor_cmd_t *servo_motor_cmd) {
     fc_message_t message = {.has_imu = true,
                             .imu =
                                     {
@@ -37,9 +38,9 @@ void flightcomputer_send(const imu_data_t *imu_data, const remote_data_t *remote
                                        .isArmed = remote_data->is_armed,
                                        .overrideActive = remote_data->override_active,
                                        .remote_ok = remote_data->remote_ok},
-                            .motor = 0,
-                            .servoLeft = 500,
-                            .servoRight = 500};
+                            .motor = servo_motor_cmd->motor,
+                            .servoLeft = servo_motor_cmd->servo_left,
+                            .servoRight = servo_motor_cmd->servo_right};
 
     protobuf_send_fc(&message);
 }

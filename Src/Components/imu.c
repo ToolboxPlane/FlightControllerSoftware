@@ -42,12 +42,15 @@ static void bno_sample_callback(bno055_response_t response) {
         switch (bno_sampling_state) {
             case EUL:
                 bno_sampling_state = GYR;
+                imu_start_sampling();
                 break;
             case GYR:
                 bno_sampling_state = ACC;
+                imu_start_sampling();
                 break;
             case ACC:
                 bno_sampling_state = STATUS;
+                imu_start_sampling();
                 break;
             case STATUS:
                 if (bno_status != sensor_fusion_algorithm_running) {
@@ -57,6 +60,7 @@ static void bno_sample_callback(bno055_response_t response) {
                     imu_data->imu_ok = true;
                 }
                 bno_sampling_state = CALIB_STAT;
+                imu_start_sampling();
                 break;
             case CALIB_STAT:
                 current_sample_state_id = 1 - current_sample_state_id;

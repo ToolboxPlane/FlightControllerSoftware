@@ -32,7 +32,7 @@ foreach (MockedModule ${MockedModules})
 
     # Add a target which will autogenerate the mock source files
     add_custom_command(
-            COMMAND python3 ${CMAKE_SOURCE_DIR}/Tests/Mock/Lib/generate_mock.py ${CMAKE_SOURCE_DIR}/Src/${MockedModule}.h ${MockedModule} ${MockPath}
+            COMMAND python3 ${CMAKE_SOURCE_DIR}/Tests/LowLevel/Mock/Lib/generate_mock.py ${CMAKE_SOURCE_DIR}/Src/${MockedModule}.h ${MockedModule} ${MockPath}
             WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
             DEPENDS
             ${CMAKE_SOURCE_DIR}/Src/${MockedModule}.h
@@ -61,17 +61,17 @@ foreach (MockedModule ${MockedSystemModules})
 
     # Add a target which will autogenerate the mock source files
     add_custom_command(
-            COMMAND python3 ${CMAKE_SOURCE_DIR}/Tests/Mock/Lib/generate_mock.py ${CMAKE_SOURCE_DIR}/Tests/Mock/System/${MockedModule}.h ${MockedModule} ${MockPath}
+            COMMAND python3 ${CMAKE_SOURCE_DIR}/Tests/LowLevel/Mock/Lib/generate_mock.py ${CMAKE_SOURCE_DIR}/Tests/LowLevel/Mock/System/${MockedModule}.h ${MockedModule} ${MockPath}
             WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
             DEPENDS
-            ${CMAKE_SOURCE_DIR}/Tests/Mock/System/${MockedModule}.h
+            ${CMAKE_SOURCE_DIR}/Tests/LowLevel/Mock/System/${MockedModule}.h
             Lib/generate_mock.py
             OUTPUT ${MockCpp} ${MockHpp})
 
     # Add a library for the mocked module
     add_library(${MockLibTarget} STATIC ${MockCpp} ${MockHpp})
     target_link_libraries(${MockLibTarget} PUBLIC MockLib)
-    target_include_directories(${MockLibTarget} PUBLIC ${CMAKE_SOURCE_DIR}/Tests/Mock/System)
+    target_include_directories(${MockLibTarget} PUBLIC ${CMAKE_SOURCE_DIR}/Tests/LowLevel/Mock/System)
     target_include_directories(${MockLibTarget} INTERFACE ${CMAKE_CURRENT_BINARY_DIR}/Mock)
 endforeach ()
 

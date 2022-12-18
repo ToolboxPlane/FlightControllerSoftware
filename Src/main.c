@@ -123,7 +123,7 @@ void timer_tick(void) {
     static volatile uint8_t fcps_send_mux = 0;
     fcps_send_mux += 1;
     if (fcps_send_mux >= 6) {
-        flightcomputer_send(&imu_data, &remote_data);
+        flightcomputer_send(&imu_data, &remote_data, &servo_motor_cmd);
         fcps_send_mux = 0;
     }
 
