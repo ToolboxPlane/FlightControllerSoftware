@@ -18,6 +18,7 @@ jobs:
         build: [ Release, Debug ]
         test: [ Test_Application_controllerm
                 Test_Application_error_handler,
+                Test_Application_mode_handler,
                 Test_Components_flightcomputer,
                 Test_Components_imu,
                 Test_Components_remote
