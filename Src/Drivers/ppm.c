@@ -28,35 +28,32 @@ void ppm_init(void) {
     pwm_init(4, prescaler_8, PPM_MAX_VAL);
 }
 
-void ppm_channel_set(uint8_t channel_id, uint16_t setpoint) {
+void ppm_channel_set(ppm_channel_id channel_id, uint16_t setpoint) {
     uint16_t compare_value = (setpoint + PPM_ZERO_VAL) * 2U;
     switch (channel_id) {
-        case 1:
+        case CHANNEL_1:
             pwm_set_out_a(3, compare_value);
             break;
-        case 2:
+        case CHANNEL_2:
             pwm_set_out_b(3, compare_value);
             break;
-        case 3:
+        case CHANNEL_3:
             pwm_set_out_c(3, compare_value);
             break;
-        case 4:
+        case CHANNEL_4:
             pwm_set_out_a(4, compare_value);
             break;
-        case 5:
+        case CHANNEL_5:
             pwm_set_out_b(4, compare_value);
             break;
-        case 6:
+        case CHANNEL_6:
             pwm_set_out_a(1, compare_value);
             break;
-        case 7:
+        case CHANNEL_7:
             pwm_set_out_b(1, compare_value);
             break;
-        case 8:
+        case CHANNEL_8:
             pwm_set_out_c(1, compare_value);
             break;
-        default:
-            break;
-            // TODO error handler
     }
 }

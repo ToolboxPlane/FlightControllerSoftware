@@ -11,12 +11,14 @@
 #include <avr/interrupt.h>
 #include <avr/wdt.h>
 
+enum { MAX_TIME_SLOT_USAGE = (uint8_t) (12 / 16.384 * 255) };
+
 static timer_callback_t callback;
 
-static void internal_timer_callbacK(void) {
+static void internal_timer_callback(void) {
     callback();
     uint8_t time = timer_8bit_get_count();
-    if (time > 200) {
+    if (time > MAX_TIME_SLOT_USAGE) {
         error_handler_handle_warning(SYSTEM, SYSTEM_ERROR_TIMER_RUNTIME);
     }
 }
@@ -40,7 +42,7 @@ void system_post_init(void) {
     wdt_enable(WDTO_1S);
 
     //  Runs at 16.384ms interval, the BNO055 provides data at 100Hz, the output can be updated at 50Hz
-    timer_8bit_init(prescaler_1024, &internal_timer_callbacK);
+    timer_8bit_init(prescaler_1024, &internal_timer_callback);
 }
 
 void system_reset_watchdog(void) {

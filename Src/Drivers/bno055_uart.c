@@ -16,29 +16,25 @@ enum { BNO_SEND_START = 0xAA };
 enum { BNO_RECEIVE_START = 0xBB };
 enum { BNO_RECEIVE_ERROR = 0xEE };
 
+enum { BNO_RECEIVE_BUF_SIZE = 2 + 8};
 
-static volatile uint8_t receive_buf[512];
+
+static volatile uint8_t receive_buf[BNO_RECEIVE_BUF_SIZE];
 static volatile bno_callback_t bno_callback;
 static volatile void *bno_result_data;
 
 static void bno_uart_handle_response(volatile const uint8_t *data, uint8_t len, bno055_response_t response) {
-    if (response == read_success) {
-        if (len == 0) {
-            // No data read...
-        } else {
-            if (bno_result_data == 0) {
-                bno_callback(callback_buffer_invalid);
-                return;
-            }
-
-            for (uint8_t index = 0; index < len; ++index) {
-                ((uint8_t *) bno_result_data)[index] = data[index];
-            }
+    if (response == read_success && len > 0) {
+        if (bno_result_data == 0 || data == 0) {
+            bno_callback(callback_buffer_invalid);
+            return;
         }
-        bno_callback(response);
-    } else {
-        bno_callback(response);
+
+        for (uint8_t index = 0; index < len; ++index) {
+            ((uint8_t *) bno_result_data)[index] = data[index];
+        }
     }
+    bno_callback(response);
 }
 
 static void bno_uart_callback(uint8_t data) {

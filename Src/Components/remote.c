@@ -9,6 +9,9 @@
 
 #include <Drivers/sbus.h>
 
+enum { ARMED_THRESH = 400 };
+enum { OVERRIDE_THRESH = 600 };
+
 /*
  * (x-172)/(1811-172)*1000
  *
@@ -28,8 +31,8 @@ remote_data_t remote_get_data(void) {
                                  .throttle_raw = NORMALIZE_TARANIS(sbus_data.channel[3]),
                                  .pitch_raw = NORMALIZE_TARANIS(sbus_data.channel[4]),
                                  .roll_raw = NORMALIZE_TARANIS(sbus_data.channel[5]),
-                                 .is_armed = NORMALIZE_TARANIS(sbus_data.channel[6]) < 400,
-                                 .override_active = NORMALIZE_TARANIS((sbus_data.channel[7])) > 600,
+                                 .is_armed = (NORMALIZE_TARANIS(sbus_data.channel[6]) < ARMED_THRESH),
+                                 .override_active = (NORMALIZE_TARANIS((sbus_data.channel[7])) > OVERRIDE_THRESH),
                                  .remote_ok = (!sbus_data.failsave && !sbus_data.frame_lost)};
     return remote_data;
 }
