@@ -53,21 +53,21 @@ The error IDs are:
 
 | Component      | Exception                   | LED configuration |
 |----------------|-----------------------------|-------------------|
-| Application    | No IMU Data                 | ---X ---X         |
-|                | No FCP Data                 | --X- ---X         |
-|                | No Remote Data              | --XX ---X         |
-| System         | Timer Runtime               | ---X --X-         |
-|                | Watchdog                    | --X- --X-         |
-|                | Brownout                    | --XX --X-         |
-| IMU            | Init config mode error      | ---X --XX         |
-|                | Init self test write error  | --X- --XX         |
-|                | Init self test result error | --XX --XX         |
-|                | Init unit selection error   | -X-- --XX         |
-|                | Init remap axis error       | -X-X --XX         |
-|                | Init remap axis sign error  | -XX- --XX         |
-|                | Init NDOF-FMC-OFF error     | -XXX --XX         |
-|                | Status error                | X--- --XX         |
-|                | Uart error                  | X--X --XX         |
-|                | Default-case error          | X-X- --XX         |
-| Flightcomputer | -                           | -X--              |
-| Remote         | -                           | -X-X              |
+| Application    | No IMU Data                 | ◯◯◯🔴 ◯◯◯🔴       |
+|                | No FCP Data                 | ◯◯🔴◯ ◯◯◯🔴       |
+|                | No Remote Data              | ◯◯🔴🔴 ◯◯◯🔴      |
+| System         | Timer Runtime               | ◯◯◯🔴 ◯◯🔴◯       |
+|                | Watchdog                    | ◯◯🔴◯ ◯◯🔴◯       |
+|                | Brownout                    | ◯◯🔴🔴 ◯◯🔴◯      |
+| IMU            | Init config mode error      | ◯◯◯🔴 ◯◯🔴🔴      |
+|                | Init self test write error  | ◯◯🔴◯ ◯◯🔴🔴      |
+|                | Init self test result error | ◯◯🔴🔴 ◯◯🔴🔴     |
+|                | Init unit selection error   | ◯🔴◯◯ ◯◯🔴🔴      |
+|                | Init remap axis error       | ◯🔴◯🔴 ◯◯🔴🔴     |
+|                | Init remap axis sign error  | ◯🔴🔴◯ ◯◯🔴🔴     |
+|                | Init NDOF-FMC-OFF error     | ◯🔴🔴🔴 ◯◯🔴🔴    |
+|                | Status error                | 🔴◯◯◯ ◯◯🔴🔴      |
+|                | Uart error                  | 🔴◯◯🔴 ◯◯🔴🔴     |
+|                | Default◯case error          | 🔴◯🔴◯ ◯◯🔴🔴     |
+| Flightcomputer | -                           | ◯🔴◯◯             |
+| Remote         | -                           | ◯🔴◯🔴            |

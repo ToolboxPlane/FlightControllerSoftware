@@ -4,6 +4,7 @@
  * @date 12.04.19
  * @brief Main file of the Flightcontroller firmware.
  */
+#include "Application/controller.h"
 #include "Application/error_handler.h"
 #include "Components/flightcomputer.h"
 #include "Components/imu.h"
@@ -96,19 +97,26 @@ void timer_tick(void) {
      */
     servo_motor_cmd_t servo_motor_cmd;
     switch (setpoint_source) {
-        case SPS_FLIGHTCOMPUTER:
+        case SPS_FLIGHTCOMPUTER: {
+            controller_result_t controller_result =
+                    controller_update(&imu_data, flightcomputer_setpoint.roll, flightcomputer_setpoint.pitch);
+            servo_motor_cmd.servo_left = controller_result.elevon_left;
+            servo_motor_cmd.servo_right = controller_result.elevon_right;
             servo_motor_cmd.motor = flightcomputer_setpoint.motor;
-            // TODO controller
             break;
+        }
         case SPS_REMOTE:
             servo_motor_cmd.motor = remote_data.throttle_raw;
             servo_motor_cmd.servo_left = remote_data.elevon_left_mixed;
             servo_motor_cmd.servo_right = remote_data.elevon_right_mixed;
             break;
-        case SPS_STABILISED_FAILSAVE:
+        case SPS_STABILISED_FAILSAVE: {
+            controller_result_t controller_result = controller_update(&imu_data, 0, 0);
+            servo_motor_cmd.servo_left = controller_result.elevon_left;
+            servo_motor_cmd.servo_right = controller_result.elevon_right;
             servo_motor_cmd.motor = 0;
-            // TODO controller
             break;
+        }
         case SPS_FAILSAVE:
             servo_motor_cmd.motor = 0;
             servo_motor_cmd.servo_left = 0;
@@ -147,10 +155,7 @@ int main(void) {
 
     system_post_init();
 
-#pragma clang diagnostic push
-#pragma ide diagnostic ignored "EndlessLoop"
     while (true) {
         system_reset_watchdog();
     }
-#pragma clang diagnostic pop
 }
