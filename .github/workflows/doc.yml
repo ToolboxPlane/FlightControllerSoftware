@@ -18,7 +18,7 @@ jobs:
       - name: Move output
         run: |
           mkdir -p out/doxygen
-          mv doxy_out/html out/doxygen
+          mv doxy_out/html/* out/doxygen/
       - uses: actions/upload-artifact@v3
         with:
           name: doxygen
