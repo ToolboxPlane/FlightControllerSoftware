@@ -14,8 +14,14 @@ set(MockedModules
         HAL/uart
         Messages/MessageEncoding
         Messages/MessageDecoding
+        Components/flightcomputer
+        Components/imu
+        Components/remote
+        Components/servo_motor
+        Components/system
         Application/controller
-        Application/error_handler)
+        Application/error_handler
+        Application/mode_handler)
 
 set(MockedSystemModules
         util/delay

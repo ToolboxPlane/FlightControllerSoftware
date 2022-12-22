@@ -10,25 +10,26 @@ jobs:
       matrix:
         compiler: [ { cc: gcc-10, cxx: g++-10 },
                     { cc: gcc-11, cxx: g++-11 },
-                    { cc: clang-10, cxx: clang++-10 },
                     { cc: clang-11, cxx: clang++-11 },
                     { cc: clang-12, cxx: clang++-12 },
                     { cc: clang-13, cxx: clang++-13 },
-                    { cc: clang-14, cxx: clang++-14 } ]
+                    { cc: clang-14, cxx: clang++-14 },
+                    { cc: clang-15, cxx: clang++-15 },
+                    { cc: clang-16, cxx: clang++-16 } ]
         build: [ Release, Debug ]
-        test: [ Test_Application_controllerm
+        test: [ Test_Application_controller,
                 Test_Application_error_handler,
                 Test_Application_mode_handler,
                 Test_Components_flightcomputer,
                 Test_Components_imu,
-                Test_Components_remote
-                Test_Components_servo_motor
+                Test_Components_remote,
+                Test_Components_servo_motor,
                 Test_Components_system,
                 Test_Drivers_bno055,
                 Test_Drivers_bno055_uart,
                 Test_Drivers_ppm,
                 Test_Drivers_protobuf,
-                Test_Drivers_sbus]
+                Test_Drivers_sbus ]
     env:
       CC: ${{ matrix.compiler.cc }}
       CXX: ${{ matrix.compiler.cxx }}

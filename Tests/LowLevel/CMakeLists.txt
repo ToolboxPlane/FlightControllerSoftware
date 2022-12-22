@@ -40,3 +40,7 @@ make_test(Application/error_handler)
 target_link_libraries(Test_Application_error_handler PRIVATE Mock_avr_io)
 
 make_test(Application/mode_handler)
+target_link_libraries(Test_Application_mode_handler PRIVATE Mock_Application_error_handler)
+target_link_libraries(Test_Application_mode_handler PRIVATE Mock_Components_imu)
+target_link_libraries(Test_Application_mode_handler PRIVATE Mock_Components_remote)
+target_link_libraries(Test_Application_mode_handler PRIVATE Mock_Components_flightcomputer)
