@@ -21,6 +21,6 @@ enum {
 
 
 mode_handler_mode_t mode_handler_handle(imu_data_t *imu_data, remote_data_t *remote_data,
-                                      flightcomputer_setpoint_t *flightcomputer_setpoint);
+                                        flightcomputer_setpoint_t *flightcomputer_setpoint);
 
 #endif // FLIGHTCONTROLLER_MODE_HANDLER_H

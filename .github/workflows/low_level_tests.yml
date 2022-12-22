@@ -41,6 +41,7 @@ jobs:
       - name: Install dependencies
         run: |
           # Taken from https://apt.llvm.org/
+          wget -O - https://apt.llvm.org/llvm-snapshot.gpg.key | sudo apt-key add -
           sudo add-apt-repository "deb http://apt.llvm.org/jammy/ llvm-toolchain-jammy main"
           sudo add-apt-repository "deb-src http://apt.llvm.org/jammy/ llvm-toolchain-jammy main"
           sudo apt-get update

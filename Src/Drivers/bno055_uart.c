@@ -16,7 +16,7 @@ enum { BNO_SEND_START = 0xAA };
 enum { BNO_RECEIVE_START = 0xBB };
 enum { BNO_RECEIVE_ERROR = 0xEE };
 
-enum { BNO_RECEIVE_BUF_SIZE = 2 + 8};
+enum { BNO_RECEIVE_BUF_SIZE = 2 + 8 };
 
 
 static volatile uint8_t receive_buf[BNO_RECEIVE_BUF_SIZE];
