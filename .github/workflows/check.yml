@@ -1,0 +1,59 @@
+name: Static Analysis
+on: [ push ]
+
+jobs:
+  Clang-Tidy:
+    runs-on: ubuntu-latest
+    env:
+      CC: avr-gcc
+      CXX: avr-g++
+    steps:
+      - uses: actions/checkout@v2
+        with:
+          submodules: recursive
+      - name: Install Clang-Tidy
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y clang-tidy avr-libc binutils-avr gcc-avr protobuf-compiler python3-protobuf
+      - name: Set up Build
+        run: |
+          cmake -B build -DCMAKE_EXPORT_COMPILE_COMMANDS=ON
+          cmake --build build --target FlightController.hex
+          cp build/compile_commands.json .
+      - name: Run Clang Tidy
+        run: run-clang-tidy -j$(nproc) -quiet | tee clangtidy.log
+      - name: Check Clang Tidy Result
+        run: if grep "error" clangtidy.log; then exit 1; fi;
+
+  Clang-Format:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+        with:
+          submodules: recursive
+      - name: Install clang-format
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y clang-tools python3
+          wget 'https://github.com/Sarcasm/run-clang-format/raw/39081c9c42768ab5e8321127a7494ad1647c6a2f/run-clang-format.py'
+      - name: Run Clang-Format
+        run: python3 run-clang-format.py --recursive --exclude ./build --color always .
+
+  Check-Doxygen:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          submodules: recursive
+      - name: Install dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y doxygen
+      - name: Prepare Doxyfile
+        run: sed -i "s/WARN_AS_ERROR\s*=\s*NO/WARN_AS_ERROR = YES/g" Doxyfile
+      - name: Run doxygen
+        run: doxygen
+
+
+
+

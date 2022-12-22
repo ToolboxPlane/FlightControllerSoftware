@@ -1,0 +1,45 @@
+name: DeployPages
+on:
+  workflow_run:
+    workflows:
+      - Documentation
+      - LowLevelTests
+    types:
+      - completed
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: "pages"
+  cancel-in-progress: true
+
+
+jobs:
+  DeployPages:
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    runs-on: ubuntu-latest
+    steps:
+      - name: Setup Pages
+        uses: actions/configure-pages@v2
+      - name: Download Doxygen
+        uses: dawidd6/action-download-artifact@v2
+        with:
+          workflow: "doc.yml"
+          name: doxygen
+      - name: Download Low-Level-Coverage
+        uses: dawidd6/action-download-artifact@v2
+        with:
+          workflow: "low_level_tests.yml"
+          name: llt-coverage
+      - name: tree
+        run: tree
+      - name: Upload artifact
+        uses: actions/upload-pages-artifact@v1
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v1

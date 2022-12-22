@@ -1,4 +1,4 @@
-cmake-build-debug/
+cmake-build-*
 *.tmp
 .cproject
 .mxproject
@@ -8,3 +8,5 @@ Src/Backup/
 build/
 /Inc/Backup/
 .idea/*
+doxy_out
+

@@ -1,0 +1,25 @@
+name: Documentation
+on: [ push ]
+
+jobs:
+  Build-Doxygen:
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - name: Install dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y doxygen
+      - name: Run doxygen
+        run: doxygen
+      - name: Move output
+        run: |
+          mkdir -p out/doxygen
+          mv doxy_out/html out/doxygen
+      - uses: actions/upload-artifact@v3
+        with:
+          name: doxygen
+          path: out

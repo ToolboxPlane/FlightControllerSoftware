@@ -1,0 +1,5 @@
+if (${CMAKE_C_COMPILER} MATCHES "avr")
+    add_subdirectory(HighLevel)
+else()
+    add_subdirectory(LowLevel)
+endif()
