@@ -9,6 +9,9 @@
 
 #include "bno055_uart.h"
 
+/**
+ * Possible values of the status register.
+ */
 typedef enum {
     system_idle = 0x0,
     system_error = 0x1,
@@ -20,6 +23,9 @@ typedef enum {
     unknown_status,
 } bno055_status_t;
 
+/**
+ * Possible values of the error register.
+ */
 typedef enum {
     no_error = 0x0,
     peripheral_initialization_error = 0x1,
@@ -35,6 +41,9 @@ typedef enum {
     unknown_error
 } bno055_error_t;
 
+/**
+ * Possible operation modes of the sensor.
+ */
 typedef enum {
     config_mode = 0b0000,
     acc_only = 0b0001,

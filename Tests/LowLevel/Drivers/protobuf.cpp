@@ -51,7 +51,7 @@ TEST(TEST_NAME, send_fc) {
         EXPECT_EQ(data[4], 205);
     });
 
-    protobuf_send_fc(&to_send);
+    protobuf_send(&to_send);
 
     EXPECT_TRUE(encodingHandle.functionGotCalled<message_encode>());
     EXPECT_TRUE(uartHandle.functionGotCalled<uart_send_buf>());

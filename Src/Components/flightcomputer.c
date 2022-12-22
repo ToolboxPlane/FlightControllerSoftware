@@ -42,7 +42,7 @@ void flightcomputer_send(const imu_data_t *imu_data, const remote_data_t *remote
                             .servoLeft = servo_motor_cmd->servo_left,
                             .servoRight = servo_motor_cmd->servo_right};
 
-    protobuf_send_fc(&message);
+    protobuf_send(&message);
 }
 
 bool flightcomputer_setpoint_available(void) {

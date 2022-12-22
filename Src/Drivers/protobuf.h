@@ -10,12 +10,26 @@
 #include "FlightController.pb.h"
 #include "FlightControllerSetpoint.pb.h"
 
+/**
+ * Type of the messages sent to the flightcomputer.
+ */
 typedef ToolboxPlaneMessages_FlightController fc_message_t;
+
+/**
+ * Type of the messages received from the flightcomputer.
+ */
 typedef ToolboxPlaneMessages_FlightControllerSetpoint setpoint_message_t;
 
+/**
+ * Initialize the protobuf connection.
+ */
 void protobuf_init(void);
 
-void protobuf_send_fc(const fc_message_t *message);
+/**
+ * Send a message to the flightcomputer.
+ * @param message the message to send.
+ */
+void protobuf_send(const fc_message_t *message);
 
 bool protobuf_setpoint_available(void);
 
