@@ -1,9 +1,10 @@
 name: DeployPages
 on:
   workflow_run:
-    workflows:
-      - Documentation
-      - LowLevelTests
+    workflows: [
+      Documentation,
+      LowLevelTests
+    ]
     types:
       - completed
 
@@ -40,6 +41,8 @@ jobs:
         run: tree
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v1
+        with:
+          path: .
       - name: Deploy to GitHub Pages
         id: deployment
         uses: actions/deploy-pages@v1
