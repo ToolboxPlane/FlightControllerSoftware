@@ -9,6 +9,7 @@
 #include <Application/error_handler.h>
 #include <HAL/timer8bit.h>
 #include <avr/interrupt.h>
+#include <avr/io.h>
 #include <avr/wdt.h>
 
 enum { MAX_TIME_SLOT_USAGE = (uint8_t) (12 / 16.384 * 255) };

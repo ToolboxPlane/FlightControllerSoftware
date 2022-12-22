@@ -3,6 +3,7 @@ on:
   workflow_run:
     workflows:
       - Documentation
+      - LowLevelTests
     types:
       - completed
 

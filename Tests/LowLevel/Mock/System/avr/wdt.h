@@ -7,9 +7,7 @@
 #ifndef FLIGHTCONTROLLER_WDT_H
 #define FLIGHTCONTROLLER_WDT_H
 
-typedef enum {
-    WDTO_1S
-} wdt_t;
+typedef enum { WDTO_1S } wdt_t;
 
 void wdt_enable(wdt_t wdt);
 void wdt_reset(void);
