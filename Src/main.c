@@ -14,12 +14,6 @@
 #include "Components/system.h"
 
 enum {
-    APPLICATION_ERROR_NO_IMU_DATA = 1,
-    APPLICATION_ERROR_NO_FCP_DATA = 2,
-    APPLICATION_ERROR_NO_REMOTE_DATA = 3,
-};
-
-enum {
     FLIGHTCOMPUTER_SEND_PERIOD = 6, // 6 * 16.384 \approx 100ms
 };
 

@@ -53,9 +53,7 @@ The error IDs are:
 
 | Component      | Exception                   | LED configuration |
 |----------------|-----------------------------|-------------------|
-| Application    | No IMU Data                 | ◯◯◯🔴 ◯◯◯🔴       |
-|                | No FCP Data                 | ◯◯🔴◯ ◯◯◯🔴       |
-|                | No Remote Data              | ◯◯🔴🔴 ◯◯◯🔴      |
+| Application    | -                           | xxxx ◯◯◯🔴        |
 | System         | Timer Runtime               | ◯◯◯🔴 ◯◯🔴◯       |
 |                | Watchdog                    | ◯◯🔴◯ ◯◯🔴◯       |
 |                | Brownout                    | ◯◯🔴🔴 ◯◯🔴◯      |
@@ -68,6 +66,9 @@ The error IDs are:
 |                | Init NDOF-FMC-OFF error     | ◯🔴🔴🔴 ◯◯🔴🔴    |
 |                | Status error                | 🔴◯◯◯ ◯◯🔴🔴      |
 |                | Uart error                  | 🔴◯◯🔴 ◯◯🔴🔴     |
-|                | Default◯case error          | 🔴◯🔴◯ ◯◯🔴🔴     |
-| Flightcomputer | -                           | ◯🔴◯◯             |
-| Remote         | -                           | ◯🔴◯🔴            |
+|                | Default-case error          | 🔴◯🔴◯ ◯◯🔴🔴     |
+| Flightcomputer | -                           | xxxx ◯🔴◯◯        |
+| Remote         | -                           | xxxx ◯🔴◯🔴       |
+| Mode Handler   | No IMU Data                 | ◯◯◯🔴 ◯🔴🔴◯      |
+|                | No FCP Data                 | ◯◯🔴◯ ◯🔴🔴◯      |
+|                | No Remote Data              | ◯◯🔴🔴 ◯🔴🔴◯     |

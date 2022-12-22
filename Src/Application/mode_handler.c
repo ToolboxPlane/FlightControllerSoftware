@@ -6,6 +6,8 @@
  */
 #include "mode_handler.h"
 
+#include "error_handler.h"
+
 enum {
     IMU_TIMEOUT = 6,            // 6 * 16.384 \approx 100ms
     FLIGHTCOMPUTER_TIMOUT = 12, // 12 * 16.384 \approx 200ms
@@ -13,7 +15,7 @@ enum {
 };
 
 mode_handler_mode_t mode_handler_handle(imu_data_t *imu_data, remote_data_t *remote_data,
-                                      flightcomputer_setpoint_t *flightcomputer_setpoint) {
+                                        flightcomputer_setpoint_t *flightcomputer_setpoint) {
     /*
      * Timeout Handling
      */
@@ -30,7 +32,7 @@ mode_handler_mode_t mode_handler_handle(imu_data_t *imu_data, remote_data_t *rem
     if (imu_timeout_counter >= IMU_TIMEOUT) {
         imu_timeout_counter = IMU_TIMEOUT;
         imu_active = false;
-        // error_handler_handle_warning(APPLICATION, APPLICATION_ERROR_NO_IMU_DATA);
+        error_handler_handle_warning(MODE_HANDLER, MODE_HANDLER_ERROR_NO_IMU_DATA);
     }
     *imu_data = imu_get_latest_data();
 
@@ -43,7 +45,7 @@ mode_handler_mode_t mode_handler_handle(imu_data_t *imu_data, remote_data_t *rem
     if (remote_timeout_counter >= REMOTE_TIMEOUT) {
         remote_timeout_counter = REMOTE_TIMEOUT;
         remote_active = false;
-        // error_handler_handle_warning(APPLICATION, APPLICATION_ERROR_NO_REMOTE_DATA);
+        error_handler_handle_warning(MODE_HANDLER, MODE_HANDLER_ERROR_NO_REMOTE_DATA);
     }
     *remote_data = remote_get_data();
 
@@ -56,7 +58,7 @@ mode_handler_mode_t mode_handler_handle(imu_data_t *imu_data, remote_data_t *rem
     if (flightcomputer_timeout_counter >= FLIGHTCOMPUTER_TIMOUT) {
         flightcomputer_timeout_counter = FLIGHTCOMPUTER_TIMOUT;
         flightcomputer_active = false;
-        // error_handler_handle_warning(APPLICATION, APPLICATION_ERROR_NO_FCP_DATA);
+        error_handler_handle_warning(MODE_HANDLER, MODE_HANDLER_ERROR_NO_FCP_DATA);
     }
     *flightcomputer_setpoint = flightcomputer_get_setpoint();
 
