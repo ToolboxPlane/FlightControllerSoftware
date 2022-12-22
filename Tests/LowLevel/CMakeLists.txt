@@ -33,11 +33,17 @@ make_test(Components/servo_motor)
 target_link_libraries(Test_Components_servo_motor PRIVATE Mock_Drivers_ppm)
 
 make_test(Components/system)
+target_link_libraries(Test_Components_system PRIVATE Mock_avr_io)
+target_link_libraries(Test_Components_system PRIVATE Mock_avr_wdt)
+target_link_libraries(Test_Components_system PRIVATE Mock_avr_interrupt)
+target_link_libraries(Test_Components_system PRIVATE Mock_HAL_timer8bit)
+target_link_libraries(Test_Components_system PRIVATE Mock_Application_error_handler)
 
 make_test(Application/controller)
 
 make_test(Application/error_handler)
 target_link_libraries(Test_Application_error_handler PRIVATE Mock_avr_io)
+target_link_libraries(Test_Application_error_handler PRIVATE Mock_avr_wdt)
 
 make_test(Application/mode_handler)
 target_link_libraries(Test_Application_mode_handler PRIVATE Mock_Application_error_handler)

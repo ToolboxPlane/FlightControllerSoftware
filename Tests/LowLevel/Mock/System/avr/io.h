@@ -9,6 +9,10 @@
 
 #include <stdint.h>
 
-uint8_t DDRA, DDRB, DDRC, DDRD, DDRE, DDRH;
+uint8_t DDRA, DDRB, DDRC, DDRD, DDRE, DDRH, DDRL;
+uint8_t PORTA, PORTB, PORTC, PORTD, PORTE, PORTH, PORTL;
+uint8_t MCUSR;
+
+enum { WDRF, BORF };
 
 #endif // FLIGHTCONTROLLER_IO_H

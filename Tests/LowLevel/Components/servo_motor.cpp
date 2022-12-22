@@ -19,7 +19,7 @@ TEST(TEST_NAME, set) {
 
     servo_motor_set(&servoMotorCmd);
 
-    EXPECT_TRUE(handle.functionGotCalled<ppm_channel_set>(1, 400));
-    EXPECT_TRUE(handle.functionGotCalled<ppm_channel_set>(2, 700));
-    EXPECT_TRUE(handle.functionGotCalled<ppm_channel_set>(3, 600));
+    EXPECT_TRUE(handle.functionGotCalled<ppm_channel_set>(CHANNEL_1, 400));
+    EXPECT_TRUE(handle.functionGotCalled<ppm_channel_set>(CHANNEL_2, 700));
+    EXPECT_TRUE(handle.functionGotCalled<ppm_channel_set>(CHANNEL_3, 600));
 }

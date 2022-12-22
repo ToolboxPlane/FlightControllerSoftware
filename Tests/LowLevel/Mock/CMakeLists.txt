@@ -25,7 +25,9 @@ set(MockedModules
 
 set(MockedSystemModules
         util/delay
-        avr/io)
+        avr/interrupt
+        avr/io
+        avr/wdt)
 
 # Build mock sources and target for module mocks
 foreach (MockedModule ${MockedModules})
