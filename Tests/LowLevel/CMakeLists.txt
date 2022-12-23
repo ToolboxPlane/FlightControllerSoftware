@@ -51,9 +51,11 @@ target_link_libraries(Test_Application_mode_handler PRIVATE Mock_Components_imu)
 target_link_libraries(Test_Application_mode_handler PRIVATE Mock_Components_remote)
 target_link_libraries(Test_Application_mode_handler PRIVATE Mock_Components_flightcomputer)
 
+add_custom_target(RunAllTests DEPENDS ${AllTests})
+
 add_custom_target(coverage.info
         COMMAND lcov --capture --directory ${CMAKE_CURRENT_BINARY_DIR} --output-file ${CMAKE_CURRENT_BINARY_DIR}/coverage.info
-        DEPENDS ${AllTests})
+        DEPENDS ${RunAllTests})
 
 add_custom_target(Coverage
         COMMAND genhtml ${CMAKE_CURRENT_BINARY_DIR}/coverage.info --output-directory ${CMAKE_CURRENT_BINARY_DIR}/coverage

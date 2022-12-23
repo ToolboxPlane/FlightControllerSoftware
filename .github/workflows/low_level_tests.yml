@@ -20,7 +20,6 @@ jobs:
     env:
       CC: ${{ matrix.compiler.cc }}
       CXX: ${{ matrix.compiler.cxx }}
-      REPORT_FILE: ${{ matrix.cc }}_${{ matrix.build }}_${{ matrix.test }}.xml
     steps:
       - uses: actions/checkout@v2
         with:
@@ -36,7 +35,7 @@ jobs:
       - name: Set up Build
         run: cmake -B build -DCMAKE_BUILD_TYPE=${{ matrix.build }}
       - name: Build and run tests
-        run:  cmake --build build --target Coverage
+        run:  cmake --build build --target RunAllTests
       - uses: actions/upload-artifact@v3
         with:
           name: RunResults
