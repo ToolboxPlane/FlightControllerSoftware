@@ -14,11 +14,12 @@ TEST(TEST_NAME, init) {
      * bits
      */
     EXPECT_TRUE(uartHandler.functionGotCalled<uart_init>(2, 100000U, EVEN, 2, std::ignore));
+    EXPECT_FALSE(sbus_data_available());
 }
 
 TEST(TEST_NAME, decode) {
     auto uartHandler = mock::uart.getHandle();
-    uart_callback_t uartCallback;
+    uart_callback_t uartCallback = nullptr;
     uartHandler.overrideFunc<uart_init>([&uartCallback](uint8_t /*id*/, uint32_t /*baud*/, uart_parity_t /*parity*/,
                                                         uint8_t /*stop_bits*/,
                                                         uart_callback_t rx_callback) { uartCallback = rx_callback; });
@@ -63,22 +64,25 @@ TEST(TEST_NAME, decode) {
                       /* 23 */ 0b00,
                       /* 24 */ 0x00};
 
-    for (unsigned char c : data) {
+    for (const uint8_t c : data) {
         EXPECT_TRUE(sbus_get_latest_data().failsave);
         EXPECT_TRUE(sbus_get_latest_data().frame_lost);
+        EXPECT_FALSE(sbus_data_available());
         uartCallback(c);
     }
+
+    EXPECT_TRUE(sbus_data_available());
     EXPECT_FALSE(sbus_get_latest_data().failsave);
     EXPECT_FALSE(sbus_get_latest_data().frame_lost);
 
-    for (auto c = 0U; c < 16; ++c) {
-        EXPECT_EQ(sbus_get_latest_data().channel[c], c + 1);
+    for (auto channel = 0U; channel < 16U; ++channel) {
+        EXPECT_EQ(sbus_get_latest_data().channel[channel], channel + 1);
     }
 }
 
 TEST(TEST_NAME, decode_failsave) {
     auto uartHandler = mock::uart.getHandle();
-    uart_callback_t uartCallback;
+    uart_callback_t uartCallback = nullptr;
     uartHandler.overrideFunc<uart_init>([&uartCallback](uint8_t /*id*/, uint32_t /*baud*/, uart_parity_t /*parity*/,
                                                         uint8_t /*stop_bits*/,
                                                         uart_callback_t rx_callback) { uartCallback = rx_callback; });
@@ -89,22 +93,25 @@ TEST(TEST_NAME, decode_failsave) {
     data[23] = 0x08;
     data[24] = 0;
 
-    for (unsigned char c : data) {
+    for (const uint8_t c : data) {
         EXPECT_TRUE(sbus_get_latest_data().failsave);
         EXPECT_TRUE(sbus_get_latest_data().frame_lost);
+        EXPECT_FALSE(sbus_data_available());
         uartCallback(c);
     }
+
+    EXPECT_TRUE(sbus_data_available());
     EXPECT_TRUE(sbus_get_latest_data().failsave);
     EXPECT_FALSE(sbus_get_latest_data().frame_lost);
 
-    for (unsigned short c : sbus_get_latest_data().channel) {
-        EXPECT_EQ(c, 0);
+    for (const uint16_t channel : sbus_get_latest_data().channel) {
+        EXPECT_EQ(channel, 0);
     }
 }
 
 TEST(TEST_NAME, decode_framelost) {
     auto uartHandler = mock::uart.getHandle();
-    uart_callback_t uartCallback;
+    uart_callback_t uartCallback = nullptr;
     uartHandler.overrideFunc<uart_init>([&uartCallback](uint8_t /*id*/, uint32_t /*baud*/, uart_parity_t /*parity*/,
                                                         uint8_t /*stop_bits*/,
                                                         uart_callback_t rx_callback) { uartCallback = rx_callback; });
@@ -115,15 +122,18 @@ TEST(TEST_NAME, decode_framelost) {
     data[23] = 0x04;
     data[24] = 0;
 
-    for (unsigned char c : data) {
+    for (const uint8_t c : data) {
         EXPECT_TRUE(sbus_get_latest_data().failsave);
         EXPECT_TRUE(sbus_get_latest_data().frame_lost);
+        EXPECT_FALSE(sbus_data_available());
         uartCallback(c);
     }
+
+    EXPECT_TRUE(sbus_data_available());
     EXPECT_FALSE(sbus_get_latest_data().failsave);
     EXPECT_TRUE(sbus_get_latest_data().frame_lost);
 
-    for (auto c = 0U; c < 16; ++c) {
-        EXPECT_EQ(sbus_get_latest_data().channel[c], 0);
+    for (const uint16_t channel : sbus_get_latest_data().channel) {
+        EXPECT_EQ(channel, 0);
     }
 }

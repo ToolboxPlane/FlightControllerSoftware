@@ -17,7 +17,7 @@ TEST(TEST_NAME, send) {
 
     flightcomputer_init();
 
-    handle.overrideFunc<protobuf_send_fc>([](const fc_message_t *message) {
+    handle.overrideFunc<protobuf_send>([](const fc_message_t *message) {
         EXPECT_TRUE(message->has_imu);
         EXPECT_TRUE(message->has_remote);
 
@@ -69,7 +69,7 @@ TEST(TEST_NAME, send) {
     servo_motor_cmd_t servoMotorCmd = {.motor = 17, .servo_left = 18, .servo_right = 19};
     flightcomputer_send(&imuData, &remoteData, &servoMotorCmd);
 
-    EXPECT_TRUE(handle.functionGotCalled<protobuf_send_fc>());
+    EXPECT_TRUE(handle.functionGotCalled<protobuf_send>());
 }
 
 TEST(TEST_NAME, data_available_true) {

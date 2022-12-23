@@ -13,7 +13,7 @@ TEST(TEST_NAME, init) {
 
     protobuf_init();
 
-    EXPECT_TRUE(uartHandle.functionGotCalled<uart_init>(0, 115200U, ODD, 1, std::ignore));
+    EXPECT_TRUE(uartHandle.functionGotCalled<uart_init>(0, 115200U, NONE, 1, std::ignore));
     EXPECT_FALSE(protobuf_setpoint_available());
 }
 

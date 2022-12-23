@@ -17,24 +17,10 @@ jobs:
                     #{ cc: clang-15, cxx: clang++-15 },
                     { cc: clang-16, cxx: clang++-16 } ]
         build: [ Release, Debug ]
-        test: [ Test_Application_controller,
-                Test_Application_error_handler,
-                Test_Application_mode_handler,
-                Test_Components_flightcomputer,
-                Test_Components_imu,
-                Test_Components_remote,
-                Test_Components_servo_motor,
-                Test_Components_system,
-                Test_Drivers_bno055,
-                Test_Drivers_bno055_uart,
-                Test_Drivers_ppm,
-                Test_Drivers_protobuf,
-                Test_Drivers_sbus ]
     env:
       CC: ${{ matrix.compiler.cc }}
       CXX: ${{ matrix.compiler.cxx }}
       REPORT_FILE: ${{ matrix.cc }}_${{ matrix.build }}_${{ matrix.test }}.xml
-      GTEST_ARGS: --gtest_repeat=1000 --gtest_shuffle --gtest_output=xml:${REPORT_FILE}
     steps:
       - uses: actions/checkout@v2
         with:
@@ -49,18 +35,12 @@ jobs:
           sudo apt-get install -y wget g++-9 g++-10 g++-11 protobuf-compiler valgrind python3-protobuf clang-*
       - name: Set up Build
         run: cmake -B build -DCMAKE_BUILD_TYPE=${{ matrix.build }}
-      - name: Build
-        run:  cmake --build build --target ${{ matrix.test }}
-      - name: Test
-        run: valgrind ./build/Tests/LowLevel/${{ matrix.test }} ${{ env.GTEST_ARGS }}
+      - name: Build and run tests
+        run:  cmake --build build --target Coverage
       - uses: actions/upload-artifact@v3
         with:
-          name: report
-          path: ${{ env.REPORT_FILE }}
-      - uses: actions/upload-artifact@v3
-        with:
-          name: build
-          path: build/Tests/LowLevel/CMakeFiles/
+          name: RunResults
+          path: build/Tests/LowLevel
 
   Consolidate-Results:
     runs-on: ubuntu-latest
@@ -72,7 +52,9 @@ jobs:
           submodules: recursive
       - uses: actions/download-artifact@v3
         with:
-          name: report
+          name: RunResults
+      - name: tree
+        run: tree
       - uses: actions/setup-node@v2
       - name: Install report merger
         run: npm install -g junit-report-merger
@@ -96,9 +78,7 @@ jobs:
           submodules: recursive
       - uses: actions/download-artifact@v3
         with:
-          name: build
-      - name: Move artifacts
-        run: tree
+          name: RunResults
       - name: tree
         run: tree
       - name: Install dependencies
@@ -106,8 +86,7 @@ jobs:
           sudo apt-get update
           sudo apt-get install -y lcov
       - name: Set up Build
-        run: |
-          cmake -B build
+        run: cmake -B build
       - name: Run LCOV
         run: lcov --no-external --capture --directory . --output-file coverage.info
       - name: Gen HTML

@@ -92,6 +92,8 @@ FetchContent_Declare(
 )
 FetchContent_MakeAvailable(gtest)
 
+set(AllTests)
+
 # Function to build a mock test for a module
 function(make_test file_under_test)
     string(REPLACE "/" "_" TestSuite ${file_under_test})
@@ -115,5 +117,14 @@ function(make_test file_under_test)
     string(REPLACE "." "_" compiler_version ${CMAKE_C_COMPILER_VERSION})
     set(test_name "${CMAKE_C_COMPILER_ID}_${compiler_version}_${CMAKE_BUILD_TYPE}_${test_name}")
     target_compile_definitions(${TestExecutable} PRIVATE -DTEST_NAME=${test_name})
+
+    # Add target to run test
+    set(RunTargetName ${TestExecutable}_Run)
+    add_custom_target(${RunTargetName}
+            COMMAND ${TestExecutable} --gtest_repeat=10 --gtest_shuffle --gtest_output=xml:${test_name}.xml
+            DEPENDS ${TestExecutable})
+
+    # Add test to list of tests
+    set(AllTests ${AllTests} ${RunTargetName} PARENT_SCOPE)
 endfunction()
 
