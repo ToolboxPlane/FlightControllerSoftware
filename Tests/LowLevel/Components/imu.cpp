@@ -309,3 +309,40 @@ TEST(TEST_NAME, read__status_error) {
     EXPECT_EQ(data.imu_ok, false);
     EXPECT_TRUE(errorHandlerHandle.functionGotCalled<error_handler_handle_warning>(IMU, IMU_ERROR_STATUS));
 }
+
+TEST(TEST_NAME, read__error_call_error_handler) {
+    auto bnoHandle = mock::bno055.getHandle();
+    auto errorHandlerHandle = mock::error_handler.getHandle();
+
+    bnoHandle.overrideFunc<bno055_read_eul_xyz_2_mul_16>(
+            [](int16_t * /*out*/, bno_callback_t callback) { callback(read_fail); });
+
+    EXPECT_FALSE(imu_data_available());
+    EXPECT_NO_THROW(imu_start_sampling());
+    EXPECT_FALSE(imu_data_available());
+
+    auto data = imu_get_latest_data();
+
+    EXPECT_EQ(data.imu_ok, false);
+    EXPECT_TRUE(errorHandlerHandle.functionGotCalled<error_handler_handle_warning>(IMU, IMU_ERROR_UART));
+}
+
+TEST(TEST_NAME, read__error_restart) {
+    auto bnoHandle = mock::bno055.getHandle();
+    auto errorHandlerHandle = mock::error_handler.getHandle();
+    int16_t *dataPtr = nullptr;
+
+
+    bnoHandle.overrideFunc<bno055_read_eul_xyz_2_mul_16>(
+            [](int16_t * /*out*/, bno_callback_t callback) { callback(read_success); });
+
+    bnoHandle.overrideFunc<bno055_read_gyr_xyz_mul_16>([&dataPtr](int16_t *out, bno_callback_t callback) {
+        EXPECT_NE(dataPtr, out);
+        dataPtr = out;
+        callback(read_fail);
+    });
+
+    EXPECT_FALSE(imu_data_available());
+    EXPECT_NO_THROW(imu_start_sampling());
+    EXPECT_NO_THROW(imu_start_sampling());
+}
