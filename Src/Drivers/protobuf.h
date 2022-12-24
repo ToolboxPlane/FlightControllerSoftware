@@ -3,6 +3,7 @@
  * @author Paul Nykiel
  * @date 19.11.22
  * @brief Definition of the library functions for protobuf encoding, transmission and reception.
+ * @ingroup Drivers
  */
 #ifndef FLIGHTCONTROLLER_PROTOBUF_H
 #define FLIGHTCONTROLLER_PROTOBUF_H

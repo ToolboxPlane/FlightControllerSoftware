@@ -3,6 +3,7 @@
  * @author Paul Nykiel
  * @date 19.11.22
  * @brief Implementations of the library functions for protobuf encoding, transmission and reception.
+ * @ingroup Drivers
  */
 #include "protobuf.h"
 

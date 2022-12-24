@@ -3,6 +3,7 @@
  * @author Paul Nykiel
  * @date 13.11.22
  * @brief Declaration of the remote interface component.
+ * @ingroup Components
  */
 #ifndef FLIGHTCONTROLLER_REMOTE_H
 #define FLIGHTCONTROLLER_REMOTE_H

@@ -3,6 +3,7 @@
  * @author Paul Nykiel
  * @date 27.11.22
  * @brief Implementation of the servo and motor interface component.
+ * @ingroup Components
  */
 #include "servo_motor.h"
 

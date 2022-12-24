@@ -3,6 +3,7 @@
  * @author Paul Nykiel
  * @date 27.11.22
  * @brief Declaration of the error handler application.
+ * @ingroup Application
  */
 #ifndef FLIGHTCONTROLLER_ERROR_HANDLER_H
 #define FLIGHTCONTROLLER_ERROR_HANDLER_H

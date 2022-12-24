@@ -3,6 +3,7 @@
  * @author Paul Nykiel
  * @date 21.12.22
  * @brief Implementation of the mode handler application.
+ * @ingroup Application
  */
 #include "mode_handler.h"
 

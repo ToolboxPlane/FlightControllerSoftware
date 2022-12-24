@@ -3,6 +3,7 @@
  * @author Paul Nykiel
  * @date 27.11.22
  * @brief Implementation of the error handler application.
+ * @ingroup Application
  */
 #include "error_handler.h"
 

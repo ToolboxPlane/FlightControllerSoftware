@@ -4,6 +4,27 @@
  * @date 12.04.19
  * @brief Main file of the Flightcontroller firmware.
  */
+
+/**
+ * @defgroup HAL Hardware-Abstraction-Layer
+ * @brief Drivers for the different CPU peripherals.
+ */
+
+/**
+ * @defgroup Drivers Drivers-Layer
+ * @brief Drivers for the different sensors and communication interfaces.
+ */
+
+/**
+ * @defgroup Components Components-Layer
+ * @brief Library for the application specific communication with sensors and interfaces.
+ */
+
+/**
+ * @defgroup Application Application-Library
+ * @brief Library for application specific functions.
+ */
+
 #include "Application/controller.h"
 #include "Application/error_handler.h"
 #include "Application/mode_handler.h"

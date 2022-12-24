@@ -3,6 +3,7 @@
  * @author Paul Nykiel
  * @date 01.12.22
  * @brief Implementation of the system interface component.
+ * @ingroup Components
  */
 #include "system.h"
 

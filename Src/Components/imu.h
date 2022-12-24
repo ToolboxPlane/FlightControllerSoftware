@@ -3,6 +3,7 @@
  * @author Paul Nykiel
  * @date 18.04.19
  * @brief Implementation of the IMU interface component.
+ * @ingroup Components
  */
 
 #ifndef FLIGHTCONTROLLER_IMU_H

@@ -3,6 +3,7 @@
  * @author Paul Nykiel
  * @date 21.12.22
  * @brief Declaration of the mode handler application.
+ * @ingroup Application
  */
 #ifndef FLIGHTCONTROLLER_MODE_HANDLER_H
 #define FLIGHTCONTROLLER_MODE_HANDLER_H

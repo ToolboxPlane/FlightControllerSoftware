@@ -3,6 +3,7 @@
  * @author Paul Nykiel
  * @date 13.11.22
  * @brief Implementation of the remote interface component.
+ * @ingroup Components
  */
 
 #include "remote.h"

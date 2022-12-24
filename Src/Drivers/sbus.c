@@ -3,6 +3,7 @@
  * @author Paul Nykiel
  * @date 14.04.18
  * @brief Implementation of the library functions for sbus reception and decoding.
+ * @ingroup Drivers
  */
 
 #include "sbus.h"

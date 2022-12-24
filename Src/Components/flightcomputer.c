@@ -3,6 +3,7 @@
  * @author Paul Nykiel
  * @date 14.11.22
  * @brief Implementation of the Flight-Computer interface component.
+ * @ingroup Components
  */
 #include "flightcomputer.h"
 

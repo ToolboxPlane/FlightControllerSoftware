@@ -3,6 +3,7 @@
  * @author Paul Nykiel
  * @date 01.12.22
  * @brief Declaration of the system interface component.
+ * @ingroup Components
  */
 #ifndef FLIGHTCONTROLLER_SYSTEM_H
 #define FLIGHTCONTROLLER_SYSTEM_H

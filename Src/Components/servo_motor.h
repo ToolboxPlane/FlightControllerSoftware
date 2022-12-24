@@ -3,6 +3,7 @@
  * @author Paul Nykiel
  * @date 27.11.22
  * @brief Declaration of the servo and motor interface component.
+ * @ingroup Components
  */
 #ifndef FLIGHTCONTROLLER_SERVO_MOTOR_H
 #define FLIGHTCONTROLLER_SERVO_MOTOR_H

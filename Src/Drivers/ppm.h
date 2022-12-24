@@ -3,6 +3,7 @@
  * @author Paul Nykiel
  * @date 27.11.22
  * @brief Definition of the library functions for the PPM pins on the FC.
+ * @ingroup Drivers
  */
 #ifndef FLIGHTCONTROLLER_PPM_H
 #define FLIGHTCONTROLLER_PPM_H

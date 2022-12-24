@@ -3,6 +3,7 @@
  * @author Paul Nykiel
  * @date 27.11.22
  * @brief Implementation of the library functions for the PPM pins on the FC.
+ * @ingroup Drivers
  */
 #include "ppm.h"
 

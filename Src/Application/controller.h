@@ -3,6 +3,7 @@
  * @author Paul Nykiel
  * @date 27.11.22
  * @brief Declaration of the controller application.
+ * @ingroup Application
  */
 #ifndef FLIGHTCONTROLLER_CONTROLLER_H
 #define FLIGHTCONTROLLER_CONTROLLER_H

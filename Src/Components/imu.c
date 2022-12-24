@@ -3,6 +3,7 @@
  * @author Paul Nykiel
  * @date 18.04.19
  * @brief Declaration of the IMU interface component.
+ * @ingroup Components
  */
 
 #include "imu.h"

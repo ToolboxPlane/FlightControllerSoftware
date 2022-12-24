@@ -3,6 +3,7 @@
  * @author Paul Nykiel
  * @date 14.11.22
  * @brief Declaration of the Flight-Computer interface component.
+ * @ingroup Components
  */
 #ifndef FLIGHTCONTROLLER_FLIGHTCOMPUTER_H
 #define FLIGHTCONTROLLER_FLIGHTCOMPUTER_H
