@@ -55,7 +55,7 @@ add_custom_target(RunAllTests DEPENDS ${AllTests})
 
 add_custom_target(coverage.info
         COMMAND lcov --capture --directory ${CMAKE_CURRENT_BINARY_DIR} --output-file ${CMAKE_CURRENT_BINARY_DIR}/coverage.info
-        DEPENDS ${RunAllTests})
+        DEPENDS ${AllTests})
 
 add_custom_target(Coverage
         COMMAND genhtml ${CMAKE_CURRENT_BINARY_DIR}/coverage.info --output-directory ${CMAKE_CURRENT_BINARY_DIR}/coverage

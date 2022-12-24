@@ -33,9 +33,7 @@ void protobuf_init(void) {
     uart_init(UART_ID, UART_BAUD, NONE, 1, uart_callback);
     rx_head = 0;
     rx_tail = 0;
-    message_decoding_data.len = 0;
-    message_decoding_data.id = FC_SP_ID;
-    message_decoding_data.decodingState = DECODING_INITIAL;
+    message_decoding_init(&message_decoding_data, FC_SP_ID);
 }
 
 void protobuf_send(const fc_message_t *message) {
@@ -45,14 +43,13 @@ void protobuf_send(const fc_message_t *message) {
 }
 
 bool protobuf_setpoint_available(void) {
-    pb_istream_t istream;
     bool res = false;
     while (rx_tail != rx_head) {
         uint8_t data = rx_buf[rx_tail];
         rx_tail = (rx_tail + 1) % RX_BUF_SIZE;
 
-        if (message_decode(&message_decoding_data, data, &istream)) {
-            pb_decode(&istream, &ToolboxPlaneMessages_FlightControllerSetpoint_msg, &setpoint_message);
+        if (message_decoding_decode(&message_decoding_data, data, &ToolboxPlaneMessages_FlightControllerSetpoint_msg,
+                                    &setpoint_message)) {
             res = true;
         }
     }

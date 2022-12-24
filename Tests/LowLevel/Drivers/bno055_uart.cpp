@@ -103,7 +103,29 @@ TEST(TEST_NAME, write_register__write_success) {
     EXPECT_EQ(bnoResponse.value(), bno055_response_t::write_success);
 }
 
-TEST(TEST_NAME, write_register__write_wrong_start_byte) {
+TEST(TEST_NAME, write_register__invalid_sync) {
+    auto handle = mock::uart.getHandle();
+    // Setup to capture uart-Callback
+    uart_callback_t uartCallback;
+    handle.overrideFunc<uart_init>([&uartCallback](uint8_t /*id*/, uint16_t /*baud*/, uart_parity_t /*parity*/,
+                                                   uint8_t /*stop*/,
+                                                   uart_callback_t callback) -> void { uartCallback = callback; });
+
+    bno055_uart_init();
+    bnoResponse.reset();
+
+    // Actual test
+    uint8_t data[] = {38, 45};
+
+    bno055_uart_write_register(0, data, 2, bnoCallback);
+
+    uartCallback(0x00);
+
+    ASSERT_TRUE(bnoResponse.has_value());
+    EXPECT_EQ(bnoResponse.value(), bno055_response_t::invalid_sync);
+}
+
+TEST(TEST_NAME, write_register__write_response_write_fail) {
     auto handle = mock::uart.getHandle();
     // Setup to capture uart-Callback
     uart_callback_t uartCallback;
@@ -120,10 +142,10 @@ TEST(TEST_NAME, write_register__write_wrong_start_byte) {
     bno055_uart_write_register(0, data, 2, bnoCallback);
 
     uartCallback(0xEE);
-    uartCallback(0x06);
+    uartCallback(0x03);
 
     ASSERT_TRUE(bnoResponse.has_value());
-    EXPECT_EQ(bnoResponse.value(), bno055_response_t::wrong_start_byte);
+    EXPECT_EQ(bnoResponse.value(), bno055_response_t::write_fail);
 }
 
 TEST(TEST_NAME, read_register__read_success_8bit) {

@@ -10,6 +10,7 @@ extern "C" {
 
 TEST(TEST_NAME, init) {
     auto uartHandle = mock::uart.getHandle();
+    auto decodeHandle = mock::MessageDecoding.getHandle();
 
     protobuf_init();
 
@@ -20,6 +21,7 @@ TEST(TEST_NAME, init) {
 TEST(TEST_NAME, send_fc) {
     auto uartHandle = mock::uart.getHandle();
     auto encodingHandle = mock::MessageEncoding.getHandle();
+    auto decodeHandle = mock::MessageDecoding.getHandle();
 
     protobuf_init();
 
@@ -64,8 +66,9 @@ TEST(TEST_NAME, receive_singler_buffer) {
     uartHandle.overrideFunc<uart_init>([&uartCallback](uint8_t /*id*/, uint16_t /*baud*/, uart_parity_t /*parity*/,
                                                        uint8_t /*stop_bits*/,
                                                        uart_callback_t callback) { uartCallback = callback; });
-    decodeHandle.overrideFunc<message_decode>([](message_decoding_data_t * /*messageDecodingData*/, uint8_t /*data*/,
-                                                 pb_istream_s * /*istream*/) -> bool { return false; });
+    decodeHandle.overrideFunc<message_decoding_decode>([](message_decoding_data_t * /*messageDecodingData*/,
+                                                          uint8_t /*data*/, const pb_msgdesc_t * /*fields*/,
+                                                          void * /*message*/) -> bool { return false; });
 
     protobuf_init();
 
@@ -75,7 +78,8 @@ TEST(TEST_NAME, receive_singler_buffer) {
         bufData = c * 11;
         uartCallback(bufData);
         protobuf_setpoint_available();
-        EXPECT_TRUE(decodeHandle.functionGotCalled<message_decode>(std::ignore, bufData, std::ignore));
+        EXPECT_TRUE(decodeHandle.functionGotCalled<message_decoding_decode>(
+                std::ignore, bufData, &ToolboxPlaneMessages_FlightControllerSetpoint_msg, std::ignore));
     }
 }
 
@@ -87,12 +91,13 @@ TEST(TEST_NAME, receive_200bytes) {
                                                        uint8_t /*stop_bits*/,
                                                        uart_callback_t callback) { uartCallback = callback; });
     int receiveIndex = 10U;
-    decodeHandle.overrideFunc<message_decode>([&receiveIndex](message_decoding_data_t * /*messageDecodingData*/,
-                                                              uint8_t data, pb_istream_s * /*istream*/) -> bool {
-        EXPECT_EQ(receiveIndex, data);
-        receiveIndex += 1;
-        return false;
-    });
+    decodeHandle.overrideFunc<message_decoding_decode>(
+            [&receiveIndex](message_decoding_data_t * /*messageDecodingData*/, uint8_t data,
+                            const pb_msgdesc_t * /*fields*/, void * /*message*/) -> bool {
+                EXPECT_EQ(receiveIndex, data);
+                receiveIndex += 1;
+                return false;
+            });
 
     protobuf_init();
 
@@ -128,15 +133,19 @@ TEST(TEST_NAME, receive_pb_decode) {
     std::size_t dataSendIndex = 0;
     std::size_t dataDecodeIndex = 0;
 
-    decodeHandle.overrideFunc<message_decode>(
+    decodeHandle.overrideFunc<message_decoding_decode>(
             [&callbackData, &dataDecodeIndex](message_decoding_data_t *messageDecodingData, uint8_t data,
-                                              pb_istream_s *istream) -> bool {
+                                              const pb_msgdesc_t *fields, void *message) -> bool {
                 EXPECT_EQ(callbackData[dataDecodeIndex], data);
                 EXPECT_NE(messageDecodingData, nullptr);
-                EXPECT_NE(istream, nullptr);
+                EXPECT_EQ(fields, &ToolboxPlaneMessages_FlightControllerSetpoint_msg);
+                EXPECT_NE(message, nullptr);
                 dataDecodeIndex += 1;
                 if (dataDecodeIndex == callbackData.size()) {
-                    *istream = pb_istream_from_buffer(callbackData.data(), callbackData.size());
+                    auto fcData = static_cast<ToolboxPlaneMessages_FlightControllerSetpoint *>(message);
+                    fcData->motor = 1337;
+                    fcData->pitch = 17;
+                    fcData->roll = 34;
                     return true;
                 }
                 return false;
