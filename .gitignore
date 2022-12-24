@@ -8,5 +8,6 @@ Src/Backup/
 build/
 /Inc/Backup/
 .idea/*
-doxy_out
+doxygen
+__pycache__
 

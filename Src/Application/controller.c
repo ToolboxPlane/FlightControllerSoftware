@@ -20,12 +20,12 @@ enum { ROLL_R_SIGN = -1 };
 
 enum { CONTROL_LIMIT = 500 };
 
-static int16_t clamp(int16_t val, int16_t min, int16_t max) {
-    if (val < min) {
-        return min;
+static int16_t apply_control_limit(int16_t val) {
+    if (val < -CONTROL_LIMIT) {
+        return -CONTROL_LIMIT;
     }
-    if (val > max) {
-        return max;
+    if (val > CONTROL_LIMIT) {
+        return CONTROL_LIMIT;
     }
     return val;
 }
@@ -49,8 +49,8 @@ controller_result_t controller_update(const imu_data_t *imu_data, int16_t roll_s
     int16_t elevon_right_mul_4 = ROLL_R_SIGN * (roll_cmd_mul_8 / 2) + PITCH_R_SIGN * (pitch_cmd_mul_8 / 2);
 
     // Control limits
-    controller_result_t result = {.elevon_left = clamp(elevon_left_mul_4 / 4, -CONTROL_LIMIT, CONTROL_LIMIT),
-                                  .elevon_right = clamp(elevon_right_mul_4 / 4, -CONTROL_LIMIT, CONTROL_LIMIT)};
+    controller_result_t result = {.elevon_left = apply_control_limit(elevon_left_mul_4 / 4),
+                                  .elevon_right = apply_control_limit(elevon_right_mul_4 / 4)};
     // NOLINTEND(cppcoreguidelines-avoid-magic-numbers)
 
     return result;
