@@ -60,3 +60,11 @@ add_custom_target(coverage.info
 add_custom_target(Coverage
         COMMAND genhtml ${CMAKE_CURRENT_BINARY_DIR}/coverage.info --output-directory ${CMAKE_CURRENT_BINARY_DIR}/coverage
         DEPENDS coverage.info)
+
+add_custom_target(report.xml
+        COMMAND junit2html . --merge report.xml
+        DEPENDS ${AllTests})
+
+add_custom_target(LLReport
+        COMMAND junit2html report.xml --report-matrix LLReport.html
+        DEPENDS report.xml)
