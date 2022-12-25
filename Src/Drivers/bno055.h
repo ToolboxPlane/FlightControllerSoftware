@@ -75,6 +75,9 @@ typedef enum { celsius = 0, fahrenheit = 1 } bno055_unit_sel_temperature;
 
 typedef enum { windows = 0, android = 1 } bno055_unit_sel_orientation_def;
 
+/**
+ * Initialize the physical connection to the BNO, this will not initialize the sensor itself.
+ */
 void bno055_init(void);
 
 void bno055_write_reset(bno055_callback_t callback);
