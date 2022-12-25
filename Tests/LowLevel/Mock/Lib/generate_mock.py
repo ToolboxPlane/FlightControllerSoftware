@@ -6,20 +6,30 @@ header_path = sys.argv[1]
 module = sys.argv[2]
 out_dir = sys.argv[3]
 
-header_file = "\n".join(open(header_path, "r").readlines())
+header_file = "".join(open(header_path, "r").readlines())
 
-matches = re.findall("(\\w+) (\\w+)\\((.+)\\);", header_file)
+# https://regex101.com/r/weFtWH/1
+matches = re.findall(r"([a-zA-Z0-9_]+)\s+([a-zA-Z0-9_]+)\s*\((([a-zA-Z0-9_*\s,]+)*)\);", header_file)
 functions = []
 for match in matches:
-    return_type, name, args = match
-    args = args.split(",")
+    return_type = match[0]
+    name = match[1]
+    args = match[2].split(",")
     args_with_name = []
     if not (len(args) == 1 and args[0] == "void"):
         for arg in args:
-            arg_match = re.search("(\\w+ )+\\*?(\\w+)", arg)
-            args_with_name.append((arg_match.group(0), arg_match.group(2)))
+            # https://regex101.com/r/weFtWH/2
+            arg_match = re.search(r"\s*([a-zA-Z0-9_]+\s+)*([a-zA-Z0-9_]+)\s+\*?([a-zA-Z0-9_]+)", arg)
+            args_with_name.append((arg, arg_match.groups()[-1]))
 
     functions.append((return_type, name, args_with_name))
+
+# https://regex101.com/r/weFtWH/3
+matches = re.findall(r"extern\s+([a-zA-Z0-9_]+\s+[a-zA-Z0-9_]+\s*(,\s*[a-zA-Z0-9_]+\s*)*;)", header_file)
+
+variables = []
+for match in matches:
+    variables.append(match[0])
 
 mock_name = module.split("/")[-1]
 function_list = ", ".join([function[1] for function in functions])
@@ -53,3 +63,6 @@ for return_type, name, args_with_name in functions:
         f"\t{return_statement} mock::{mock_name}.functionCallDelegate<{name}>({args_forward});\n"
         f"}}\n\n"
     )
+
+for variable in variables:
+    mock_src.write(f"{variable}\n")

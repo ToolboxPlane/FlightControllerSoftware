@@ -9,9 +9,9 @@
 
 #include <stdint.h>
 
-uint8_t DDRA, DDRB, DDRC, DDRD, DDRE, DDRH, DDRL;
-uint8_t PORTA, PORTB, PORTC, PORTD, PORTE, PORTH, PORTL;
-uint8_t MCUSR;
+extern uint8_t DDRA, DDRB, DDRC, DDRD, DDRE, DDRH, DDRL;
+extern uint8_t PORTA, PORTB, PORTC, PORTD, PORTE, PORTH, PORTL;
+extern uint8_t MCUSR;
 
 enum { WDRF, BORF };
 
