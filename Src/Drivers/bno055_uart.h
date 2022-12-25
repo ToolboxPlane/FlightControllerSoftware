@@ -36,7 +36,7 @@ typedef enum {
 /**
  * Type of the function called after a transaction is completed.
  */
-typedef void (*bno_callback_t)(bno055_response_t);
+typedef void (*bno055_callback_t)(bno055_response_t);
 
 /**
  * Initialize the uart interface of the sensor.
@@ -57,7 +57,7 @@ void bno055_uart_init(void);
  * @param len the number of bytes to write
  * @param callback a function to call once the sensor sends a reply
  */
-void bno055_uart_write_register(uint8_t reg, const uint8_t *data, uint8_t len, bno_callback_t callback);
+void bno055_uart_write_register(uint8_t reg, const uint8_t *data, uint8_t len, bno055_callback_t callback);
 
 /**
  * Read data from a register via UART.
@@ -70,7 +70,7 @@ void bno055_uart_write_register(uint8_t reg, const uint8_t *data, uint8_t len, b
  * @param callback a function to call once the transaction is finished
  * @param result the location at which to write the result
  */
-void bno055_uart_read_register(uint8_t reg, uint8_t len, bno_callback_t callback, void *result);
+void bno055_uart_read_register(uint8_t reg, uint8_t len, bno055_callback_t callback, void *result);
 
 
 #endif // FLIGHTCONTROLLER_BNO055_UART_H

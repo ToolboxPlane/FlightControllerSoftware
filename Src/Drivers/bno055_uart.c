@@ -21,7 +21,7 @@ enum { BNO_RECEIVE_BUF_SIZE = 2 + 8 };
 
 
 static volatile uint8_t receive_buf[BNO_RECEIVE_BUF_SIZE];
-static volatile bno_callback_t bno_callback;
+static volatile bno055_callback_t bno_callback;
 static volatile void *bno_result_data;
 
 static void bno_uart_handle_response(volatile const uint8_t *data, uint8_t len, bno055_response_t response) {
@@ -80,7 +80,7 @@ void bno055_uart_init(void) {
     uart_init(BNO_UART_ID, BNO_BAUD, NONE, 1, &bno_uart_callback);
 }
 
-void bno055_uart_write_register(uint8_t reg, const uint8_t *data, uint8_t len, bno_callback_t callback) {
+void bno055_uart_write_register(uint8_t reg, const uint8_t *data, uint8_t len, bno055_callback_t callback) {
     bno_callback = callback;
 
     uint8_t buf[len + 4];
@@ -94,7 +94,7 @@ void bno055_uart_write_register(uint8_t reg, const uint8_t *data, uint8_t len, b
     uart_send_buf(BNO_UART_ID, buf, len + 4);
 }
 
-void bno055_uart_read_register(uint8_t reg, uint8_t len, bno_callback_t callback, void *result) {
+void bno055_uart_read_register(uint8_t reg, uint8_t len, bno055_callback_t callback, void *result) {
     bno_callback = callback;
     bno_result_data = result;
 
