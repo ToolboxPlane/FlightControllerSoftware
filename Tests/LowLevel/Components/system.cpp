@@ -102,3 +102,9 @@ TEST(TEST_NAME, timer_runtime_exception) {
     EXPECT_TRUE(timerHandle.functionGotCalled<timer_8bit_get_count>());
     EXPECT_TRUE(errorHandlerHandle.functionGotCalled<error_handler_handle_warning>(SYSTEM, SYSTEM_ERROR_TIMER_RUNTIME));
 }
+
+TEST(TEST_NAME, timer_reset_watchdog) {
+    auto wdtHandle = mock::wdt.getHandle();
+    system_reset_watchdog();
+    EXPECT_TRUE(wdtHandle.functionGotCalled<wdt_reset>());
+}
