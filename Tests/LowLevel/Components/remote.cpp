@@ -30,7 +30,7 @@ TEST(TEST_NAME, get_data_ok) {
     handle.overrideFunc<sbus_get_latest_data>([]() {
         return sbus_data_t{
                 .channel = {172, 1811, 172, 1811, 172, 1811, 172, 1811},
-                .failsave = false,
+                .failsafe = false,
                 .frame_lost = false,
         };
     });
@@ -55,7 +55,7 @@ TEST(TEST_NAME, get_data_failsve) {
     handle.overrideFunc<sbus_get_latest_data>([]() {
         return sbus_data_t{
                 .channel = {1000},
-                .failsave = true,
+                .failsafe = true,
                 .frame_lost = false,
         };
     });
@@ -72,7 +72,7 @@ TEST(TEST_NAME, get_data_frame_lost) {
     handle.overrideFunc<sbus_get_latest_data>([]() {
         return sbus_data_t{
                 .channel = {1000},
-                .failsave = false,
+                .failsafe = false,
                 .frame_lost = true,
         };
     });

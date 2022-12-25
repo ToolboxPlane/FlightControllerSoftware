@@ -32,8 +32,16 @@ void protobuf_init(void);
  */
 void protobuf_send(const fc_message_t *message);
 
+/**
+ * Decodes all data received since the last call and returns whether the data contains a full new message.
+ * @return true if a new message was received, otherwise false.
+ */
 bool protobuf_setpoint_available(void);
 
+/**
+ * Get the last message that was received.
+ * @return a copy of the last message.
+ */
 setpoint_message_t protobuf_get_setpoint(void);
 
 #endif // FLIGHTCONTROLLER_PROTOBUF_H

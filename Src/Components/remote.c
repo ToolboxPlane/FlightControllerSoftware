@@ -34,7 +34,7 @@ remote_data_t remote_get_data(void) {
                                  .roll_raw = NORMALIZE_TARANIS(sbus_data.channel[5]),
                                  .is_armed = (NORMALIZE_TARANIS(sbus_data.channel[6]) < ARMED_THRESH),
                                  .override_active = (NORMALIZE_TARANIS((sbus_data.channel[7])) > OVERRIDE_THRESH),
-                                 .remote_ok = (!sbus_data.failsave && !sbus_data.frame_lost)};
+                                 .remote_ok = (!sbus_data.failsafe && !sbus_data.frame_lost)};
     return remote_data;
 }
 

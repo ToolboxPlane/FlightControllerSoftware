@@ -65,14 +65,14 @@ TEST(TEST_NAME, decode) {
                       /* 24 */ 0x00};
 
     for (const uint8_t c : data) {
-        EXPECT_TRUE(sbus_get_latest_data().failsave);
+        EXPECT_TRUE(sbus_get_latest_data().failsafe);
         EXPECT_TRUE(sbus_get_latest_data().frame_lost);
         EXPECT_FALSE(sbus_data_available());
         uartCallback(c);
     }
 
     EXPECT_TRUE(sbus_data_available());
-    EXPECT_FALSE(sbus_get_latest_data().failsave);
+    EXPECT_FALSE(sbus_get_latest_data().failsafe);
     EXPECT_FALSE(sbus_get_latest_data().frame_lost);
 
     for (auto channel = 0U; channel < 16U; ++channel) {
@@ -94,14 +94,14 @@ TEST(TEST_NAME, decode_failsave) {
     data[24] = 0;
 
     for (const uint8_t c : data) {
-        EXPECT_TRUE(sbus_get_latest_data().failsave);
+        EXPECT_TRUE(sbus_get_latest_data().failsafe);
         EXPECT_TRUE(sbus_get_latest_data().frame_lost);
         EXPECT_FALSE(sbus_data_available());
         uartCallback(c);
     }
 
     EXPECT_TRUE(sbus_data_available());
-    EXPECT_TRUE(sbus_get_latest_data().failsave);
+    EXPECT_TRUE(sbus_get_latest_data().failsafe);
     EXPECT_FALSE(sbus_get_latest_data().frame_lost);
 
     for (const uint16_t channel : sbus_get_latest_data().channel) {
@@ -123,14 +123,14 @@ TEST(TEST_NAME, decode_framelost) {
     data[24] = 0;
 
     for (const uint8_t c : data) {
-        EXPECT_TRUE(sbus_get_latest_data().failsave);
+        EXPECT_TRUE(sbus_get_latest_data().failsafe);
         EXPECT_TRUE(sbus_get_latest_data().frame_lost);
         EXPECT_FALSE(sbus_data_available());
         uartCallback(c);
     }
 
     EXPECT_TRUE(sbus_data_available());
-    EXPECT_FALSE(sbus_get_latest_data().failsave);
+    EXPECT_FALSE(sbus_get_latest_data().failsafe);
     EXPECT_TRUE(sbus_get_latest_data().frame_lost);
 
     for (const uint16_t channel : sbus_get_latest_data().channel) {

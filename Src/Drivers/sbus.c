@@ -10,75 +10,94 @@
 
 #include <HAL/uart.h>
 
-enum { SBUS_UART = 2 };
-enum { SBUS_BAUD = 100000 };
+enum { UART_ID = 2 };
+enum { UART_BAUD = 100000 };
+
+enum { RX_BUF_SIZE = 512 };
 
 enum { SBUS_START_BYTE = 0x0F };
 enum { SBUS_END_BYTE = 0x00 };
-
-enum { SBUS_NUM_CHANNELS = 16U };
 enum { SBUS_BITS_PER_CHANNEL = 11U };
 
-static volatile sbus_data_t sbus_datas[2];
-static volatile uint8_t curr_sampling_data = 0;
-static volatile bool sbus_sampling_complete;
+static volatile uint8_t rx_buf[RX_BUF_SIZE];
+static volatile uint8_t rx_head, rx_tail;
+static volatile sbus_data_t latest_data;
+static volatile sbus_data_t curr_decode_data;
+static volatile uint8_t decode_byte_count;
 
-static void sbus_uart_callback(uint8_t data) {
-    static uint8_t byte_count = 0;
+static void uart_callback(uint8_t data) {
+    rx_buf[rx_head] = data;
+    rx_head = (rx_head + 1) % RX_BUF_SIZE;
+    if (rx_tail == rx_head) {
+        // TODO error handling
+    }
+}
 
-    sbus_data_t *sbus_data = (sbus_data_t *) (&sbus_datas[curr_sampling_data]);
-
-    switch (byte_count) {
+static bool sbus_decode(uint8_t data) {
+    switch (decode_byte_count) {
         case 0: // Startbyte
             if (data == SBUS_START_BYTE) {
-                byte_count = 1;
+                decode_byte_count = 1;
             }
             for (uint8_t index = 0U; index < SBUS_NUM_CHANNELS; ++index) {
-                sbus_data->channel[index] = 0;
+                curr_decode_data.channel[index] = 0;
             }
             break;
         case 24: // Endbyte
+            decode_byte_count = 0;
             if (data == SBUS_END_BYTE) {
-                curr_sampling_data = 1 - curr_sampling_data;
-                sbus_sampling_complete = true;
-            } else {
-                // TODO warning
+                return true;
             }
-            byte_count = 0;
+            // TODO warning
             break;
         case 23: // Flags
-            sbus_data->failsave = (data >> 3u) & 1u;
-            sbus_data->frame_lost = (data >> 2u) & 1u;
-            byte_count = 24;
+            curr_decode_data.failsafe = (data >> 3u) & 1u;
+            curr_decode_data.frame_lost = (data >> 2u) & 1u;
+            decode_byte_count = 24;
             break;
         default: // Data
         {
-            uint16_t startBitNum = (byte_count - 1) * 8;
+            uint16_t startBitNum = (decode_byte_count - 1) * 8;
 
             for (uint8_t bit_index = 0; bit_index < 8; bit_index++) {
                 uint8_t channelNumber = (startBitNum + bit_index) / SBUS_BITS_PER_CHANNEL;
                 uint8_t bitInChannel = ((startBitNum + bit_index) % SBUS_BITS_PER_CHANNEL);
                 uint8_t bit = (data >> bit_index) & 1u;
-                sbus_data->channel[channelNumber] |= bit << bitInChannel;
+                curr_decode_data.channel[channelNumber] |= bit << bitInChannel;
             }
-            byte_count++;
+            decode_byte_count++;
         } break;
     }
+    return false;
 }
 
 void sbus_init(void) {
-    uart_init(SBUS_UART, SBUS_BAUD, EVEN, 2, sbus_uart_callback);
-    curr_sampling_data = 0;
-    sbus_datas[1 - curr_sampling_data].frame_lost = true;
-    sbus_datas[1 - curr_sampling_data].failsave = true;
-    sbus_sampling_complete = false;
-}
-
-sbus_data_t sbus_get_latest_data(void) {
-    sbus_sampling_complete = false;
-    return sbus_datas[1 - curr_sampling_data];
+    uart_init(UART_ID, UART_BAUD, EVEN, 2, uart_callback);
+    rx_head = 0;
+    rx_tail = 0;
+    decode_byte_count = 0;
+    latest_data.failsafe = true;
+    latest_data.frame_lost = true;
 }
 
 bool sbus_data_available(void) {
-    return sbus_sampling_complete;
+    bool res = false;
+    while (rx_tail != rx_head) {
+        uint8_t data = rx_buf[rx_tail];
+        rx_tail = (rx_tail + 1) % RX_BUF_SIZE;
+
+        if (sbus_decode(data)) {
+            for (uint8_t index = 0U; index < SBUS_NUM_CHANNELS; ++index) {
+                latest_data.channel[index] = curr_decode_data.channel[index];
+            }
+            latest_data.failsafe = curr_decode_data.failsafe;
+            latest_data.frame_lost = curr_decode_data.frame_lost;
+            res = true;
+        }
+    }
+    return res;
+}
+
+sbus_data_t sbus_get_latest_data(void) {
+    return latest_data;
 }
