@@ -29,7 +29,6 @@ typedef enum {
     IMU_ERROR_INIT_NDOF_FMC_OFF = 7,
     IMU_ERROR_STATUS = 8,
     IMU_ERROR_UART = 9,
-    IMU_ERROR_DEFAULT = 10
 } imu_error_t;
 
 void imu_init(void);

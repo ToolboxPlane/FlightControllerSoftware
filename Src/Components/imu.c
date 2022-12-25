@@ -69,12 +69,6 @@ static void bno_sample_callback(bno055_response_t response) {
                 sampling_complete = true;
                 bno_sampling_state = EUL;
                 break;
-            default:
-                error_handler_handle_warning(IMU, IMU_ERROR_DEFAULT);
-                imu_data->imu_ok = false;
-                current_sample_state_id = 1 - current_sample_state_id;
-                bno_sampling_state = EUL;
-                break;
         }
     } else if (response != bus_over_run_error) { // Bus overrun just happens...
         error_handler_handle_warning(IMU, IMU_ERROR_UART);
