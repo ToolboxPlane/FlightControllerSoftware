@@ -15,9 +15,9 @@ TEST(TEST_NAME, init) {
 TEST(TEST_NAME, set) {
     auto handle = mock::ppm.getHandle();
 
-    actuator_cmd_t servoMotorCmd{.motor = 700, .servo_left = -100, .servo_right = 100};
+    actuator_cmd_t actuatorCmd{.motor = 700, .elevon_left = -100, .elevon_right = 100};
 
-    actuators_set(&servoMotorCmd);
+    actuators_set(&actuatorCmd);
 
     EXPECT_TRUE(handle.functionGotCalled<ppm_channel_set>(CHANNEL_1, 400));
     EXPECT_TRUE(handle.functionGotCalled<ppm_channel_set>(CHANNEL_2, 700));

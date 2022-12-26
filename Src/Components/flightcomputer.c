@@ -40,8 +40,8 @@ void flightcomputer_send(const imu_data_t *imu_data, const remote_data_t *remote
                                        .overrideActive = remote_data->override_active,
                                        .remote_ok = remote_data->remote_ok},
                             .motor = actuator_cmd->motor,
-                            .servoLeft = actuator_cmd->servo_left,
-                            .servoRight = actuator_cmd->servo_right};
+                            .servoLeft = actuator_cmd->elevon_left,
+                            .servoRight = actuator_cmd->elevon_right};
 
     protobuf_send(&message);
 }

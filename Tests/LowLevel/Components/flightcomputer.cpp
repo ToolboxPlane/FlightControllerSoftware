@@ -66,7 +66,7 @@ TEST(TEST_NAME, send) {
                                 .is_armed = true,
                                 .override_active = false,
                                 .remote_ok = true};
-    actuator_cmd_t actuatorCmd = {.motor = 17, .servo_left = 18, .servo_right = 19};
+    actuator_cmd_t actuatorCmd = {.motor = 17, .elevon_left = 18, .elevon_right = 19};
     flightcomputer_send(&imuData, &remoteData, &actuatorCmd);
 
     EXPECT_TRUE(handle.functionGotCalled<protobuf_send>());

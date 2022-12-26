@@ -59,27 +59,27 @@ void timer_tick(void) {
         case MODE_FLIGHTCOMPUTER: {
             controller_result_t controller_result =
                     controller_update(&imu_data, flightcomputer_setpoint.roll, flightcomputer_setpoint.pitch);
-            actuator_cmd.servo_left = controller_result.elevon_left;
-            actuator_cmd.servo_right = controller_result.elevon_right;
+            actuator_cmd.elevon_left = controller_result.elevon_left;
+            actuator_cmd.elevon_right = controller_result.elevon_right;
             actuator_cmd.motor = flightcomputer_setpoint.motor;
             break;
         }
         case MODE_REMOTE:
             actuator_cmd.motor = remote_data.throttle_raw;
-            actuator_cmd.servo_left = remote_data.elevon_left_mixed - SERVO_REMOTE_OFFSET;
-            actuator_cmd.servo_right = remote_data.elevon_right_mixed - SERVO_REMOTE_OFFSET;
+            actuator_cmd.elevon_left = remote_data.elevon_left_mixed - SERVO_REMOTE_OFFSET;
+            actuator_cmd.elevon_right = remote_data.elevon_right_mixed - SERVO_REMOTE_OFFSET;
             break;
         case MODE_STABILISED_FAILSAVE: {
             controller_result_t controller_result = controller_update(&imu_data, 0, 0);
-            actuator_cmd.servo_left = controller_result.elevon_left;
-            actuator_cmd.servo_right = controller_result.elevon_right;
+            actuator_cmd.elevon_left = controller_result.elevon_left;
+            actuator_cmd.elevon_right = controller_result.elevon_right;
             actuator_cmd.motor = 0;
             break;
         }
         case MODE_FAILSAVE:
             actuator_cmd.motor = 0;
-            actuator_cmd.servo_left = 0;
-            actuator_cmd.servo_right = 0;
+            actuator_cmd.elevon_left = 0;
+            actuator_cmd.elevon_right = 0;
             break;
     }
 
