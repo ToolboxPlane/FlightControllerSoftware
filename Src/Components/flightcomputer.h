@@ -34,10 +34,10 @@ void flightcomputer_init(void);
  * and sending the message using the protobuf module.
  * @param imu_data the IMU data to send
  * @param remote_data the remote control data to send
- * @param servo_motor_cmd the servo and motor command to send
+ * @param actuator_cmd the actuator command to send to the FCP
  */
 void flightcomputer_send(const imu_data_t *imu_data, const remote_data_t *remote_data,
-                         const servo_motor_cmd_t *servo_motor_cmd);
+                         const actuator_cmd_t *actuator_cmd);
 
 /**
  * Checks whether the protobuf module decoded a new message.

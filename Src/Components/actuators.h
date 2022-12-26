@@ -16,10 +16,10 @@
 typedef struct {
     uint16_t motor;
     int16_t servo_left, servo_right;
-} servo_motor_cmd_t;
+} actuator_cmd_t;
 
 void actuators_init(void);
 
-void actuators_set(const servo_motor_cmd_t *servo_motor_cmd);
+void actuators_set(const actuator_cmd_t *actuator_cmd);
 
 #endif // FLIGHTCONTROLLER_ACTUATORS_H

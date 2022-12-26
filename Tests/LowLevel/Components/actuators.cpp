@@ -15,7 +15,7 @@ TEST(TEST_NAME, init) {
 TEST(TEST_NAME, set) {
     auto handle = mock::ppm.getHandle();
 
-    servo_motor_cmd_t servoMotorCmd{.motor = 700, .servo_left = -100, .servo_right = 100};
+    actuator_cmd_t servoMotorCmd{.motor = 700, .servo_left = -100, .servo_right = 100};
 
     actuators_set(&servoMotorCmd);
 

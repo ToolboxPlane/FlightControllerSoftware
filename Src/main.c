@@ -54,36 +54,36 @@ void timer_tick(void) {
     /*
      * Calculate outputs
      */
-    servo_motor_cmd_t servo_motor_cmd;
+    actuator_cmd_t actuator_cmd;
     switch (mode) {
         case MODE_FLIGHTCOMPUTER: {
             controller_result_t controller_result =
                     controller_update(&imu_data, flightcomputer_setpoint.roll, flightcomputer_setpoint.pitch);
-            servo_motor_cmd.servo_left = controller_result.elevon_left;
-            servo_motor_cmd.servo_right = controller_result.elevon_right;
-            servo_motor_cmd.motor = flightcomputer_setpoint.motor;
+            actuator_cmd.servo_left = controller_result.elevon_left;
+            actuator_cmd.servo_right = controller_result.elevon_right;
+            actuator_cmd.motor = flightcomputer_setpoint.motor;
             break;
         }
         case MODE_REMOTE:
-            servo_motor_cmd.motor = remote_data.throttle_raw;
-            servo_motor_cmd.servo_left = remote_data.elevon_left_mixed - SERVO_REMOTE_OFFSET;
-            servo_motor_cmd.servo_right = remote_data.elevon_right_mixed - SERVO_REMOTE_OFFSET;
+            actuator_cmd.motor = remote_data.throttle_raw;
+            actuator_cmd.servo_left = remote_data.elevon_left_mixed - SERVO_REMOTE_OFFSET;
+            actuator_cmd.servo_right = remote_data.elevon_right_mixed - SERVO_REMOTE_OFFSET;
             break;
         case MODE_STABILISED_FAILSAVE: {
             controller_result_t controller_result = controller_update(&imu_data, 0, 0);
-            servo_motor_cmd.servo_left = controller_result.elevon_left;
-            servo_motor_cmd.servo_right = controller_result.elevon_right;
-            servo_motor_cmd.motor = 0;
+            actuator_cmd.servo_left = controller_result.elevon_left;
+            actuator_cmd.servo_right = controller_result.elevon_right;
+            actuator_cmd.motor = 0;
             break;
         }
         case MODE_FAILSAVE:
-            servo_motor_cmd.motor = 0;
-            servo_motor_cmd.servo_left = 0;
-            servo_motor_cmd.servo_right = 0;
+            actuator_cmd.motor = 0;
+            actuator_cmd.servo_left = 0;
+            actuator_cmd.servo_right = 0;
             break;
     }
 
-    actuators_set(&servo_motor_cmd);
+    actuators_set(&actuator_cmd);
 
     /*
      * Send information to FCPS
@@ -91,7 +91,7 @@ void timer_tick(void) {
     static volatile uint8_t fcps_send_mux = 0;
     fcps_send_mux += 1;
     if (fcps_send_mux >= FLIGHTCOMPUTER_SEND_PERIOD) {
-        flightcomputer_send(&imu_data, &remote_data, &servo_motor_cmd);
+        flightcomputer_send(&imu_data, &remote_data, &actuator_cmd);
         fcps_send_mux = 0;
     }
 
