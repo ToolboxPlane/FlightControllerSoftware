@@ -30,7 +30,7 @@ jobs:
       - name: Download Doxygen
         uses: dawidd6/action-download-artifact@v2
         with:
-          workflow: "doc.yml"
+          workflow: "documentation.yml"
           name: doxygen
       - name: Download Low-Level-Coverage
         uses: dawidd6/action-download-artifact@v2
