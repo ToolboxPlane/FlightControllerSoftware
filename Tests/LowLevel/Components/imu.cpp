@@ -248,8 +248,11 @@ TEST(TEST_NAME, read__full_read) {
         callback(read_success);
     });
 
-    bnoHandle.overrideFunc<bno055_read_calib_status>([](uint8_t *out, bno055_callback_t callback) {
-        *out = 110;
+    bnoHandle.overrideFunc<bno055_read_calib_status>([](bno055_calib_status_t *out, bno055_callback_t callback) {
+        out->acc_status = 0;
+        out->gyr_status = 0;
+        out->mag_status = 0;
+        out->sys_status = 0;
         callback(read_success);
     });
 
@@ -279,13 +282,14 @@ TEST(TEST_NAME, read__status_error) {
     auto errorHandlerHandle = mock::error_handler.getHandle();
     bool alreadyCalled = false;
 
-    bnoHandle.overrideFunc<bno055_read_eul_xyz_2_mul_16>([&alreadyCalled](int16_t * /*out*/, bno055_callback_t callback) {
-        if (not alreadyCalled) {
-            alreadyCalled = true;
-            callback(read_success);
-        }
-        // Break the sampling process
-    });
+    bnoHandle.overrideFunc<bno055_read_eul_xyz_2_mul_16>(
+            [&alreadyCalled](int16_t * /*out*/, bno055_callback_t callback) {
+                if (not alreadyCalled) {
+                    alreadyCalled = true;
+                    callback(read_success);
+                }
+                // Break the sampling process
+            });
 
     bnoHandle.overrideFunc<bno055_read_gyr_xyz_mul_16>(
             [](int16_t * /*out*/, bno055_callback_t callback) { callback(read_success); });
@@ -299,7 +303,7 @@ TEST(TEST_NAME, read__status_error) {
     });
 
     bnoHandle.overrideFunc<bno055_read_calib_status>(
-            [](uint8_t * /*out*/, bno055_callback_t callback) { callback(read_success); });
+            [](bno055_calib_status_t * /*out*/, bno055_callback_t callback) { callback(read_success); });
 
     EXPECT_FALSE(imu_data_available());
     EXPECT_NO_THROW(imu_start_sampling());
@@ -332,7 +336,6 @@ TEST(TEST_NAME, read__error_restart) {
     auto bnoHandle = mock::bno055.getHandle();
     auto errorHandlerHandle = mock::error_handler.getHandle();
     int16_t *dataPtr = nullptr;
-
 
     bnoHandle.overrideFunc<bno055_read_eul_xyz_2_mul_16>(
             [](int16_t * /*out*/, bno055_callback_t callback) { callback(read_success); });

@@ -75,15 +75,50 @@ typedef enum { celsius = 0, fahrenheit = 1 } bno055_unit_sel_temperature;
 
 typedef enum { windows = 0, android = 1 } bno055_unit_sel_orientation_def;
 
+typedef struct {
+    unsigned mag_status : 2;
+    unsigned acc_status : 2;
+    unsigned gyr_status : 2;
+    unsigned sys_status : 2;
+} bno055_calib_status_t;
+
 /**
  * Initialize the physical connection to the BNO, this will not initialize the sensor itself.
  */
 void bno055_init(void);
 
+/**
+ * Reset the sensor by writing a 1 to the respective bit in the system trigger register.
+ * @param callback function to be called when the chip sends a response
+ */
 void bno055_write_reset(bno055_callback_t callback);
+
+/**
+ * Read the system status register of the sensor.
+ * @param out out-parameter used for storing the result
+ * @param callback callback that is called once the transaction is complete and "out" got set
+ */
 void bno055_read_system_status(bno055_status_t *out, bno055_callback_t callback);
+
+/**
+ * Read the system error register of the sensor.
+ * @param out out-parameter used for storing the result
+ * @param callback callback that is called once the transaction is complete and "out" got set
+ */
 void bno055_read_system_error(bno055_error_t *out, bno055_callback_t callback);
-void bno055_read_calib_status(uint8_t *out, bno055_callback_t callback);
+
+/**
+ * Read the calibration status register of the sensor.
+ * @param out out-parameter used for storing the result
+ * @param callback callback that is called once the transaction is complete and "out" got set
+ */
+void bno055_read_calib_status(bno055_calib_status_t *out, bno055_callback_t callback);
+
+/**
+ * Write to the operation mode register of the sensor.
+ * @param op_mode the operation mode to write
+ * @param callback callback that is called once the transaction is complete
+ */
 void bno055_write_opr_mode(bno055_opr_mode_t op_mode, bno055_callback_t callback);
 void bno055_write_unit_selection(bno055_unit_sel_acc acc_unit, bno055_unit_sel_angular_rate angular_rate_unit,
                                  bno055_unit_sel_euler_angles euler_angles_unit,

@@ -148,7 +148,7 @@ void bno055_read_system_error(bno055_error_t *out, bno055_callback_t callback) {
     bno055_uart_read_register(BNO055_SYS_ERR_ADDR, 1, callback, out);
 }
 
-void bno055_read_calib_status(uint8_t *out, bno055_callback_t callback) {
+void bno055_read_calib_status(bno055_calib_status_t *out, bno055_callback_t callback) {
     bno055_uart_read_register(BNO055_CALIB_STAT_ADDR, 1, callback, out);
 }
 

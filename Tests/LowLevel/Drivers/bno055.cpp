@@ -56,6 +56,19 @@ TEST(TEST_NAME, read_calib_status) {
     EXPECT_TRUE(bnoUartHandle.functionGotCalled<bno055_uart_read_register>(0x35, 1, callbackFunc, nullptr));
 }
 
+TEST(TEST_NAME, read_calib_status_bitfield_packing) {
+    bno055_calib_status_t calibStatus{};
+    EXPECT_EQ(reinterpret_cast<uint8_t &>(calibStatus), 0x00);
+    calibStatus.mag_status = 3;
+    EXPECT_EQ(reinterpret_cast<uint8_t &>(calibStatus), 0x03);
+    calibStatus.acc_status = 3;
+    EXPECT_EQ(reinterpret_cast<uint8_t &>(calibStatus), 0x0F);
+    calibStatus.gyr_status = 3;
+    EXPECT_EQ(reinterpret_cast<uint8_t &>(calibStatus), 0x3F);
+    calibStatus.sys_status = 3;
+    EXPECT_EQ(reinterpret_cast<uint8_t &>(calibStatus), 0xFF);
+}
+
 TEST(TEST_NAME, write_opr_mode) {
     auto bnoUartHandle = mock::bno055_uart.getHandle();
     auto callbackFunc = reinterpret_cast<bno055_callback_t>(117);
