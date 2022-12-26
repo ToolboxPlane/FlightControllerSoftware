@@ -28,10 +28,10 @@
 #include "Application/controller.h"
 #include "Application/error_handler.h"
 #include "Application/mode_handler.h"
+#include "Components/actuators.h"
 #include "Components/flightcomputer.h"
 #include "Components/imu.h"
 #include "Components/remote.h"
-#include "Components/servo_motor.h"
 #include "Components/system.h"
 
 /**
@@ -83,7 +83,7 @@ void timer_tick(void) {
             break;
     }
 
-    servo_motor_set(&servo_motor_cmd);
+    actuators_set(&servo_motor_cmd);
 
     /*
      * Send information to FCPS
@@ -108,7 +108,7 @@ int main(void) {
     imu_init();
     remote_init();
     flightcomputer_init();
-    servo_motor_init();
+    actuators_init();
 
     imu_start_sampling();
 

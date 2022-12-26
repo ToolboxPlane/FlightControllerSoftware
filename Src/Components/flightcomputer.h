@@ -11,9 +11,9 @@
 #include <stdbool.h>
 #include <stdint.h>
 
+#include "actuators.h"
 #include "imu.h"
 #include "remote.h"
-#include "servo_motor.h"
 
 /**
  * Setpoint as sent by the flightcomputer.

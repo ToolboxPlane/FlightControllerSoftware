@@ -14,10 +14,10 @@ set(MockedModules
         HAL/uart
         Messages/MessageEncoding
         Messages/MessageDecoding
+        Components/actuators
         Components/flightcomputer
         Components/imu
         Components/remote
-        Components/servo_motor
         Components/system
         Application/controller
         Application/error_handler
