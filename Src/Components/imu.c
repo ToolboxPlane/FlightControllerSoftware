@@ -13,6 +13,10 @@
 #include <util/delay.h>
 
 enum { INIT_RESPONSE_TIMEOUT_MS = 20 };
+enum { ACC_CALIB_TRESH = 2 };
+enum { MAG_CALIB_TRESH = 2 };
+enum { GYR_CALIB_TRESH = 2 };
+enum { SYS_CALIB_TRESH = 3 };
 
 typedef enum {
     EUL,
@@ -43,15 +47,15 @@ static void bno_sample_callback(bno055_response_t response) {
         switch (bno_sampling_state) {
             case EUL:
                 bno_sampling_state = GYR;
-                //imu_start_sampling();
+                // imu_start_sampling();
                 break;
             case GYR:
                 bno_sampling_state = ACC;
-                //imu_start_sampling();
+                // imu_start_sampling();
                 break;
             case ACC:
                 bno_sampling_state = STATUS;
-                //imu_start_sampling();
+                // imu_start_sampling();
                 break;
             case STATUS:
                 if (bno_status != sensor_fusion_algorithm_running) {
@@ -61,16 +65,20 @@ static void bno_sample_callback(bno055_response_t response) {
                     imu_data->imu_ok = true;
                 }
                 bno_sampling_state = CALIB_STAT;
-                //imu_start_sampling();
+                // imu_start_sampling();
                 break;
             case CALIB_STAT:
                 current_sample_state_id = 1 - current_sample_state_id;
+                if (calib_status.sys_status < SYS_CALIB_TRESH || calib_status.gyr_status < GYR_CALIB_TRESH ||
+                    calib_status.acc_status < GYR_CALIB_TRESH || calib_status.mag_status < MAG_CALIB_TRESH) {
+                    imu_data->imu_ok = false;
+                }
                 sampling_complete = true;
                 bno_sampling_state = EUL;
                 break;
         }
     } else if (response != bus_over_run_error) { // Bus overrun just happens...
-        error_handler_handle_warning(BNO055, response+1);
+        error_handler_handle_warning(BNO055, response + 1);
         imu_data->imu_ok = false;
         current_sample_state_id = 1 - current_sample_state_id;
         bno_sampling_state = EUL;
@@ -94,7 +102,7 @@ void imu_init(void) {
         return;
     }
     if (init_response != write_success) {
-        error_handler_handle_error(BNO055, init_response+1);
+        error_handler_handle_error(BNO055, init_response + 1);
         return;
     }
 
@@ -108,7 +116,7 @@ void imu_init(void) {
         return;
     }
     if (init_response != read_success) {
-        error_handler_handle_error(BNO055, init_response+1);
+        error_handler_handle_error(BNO055, init_response + 1);
         return;
     }
     if (!self_test_result.acc_passed || !self_test_result.gyr_passed || !self_test_result.mag_passed ||
@@ -126,7 +134,7 @@ void imu_init(void) {
         return;
     }
     if (init_response != write_success) {
-        error_handler_handle_error(BNO055, init_response+1);
+        error_handler_handle_error(BNO055, init_response + 1);
         return;
     }
 
@@ -148,7 +156,7 @@ void imu_init(void) {
         return;
     }
     if (init_response != write_success) {
-        error_handler_handle_error(BNO055, init_response+1);
+        error_handler_handle_error(BNO055, init_response + 1);
         return;
     }
 
@@ -160,7 +168,7 @@ void imu_init(void) {
         return;
     }
     if (init_response != write_success) {
-        error_handler_handle_error(BNO055, init_response+1);
+        error_handler_handle_error(BNO055, init_response + 1);
         return;
     }
 
@@ -173,7 +181,7 @@ void imu_init(void) {
         return;
     }
     if (init_response != write_success) {
-        error_handler_handle_error(BNO055, init_response+1);
+        error_handler_handle_error(BNO055, init_response + 1);
         return;
     }
 
