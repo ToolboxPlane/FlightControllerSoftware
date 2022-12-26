@@ -1,7 +1,8 @@
 # FlightController
- * [Documentation](https://toolboxplane.github.io/FlightControllerSoftware/doxygen)
- * [Test Reports](https://toolboxplane.github.io/FlightControllerSoftware/report/)
- * [Coverage Reports](https://toolboxplane.github.io/FlightControllerSoftware/coverage/)
+
+* [Documentation](https://toolboxplane.github.io/FlightControllerSoftware/doxygen)
+* [Test Reports](https://toolboxplane.github.io/FlightControllerSoftware/report/)
+* [Coverage Reports](https://toolboxplane.github.io/FlightControllerSoftware/coverage/)
 
 ## Building and deploy
 
@@ -52,24 +53,31 @@ ID.
 
 The error IDs are:
 
-| Component      | Exception                   | LED configuration |
-|----------------|-----------------------------|-------------------|
-| Application    | -                           | xxxx ◯◯◯🔴        |
-| System         | Timer Runtime               | ◯◯◯🔴 ◯◯🔴◯       |
-|                | Watchdog                    | ◯◯🔴◯ ◯◯🔴◯       |
-|                | Brownout                    | ◯◯🔴🔴 ◯◯🔴◯      |
-| IMU            | Init config mode error      | ◯◯◯🔴 ◯◯🔴🔴      |
-|                | Init self test write error  | ◯◯🔴◯ ◯◯🔴🔴      |
-|                | Init self test result error | ◯◯🔴🔴 ◯◯🔴🔴     |
-|                | Init unit selection error   | ◯🔴◯◯ ◯◯🔴🔴      |
-|                | Init remap axis error       | ◯🔴◯🔴 ◯◯🔴🔴     |
-|                | Init remap axis sign error  | ◯🔴🔴◯ ◯◯🔴🔴     |
-|                | Init NDOF-FMC-OFF error     | ◯🔴🔴🔴 ◯◯🔴🔴    |
-|                | Status error                | 🔴◯◯◯ ◯◯🔴🔴      |
-|                | Uart error                  | 🔴◯◯🔴 ◯◯🔴🔴     |
-|                | Default-case error          | 🔴◯🔴◯ ◯◯🔴🔴     |
-| Flightcomputer | -                           | xxxx ◯🔴◯◯        |
-| Remote         | -                           | xxxx ◯🔴◯🔴       |
-| Mode Handler   | No IMU Data                 | ◯◯◯🔴 ◯🔴🔴◯      |
-|                | No FCP Data                 | ◯◯🔴◯ ◯🔴🔴◯      |
-|                | No Remote Data              | ◯◯🔴🔴 ◯🔴🔴◯     |
+| Component      | Exception                | LED configuration |
+|----------------|--------------------------|-------------------|
+| Application    | -                        | xxxx ◯◯◯🔴        |
+| System         | Timer Runtime            | ◯◯◯🔴 ◯◯🔴◯       |
+|                | Watchdog                 | ◯◯🔴◯ ◯◯🔴◯       |
+|                | Brownout                 | ◯◯🔴🔴 ◯◯🔴◯      |
+| IMU            | Init timeout error       | ◯◯◯🔴 ◯◯🔴🔴      |
+|                | Init self test error     | ◯◯🔴◯ ◯◯🔴🔴      |
+|                | Status error             | ◯◯🔴🔴 ◯◯🔴🔴     |
+| Flightcomputer | -                        | xxxx ◯🔴◯◯        |
+| Remote         | -                        | xxxx ◯🔴◯🔴       |
+| Mode Handler   | No IMU Data              | ◯◯◯🔴 ◯🔴🔴◯      |
+|                | No FCP Data              | ◯◯🔴◯ ◯🔴🔴◯      |
+|                | No Remote Data           | ◯◯🔴🔴 ◯🔴🔴◯     |
+| BNO055         | Unexpected read success  | ◯◯◯🔴 ◯🔴🔴🔴     |
+|                | Unexpected write success | ◯◯🔴◯ ◯🔴🔴🔴     |
+|                | Read fail                | ◯◯🔴🔴 ◯🔴🔴🔴    |
+|                | Write fail               | ◯🔴◯◯ ◯🔴🔴🔴     |
+|                | Invalid address          | ◯🔴◯🔴 ◯🔴🔴🔴    |
+|                | Write disabled           | ◯🔴🔴◯ ◯🔴🔴🔴    |
+|                | Wrong start byte         | ◯🔴🔴🔴 ◯🔴🔴🔴   |
+|                | Bus overrun              | 🔴◯◯◯ ◯🔴🔴🔴     |
+|                | Max length               | 🔴◯◯🔴 ◯🔴🔴🔴    |
+|                | Min length               | 🔴◯🔴◯ ◯🔴🔴🔴    |
+|                | Receive char timeout     | 🔴◯🔴🔴 ◯🔴🔴🔴   |
+|                | Callback buffer invalid  | 🔴🔴◯◯ ◯🔴🔴🔴    |
+|                | Invalid sync             | 🔴🔴◯🔴 ◯🔴🔴🔴   |
+

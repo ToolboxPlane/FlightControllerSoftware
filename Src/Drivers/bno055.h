@@ -63,20 +63,44 @@ typedef enum {
     ndof = 0b1100
 } bno055_opr_mode_t;
 
+/**
+ * Possible axis names used for remapping.
+ */
 typedef enum { x_axis = 0, y_axis = 1, z_axis = 2 } bno055_axis_remap_axis_t;
 
+/**
+ * Possible axis signs used for sign remapping.
+ */
 typedef enum { positive = 0, neg = 1 } bno055_axis_remap_sign_t;
 
+/**
+ * Possible acceleration units for the unit selection.
+ */
 typedef enum { mps2 = 0, mg = 1 } bno055_unit_sel_acc;
 
+/**
+ * Possible angular rate units for the unit selection.
+ */
 typedef enum { dps = 0, rps = 1 } bno055_unit_sel_angular_rate;
 
+/**
+ * Possible euler angle units for the unit selection.
+ */
 typedef enum { degrees = 0, radians = 1 } bno055_unit_sel_euler_angles;
 
+/**
+ * Possible temperature units for the unit selection.
+ */
 typedef enum { celsius = 0, fahrenheit = 1 } bno055_unit_sel_temperature;
 
+/**
+ * Possible axis-frame options for the unit selection.
+ */
 typedef enum { windows = 0, android = 1 } bno055_unit_sel_orientation_def;
 
+/**
+ * Information in the calibration status register.
+ */
 typedef struct {
     unsigned mag_status : 2;
     unsigned acc_status : 2;
@@ -84,6 +108,9 @@ typedef struct {
     unsigned sys_status : 2;
 } bno055_calib_status_t;
 
+/**
+ * Information in the self-test register.
+ */
 typedef struct {
     bool acc_passed : 1;
     bool mag_passed : 1;

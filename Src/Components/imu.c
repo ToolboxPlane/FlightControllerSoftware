@@ -27,7 +27,7 @@ static volatile bool callback_ready;
 static volatile bno_sampling_state_t bno_sampling_state;
 
 static volatile imu_data_t imu_datas[2];
-static uint8_t calib_status;
+static bno055_calib_status_t calib_status;
 static bno055_status_t bno_status;
 static volatile uint8_t current_sample_state_id = 0;
 static volatile bool sampling_complete = false;
@@ -70,7 +70,8 @@ static void bno_sample_callback(bno055_response_t response) {
                 break;
         }
     } else if (response != bus_over_run_error) { // Bus overrun just happens...
-        error_handler_handle_warning(IMU, IMU_ERROR_UART);
+
+        error_handler_handle_warning(BNO055, response+1);
         imu_data->imu_ok = false;
         current_sample_state_id = 1 - current_sample_state_id;
         bno_sampling_state = EUL;
@@ -89,8 +90,12 @@ void imu_init(void) {
     callback_ready = false;
     bno055_write_opr_mode(config_mode, bno_init_callback);
     _delay_ms(INIT_RESPONSE_TIMEOUT_MS);
-    if (!callback_ready || init_response != write_success) {
-        error_handler_handle_error(IMU, IMU_ERROR_INIT_CONFIG_MODE);
+    if (!callback_ready) {
+        error_handler_handle_error(IMU, IMU_ERROR_INIT_TIMEOUT);
+        return;
+    }
+    if (init_response != write_success) {
+        error_handler_handle_error(BNO055, init_response+1);
         return;
     }
 
@@ -99,8 +104,12 @@ void imu_init(void) {
     bno055_self_test_result_t self_test_result;
     bno055_read_self_test(&self_test_result, bno_init_callback);
     _delay_ms(INIT_RESPONSE_TIMEOUT_MS);
-    if (!callback_ready || init_response != read_success) {
-        error_handler_handle_error(IMU, IMU_ERROR_INIT_SELF_TEST_WRITE);
+    if (!callback_ready) {
+        error_handler_handle_error(IMU, IMU_ERROR_INIT_TIMEOUT);
+        return;
+    }
+    if (init_response != read_success) {
+        error_handler_handle_error(BNO055, init_response+1);
         return;
     }
     if (!self_test_result.acc_passed || !self_test_result.gyr_passed || !self_test_result.mag_passed ||
@@ -113,8 +122,12 @@ void imu_init(void) {
     callback_ready = false;
     bno055_write_unit_selection(mps2, dps, degrees, celsius, android, bno_init_callback);
     _delay_ms(INIT_RESPONSE_TIMEOUT_MS);
-    if (!callback_ready || init_response != write_success) {
-        error_handler_handle_error(IMU, IMU_ERROR_INIT_UNIT_SEL);
+    if (!callback_ready) {
+        error_handler_handle_error(IMU, IMU_ERROR_INIT_TIMEOUT);
+        return;
+    }
+    if (init_response != write_success) {
+        error_handler_handle_error(BNO055, init_response+1);
         return;
     }
 
@@ -131,25 +144,37 @@ void imu_init(void) {
     callback_ready = false;
     bno055_write_remap_axis(y_axis, x_axis, z_axis, bno_init_callback);
     _delay_ms(INIT_RESPONSE_TIMEOUT_MS);
-    if (!callback_ready || init_response != write_success) {
-        error_handler_handle_error(IMU, IMU_ERROR_INIT_REMAP_AXIS);
+    if (!callback_ready) {
+        error_handler_handle_error(IMU, IMU_ERROR_INIT_TIMEOUT);
+        return;
+    }
+    if (init_response != write_success) {
+        error_handler_handle_error(BNO055, init_response+1);
         return;
     }
 
     callback_ready = false;
     bno055_write_remap_axis_sign(positive, positive, neg, bno_init_callback);
     _delay_ms(INIT_RESPONSE_TIMEOUT_MS);
-    if (!callback_ready || init_response != write_success) {
-        error_handler_handle_error(IMU, IMU_ERROR_INIT_REMAP_AXIS_SIGN);
+    if (!callback_ready) {
+        error_handler_handle_error(IMU, IMU_ERROR_INIT_TIMEOUT);
+        return;
+    }
+    if (init_response != write_success) {
+        error_handler_handle_error(BNO055, init_response+1);
         return;
     }
 
     // Set to NDOF-FMC-OFF
     callback_ready = false;
-    bno055_write_opr_mode(ndof_fmc_off, bno_init_callback);
+    bno055_write_opr_mode(ndof_fmc_off, bno_init_callback+1);
     _delay_ms(INIT_RESPONSE_TIMEOUT_MS);
-    if (!callback_ready || init_response != write_success) {
-        error_handler_handle_error(IMU, IMU_ERROR_INIT_NDOF_FMC_OFF);
+    if (!callback_ready) {
+        error_handler_handle_error(IMU, IMU_ERROR_INIT_TIMEOUT);
+        return;
+    }
+    if (init_response != write_success) {
+        error_handler_handle_error(BNO055, init_response+1);
         return;
     }
 

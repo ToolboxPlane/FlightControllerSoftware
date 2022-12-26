@@ -20,15 +20,9 @@ typedef struct {
 } imu_data_t;
 
 typedef enum {
-    IMU_ERROR_INIT_CONFIG_MODE = 1,
-    IMU_ERROR_INIT_SELF_TEST_WRITE = 2,
-    IMU_ERROR_INIT_SELF_TEST = 3,
-    IMU_ERROR_INIT_UNIT_SEL = 4,
-    IMU_ERROR_INIT_REMAP_AXIS = 5,
-    IMU_ERROR_INIT_REMAP_AXIS_SIGN = 6,
-    IMU_ERROR_INIT_NDOF_FMC_OFF = 7,
-    IMU_ERROR_STATUS = 8,
-    IMU_ERROR_UART = 9,
+    IMU_ERROR_INIT_TIMEOUT = 1,
+    IMU_ERROR_INIT_SELF_TEST = 2,
+    IMU_ERROR_STATUS = 3,
 } imu_error_t;
 
 void imu_init(void);
