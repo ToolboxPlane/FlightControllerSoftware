@@ -34,9 +34,16 @@
 #include "Components/servo_motor.h"
 #include "Components/system.h"
 
-enum {
-    FLIGHTCOMPUTER_SEND_PERIOD = 6, // 6 * 16.384 \approx 100ms
-};
+/**
+ * Frequency divider between the timer interrupt and sending new messages.
+ * 6 * 16.384 approx 100ms
+ */
+enum { FLIGHTCOMPUTER_SEND_PERIOD = 6 };
+
+/**
+ * Offset from the remote data (in [0, 1000]) to the servo_motor_cmd data (in [-500, 500])
+ */
+enum { SERVO_REMOTE_OFFSET = 1000U / 2 };
 
 void timer_tick(void) {
     imu_data_t imu_data;
@@ -59,8 +66,8 @@ void timer_tick(void) {
         }
         case MODE_REMOTE:
             servo_motor_cmd.motor = remote_data.throttle_raw;
-            servo_motor_cmd.servo_left = remote_data.elevon_left_mixed;
-            servo_motor_cmd.servo_right = remote_data.elevon_right_mixed;
+            servo_motor_cmd.servo_left = remote_data.elevon_left_mixed - SERVO_REMOTE_OFFSET;
+            servo_motor_cmd.servo_right = remote_data.elevon_right_mixed - SERVO_REMOTE_OFFSET;
             break;
         case MODE_STABILISED_FAILSAVE: {
             controller_result_t controller_result = controller_update(&imu_data, 0, 0);
