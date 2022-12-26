@@ -39,7 +39,20 @@ jobs:
       - name: Run Clang-Format
         run: python3 run-clang-format.py --recursive --exclude ./build --color always .
 
-  Check-Doxygen:
+  Check-Doxygen-Without-External:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - name: Install dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y doxygen
+      - name: Prepare Doxyfile
+        run: sed -i "s/WARN_AS_ERROR\s*=\s*NO/WARN_AS_ERROR = YES/g" Doxyfile
+      - name: Run doxygen
+        run: doxygen
+
+  Check-Doxygen-With-External:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
@@ -53,7 +66,3 @@ jobs:
         run: sed -i "s/WARN_AS_ERROR\s*=\s*NO/WARN_AS_ERROR = YES/g" Doxyfile
       - name: Run doxygen
         run: doxygen
-
-
-
-
