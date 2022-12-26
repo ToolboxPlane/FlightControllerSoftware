@@ -58,15 +58,15 @@ TEST(TEST_NAME, read_calib_status) {
 
 TEST(TEST_NAME, read_calib_status_bitfield_packing) {
     bno055_calib_status_t calibStatus{};
-    EXPECT_EQ(reinterpret_cast<uint8_t &>(calibStatus), 0x00);
+    EXPECT_EQ(reinterpret_cast<const uint8_t &>(calibStatus), 0x00);
     calibStatus.mag_status = 3;
-    EXPECT_EQ(reinterpret_cast<uint8_t &>(calibStatus), 0x03);
+    EXPECT_EQ(reinterpret_cast<const uint8_t &>(calibStatus), 0x03);
     calibStatus.acc_status = 3;
-    EXPECT_EQ(reinterpret_cast<uint8_t &>(calibStatus), 0x0F);
+    EXPECT_EQ(reinterpret_cast<const uint8_t &>(calibStatus), 0x0F);
     calibStatus.gyr_status = 3;
-    EXPECT_EQ(reinterpret_cast<uint8_t &>(calibStatus), 0x3F);
+    EXPECT_EQ(reinterpret_cast<const uint8_t &>(calibStatus), 0x3F);
     calibStatus.sys_status = 3;
-    EXPECT_EQ(reinterpret_cast<uint8_t &>(calibStatus), 0xFF);
+    EXPECT_EQ(reinterpret_cast<const uint8_t &>(calibStatus), 0xFF);
 }
 
 TEST(TEST_NAME, write_opr_mode) {
@@ -147,6 +147,19 @@ TEST(TEST_NAME, read_self_test) {
     bno055_read_self_test(nullptr, callbackFunc);
     // [https://cdn-shop.adafruit.com/datasheets/BST_BNO055_DS000_12.pdf P.51]
     EXPECT_TRUE(bnoUartHandle.functionGotCalled<bno055_uart_read_register>(0x36, 1, callbackFunc, nullptr));
+}
+
+TEST(TEST_NAME, read_self_test_bit_packing) {
+    bno055_self_test_result_t selfTestResult{};
+    EXPECT_EQ(reinterpret_cast<const uint8_t &>(selfTestResult), 0x0);
+    selfTestResult.acc_passed = true;
+    EXPECT_EQ(reinterpret_cast<const uint8_t &>(selfTestResult), 0x1);
+    selfTestResult.mag_passed = true;
+    EXPECT_EQ(reinterpret_cast<const uint8_t &>(selfTestResult), 0x3);
+    selfTestResult.gyr_passed = true;
+    EXPECT_EQ(reinterpret_cast<const uint8_t &>(selfTestResult), 0x7);
+    selfTestResult.mcu_passed = true;
+    EXPECT_EQ(reinterpret_cast<const uint8_t &>(selfTestResult), 0xF);
 }
 
 TEST(TEST_NAME, read_acc_xyz_mul_100) {

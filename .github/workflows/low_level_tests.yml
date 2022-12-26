@@ -63,7 +63,7 @@ jobs:
       - name: Move HTML
         run: |
           mkdir -p out/report
-          mv index.html out/report
+          mv *.html out/report
       - uses: actions/upload-artifact@v3
         with:
           name: llt-report

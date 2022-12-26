@@ -8,6 +8,8 @@
 #ifndef FLIGHTCONTROLLER_BNO055_H
 #define FLIGHTCONTROLLER_BNO055_H
 
+#include <stdbool.h>
+
 #include "bno055_uart.h"
 
 /**
@@ -82,6 +84,13 @@ typedef struct {
     unsigned sys_status : 2;
 } bno055_calib_status_t;
 
+typedef struct {
+    bool acc_passed : 1;
+    bool mag_passed : 1;
+    bool gyr_passed : 1;
+    bool mcu_passed : 1;
+} bno055_self_test_result_t;
+
 /**
  * Initialize the physical connection to the BNO, this will not initialize the sensor itself.
  */
@@ -120,15 +129,47 @@ void bno055_read_calib_status(bno055_calib_status_t *out, bno055_callback_t call
  * @param callback callback that is called once the transaction is complete
  */
 void bno055_write_opr_mode(bno055_opr_mode_t op_mode, bno055_callback_t callback);
+
+/**
+ * Set the unit selection register of the sensor.
+ * @param acc_unit the unit used for acceleration measurements
+ * @param angular_rate_unit the unit used for angular rates
+ * @param euler_angles_unit the unit used for euler angles
+ * @param temperature_unit the unit used for temperatures
+ * @param orientation_def the axis-frame used for the measurements
+ * @param callback callback that is called once the transaction is complete
+ */
 void bno055_write_unit_selection(bno055_unit_sel_acc acc_unit, bno055_unit_sel_angular_rate angular_rate_unit,
                                  bno055_unit_sel_euler_angles euler_angles_unit,
                                  bno055_unit_sel_temperature temperature_unit,
                                  bno055_unit_sel_orientation_def orientation_def, bno055_callback_t callback);
+
+/**
+ * Set the axis remap register of the sensor.
+ * @param new_x the axis that should be the new x-axis
+ * @param new_y the axis that should be the new y-axis
+ * @param new_z the axis that should be the new z-axis
+ * @param callback callback that is called once the transaction is complete
+ */
 void bno055_write_remap_axis(bno055_axis_remap_axis_t new_x, bno055_axis_remap_axis_t new_y,
                              bno055_axis_remap_axis_t new_z, bno055_callback_t callback);
+
+/**
+ * Set the axis remap sign register
+ * @param new_x_sign the sign of the x-axis
+ * @param new_y_sign the sign of the y-axis
+ * @param new_z_sign the sign of the z-axis
+ * @param callback the callback that is called once the transaction is complete
+ */
 void bno055_write_remap_axis_sign(bno055_axis_remap_sign_t new_x_sign, bno055_axis_remap_sign_t new_y_sign,
                                   bno055_axis_remap_sign_t new_z_sign, bno055_callback_t callback);
-void bno055_read_self_test(uint8_t *out, bno055_callback_t callback);
+
+/**
+ * Read the result of the self test
+ * @param out out-parameter used for storing the result
+ * @param callback callback that is called once the transaction is complete and "out" got set
+ */
+void bno055_read_self_test(bno055_self_test_result_t *out, bno055_callback_t callback);
 
 
 void bno055_read_acc_xyz_mul_100(int16_t *out, bno055_callback_t callback);

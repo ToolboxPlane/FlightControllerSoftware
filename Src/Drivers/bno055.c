@@ -164,7 +164,7 @@ void bno055_write_remap_axis_sign(bno055_axis_remap_sign_t new_x_sign, bno055_ax
     bno055_uart_write_register(BNO055_AXIS_MAP_SIGN_ADDR, &remap_reg, 1, callback);
 }
 
-void bno055_read_self_test(uint8_t *out, bno055_callback_t callback) {
+void bno055_read_self_test(bno055_self_test_result_t *out, bno055_callback_t callback) {
     bno055_uart_read_register(BNO055_SELFTEST_RESULT_ADDR, 1, callback, out);
 }
 

@@ -13,8 +13,11 @@ TEST(TEST_NAME, init__success) {
 
     bnoHandle.overrideFunc<bno055_write_opr_mode>(
             [](auto /*op_mode*/, bno055_callback_t callback) { callback(write_success); });
-    bnoHandle.overrideFunc<bno055_read_self_test>([](uint8_t *out, bno055_callback_t callback) {
-        *out = 0x0F;
+    bnoHandle.overrideFunc<bno055_read_self_test>([](bno055_self_test_result_t *out, bno055_callback_t callback) {
+        out->mcu_passed = true;
+        out->acc_passed = true;
+        out->gyr_passed = true;
+        out->mag_passed = true;
         callback(read_success);
     });
     bnoHandle.overrideFunc<bno055_write_unit_selection>(
@@ -63,8 +66,11 @@ TEST(TEST_NAME, init__self_test_error) {
 
     bnoHandle.overrideFunc<bno055_write_opr_mode>(
             [](auto /*op_mode*/, bno055_callback_t callback) { callback(write_success); });
-    bnoHandle.overrideFunc<bno055_read_self_test>([](uint8_t *out, bno055_callback_t callback) {
-        *out = 0x0F;
+    bnoHandle.overrideFunc<bno055_read_self_test>([](bno055_self_test_result_t *out, bno055_callback_t callback) {
+        out->mcu_passed = true;
+        out->acc_passed = true;
+        out->gyr_passed = true;
+        out->mag_passed = true;
         callback(read_fail);
     });
 
@@ -74,15 +80,81 @@ TEST(TEST_NAME, init__self_test_error) {
     EXPECT_FALSE(imu_data_available());
 }
 
-TEST(TEST_NAME, init__self_test_fail) {
+TEST(TEST_NAME, init__self_test_mcu_fail) {
     auto bnoHandle = mock::bno055.getHandle();
     auto delayHandle = mock::delay.getHandle();
     auto errorHandlerHandle = mock::error_handler.getHandle();
 
     bnoHandle.overrideFunc<bno055_write_opr_mode>(
             [](auto /*op_mode*/, bno055_callback_t callback) { callback(write_success); });
-    bnoHandle.overrideFunc<bno055_read_self_test>([](uint8_t *out, bno055_callback_t callback) {
-        *out = 0x07;
+    bnoHandle.overrideFunc<bno055_read_self_test>([](bno055_self_test_result_t *out, bno055_callback_t callback) {
+        out->mcu_passed = false;
+        out->acc_passed = true;
+        out->gyr_passed = true;
+        out->mag_passed = true;
+        callback(read_success);
+    });
+
+    imu_init();
+    EXPECT_TRUE(errorHandlerHandle.functionGotCalled<error_handler_handle_error>(IMU, IMU_ERROR_INIT_SELF_TEST));
+    EXPECT_FALSE(imu_get_latest_data().imu_ok);
+    EXPECT_FALSE(imu_data_available());
+}
+
+TEST(TEST_NAME, init__self_test_acc_fail) {
+    auto bnoHandle = mock::bno055.getHandle();
+    auto delayHandle = mock::delay.getHandle();
+    auto errorHandlerHandle = mock::error_handler.getHandle();
+
+    bnoHandle.overrideFunc<bno055_write_opr_mode>(
+            [](auto /*op_mode*/, bno055_callback_t callback) { callback(write_success); });
+    bnoHandle.overrideFunc<bno055_read_self_test>([](bno055_self_test_result_t *out, bno055_callback_t callback) {
+        out->mcu_passed = true;
+        out->acc_passed = false;
+        out->gyr_passed = true;
+        out->mag_passed = true;
+        callback(read_success);
+    });
+
+    imu_init();
+    EXPECT_TRUE(errorHandlerHandle.functionGotCalled<error_handler_handle_error>(IMU, IMU_ERROR_INIT_SELF_TEST));
+    EXPECT_FALSE(imu_get_latest_data().imu_ok);
+    EXPECT_FALSE(imu_data_available());
+}
+
+TEST(TEST_NAME, init__self_test_gyr_fail) {
+    auto bnoHandle = mock::bno055.getHandle();
+    auto delayHandle = mock::delay.getHandle();
+    auto errorHandlerHandle = mock::error_handler.getHandle();
+
+    bnoHandle.overrideFunc<bno055_write_opr_mode>(
+            [](auto /*op_mode*/, bno055_callback_t callback) { callback(write_success); });
+    bnoHandle.overrideFunc<bno055_read_self_test>([](bno055_self_test_result_t *out, bno055_callback_t callback) {
+        out->mcu_passed = true;
+        out->acc_passed = true;
+        out->gyr_passed = false;
+        out->mag_passed = true;
+        callback(read_success);
+    });
+
+    imu_init();
+    EXPECT_TRUE(errorHandlerHandle.functionGotCalled<error_handler_handle_error>(IMU, IMU_ERROR_INIT_SELF_TEST));
+    EXPECT_FALSE(imu_get_latest_data().imu_ok);
+    EXPECT_FALSE(imu_data_available());
+}
+
+TEST(TEST_NAME, init__self_test_mag_fail) {
+    auto bnoHandle = mock::bno055.getHandle();
+    auto delayHandle = mock::delay.getHandle();
+    auto errorHandlerHandle = mock::error_handler.getHandle();
+
+    bnoHandle.overrideFunc<bno055_write_opr_mode>(
+            [](auto /*op_mode*/, bno055_callback_t callback) { callback(write_success); });
+    bnoHandle.overrideFunc<bno055_read_self_test>([](bno055_self_test_result_t *out, bno055_callback_t callback) {
+        out->mcu_passed = true;
+        out->acc_passed = true;
+        out->gyr_passed = true;
+        out->mag_passed = false;
         callback(read_success);
     });
 
@@ -99,8 +171,11 @@ TEST(TEST_NAME, init__unit_sel_error) {
 
     bnoHandle.overrideFunc<bno055_write_opr_mode>(
             [](auto /*op_mode*/, bno055_callback_t callback) { callback(write_success); });
-    bnoHandle.overrideFunc<bno055_read_self_test>([](uint8_t *out, bno055_callback_t callback) {
-        *out = 0x0F;
+    bnoHandle.overrideFunc<bno055_read_self_test>([](bno055_self_test_result_t *out, bno055_callback_t callback) {
+        out->mcu_passed = true;
+        out->acc_passed = true;
+        out->gyr_passed = true;
+        out->mag_passed = true;
         callback(read_success);
     });
     bnoHandle.overrideFunc<bno055_write_unit_selection>(
@@ -122,8 +197,11 @@ TEST(TEST_NAME, init__remap_fail) {
 
     bnoHandle.overrideFunc<bno055_write_opr_mode>(
             [](auto /*op_mode*/, bno055_callback_t callback) { callback(write_success); });
-    bnoHandle.overrideFunc<bno055_read_self_test>([](uint8_t *out, bno055_callback_t callback) {
-        *out = 0x0F;
+    bnoHandle.overrideFunc<bno055_read_self_test>([](bno055_self_test_result_t *out, bno055_callback_t callback) {
+        out->mcu_passed = true;
+        out->acc_passed = true;
+        out->gyr_passed = true;
+        out->mag_passed = true;
         callback(read_success);
     });
     bnoHandle.overrideFunc<bno055_write_unit_selection>(
@@ -148,8 +226,11 @@ TEST(TEST_NAME, init__remap_sign_fail) {
 
     bnoHandle.overrideFunc<bno055_write_opr_mode>(
             [](auto /*op_mode*/, bno055_callback_t callback) { callback(write_success); });
-    bnoHandle.overrideFunc<bno055_read_self_test>([](uint8_t *out, bno055_callback_t callback) {
-        *out = 0x0F;
+    bnoHandle.overrideFunc<bno055_read_self_test>([](bno055_self_test_result_t *out, bno055_callback_t callback) {
+        out->mcu_passed = true;
+        out->acc_passed = true;
+        out->gyr_passed = true;
+        out->mag_passed = true;
         callback(read_success);
     });
     bnoHandle.overrideFunc<bno055_write_unit_selection>(
@@ -181,8 +262,11 @@ TEST(TEST_NAME, init__ndof_fail) {
             callback(write_success);
         }
     });
-    bnoHandle.overrideFunc<bno055_read_self_test>([](uint8_t *out, bno055_callback_t callback) {
-        *out = 0x0F;
+    bnoHandle.overrideFunc<bno055_read_self_test>([](bno055_self_test_result_t *out, bno055_callback_t callback) {
+        out->mcu_passed = true;
+        out->acc_passed = true;
+        out->gyr_passed = true;
+        out->mag_passed = true;
         callback(read_success);
     });
     bnoHandle.overrideFunc<bno055_write_unit_selection>(

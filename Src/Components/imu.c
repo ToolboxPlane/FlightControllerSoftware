@@ -13,7 +13,6 @@
 #include <util/delay.h>
 
 enum { INIT_RESPONSE_TIMEOUT_MS = 20 };
-enum { SELF_TEST_PASSED = 0xF };
 
 typedef enum {
     EUL,
@@ -97,21 +96,22 @@ void imu_init(void) {
 
     // Run Self Test
     callback_ready = false;
-    uint8_t self_test_result = 0;
+    bno055_self_test_result_t self_test_result;
     bno055_read_self_test(&self_test_result, bno_init_callback);
     _delay_ms(INIT_RESPONSE_TIMEOUT_MS);
     if (!callback_ready || init_response != read_success) {
         error_handler_handle_error(IMU, IMU_ERROR_INIT_SELF_TEST_WRITE);
         return;
     }
-    if (self_test_result != SELF_TEST_PASSED) {
+    if (!self_test_result.acc_passed || !self_test_result.gyr_passed || !self_test_result.mag_passed ||
+        !self_test_result.mcu_passed) {
         error_handler_handle_error(IMU, IMU_ERROR_INIT_SELF_TEST);
         return;
     }
 
     // Set unit selection
     callback_ready = false;
-    bno055_write_unit_selection(mps2, dps, degrees, celsius, windows, bno_init_callback);
+    bno055_write_unit_selection(mps2, dps, degrees, celsius, android, bno_init_callback);
     _delay_ms(INIT_RESPONSE_TIMEOUT_MS);
     if (!callback_ready || init_response != write_success) {
         error_handler_handle_error(IMU, IMU_ERROR_INIT_UNIT_SEL);
