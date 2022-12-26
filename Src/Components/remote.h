@@ -16,12 +16,12 @@
  */
 typedef struct {
     /**
-     * The mixed signals for the actuators (in [0,1000]).
+     * The mixed signals for the actuators, in [0,1000].
      */
     int16_t throttle_mixed, elevon_left_mixed, elevon_right_mixed;
 
     /**
-     * The raw signals from the joysticks (in [0, 1000]).
+     * The raw signals from the joysticks, in [0, 1000].
      */
     int16_t throttle_raw, pitch_raw, roll_raw;
 
