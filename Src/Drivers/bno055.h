@@ -171,11 +171,25 @@ void bno055_write_remap_axis_sign(bno055_axis_remap_sign_t new_x_sign, bno055_ax
  */
 void bno055_read_self_test(bno055_self_test_result_t *out, bno055_callback_t callback);
 
-
+/**
+ * Read the acceleration for all three axis multiplied with 100.
+ * @param out out-parameter used for storing the result, needs to be sufficiently large to store all three values-
+ * @param callback callback that is called once the transaction is complete and "out" got set
+ */
 void bno055_read_acc_xyz_mul_100(int16_t *out, bno055_callback_t callback);
 
+/**
+ * Read the gyroscopic angular rate for all three axis multiplied with 16.
+ * @param out out-parameter used for storing the result, needs to be sufficiently large to store all three values-
+ * @param callback callback that is called once the transaction is complete and "out" got set
+ */
 void bno055_read_gyr_xyz_mul_16(int16_t *out, bno055_callback_t callback);
 
+/**
+ * Read the euler-angles for all three axis multiplied with 16.
+ * @param out out-parameter used for storing the result, needs to be sufficiently large to store all three values-
+ * @param callback callback that is called once the transaction is complete and "out" got set
+ */
 void bno055_read_eul_xyz_2_mul_16(int16_t *out, bno055_callback_t callback);
 
 #endif // FLIGHTCONTROLLER_BNO055_H
