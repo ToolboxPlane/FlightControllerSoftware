@@ -43,15 +43,15 @@ static void bno_sample_callback(bno055_response_t response) {
         switch (bno_sampling_state) {
             case EUL:
                 bno_sampling_state = GYR;
-                imu_start_sampling();
+                //imu_start_sampling();
                 break;
             case GYR:
                 bno_sampling_state = ACC;
-                imu_start_sampling();
+                //imu_start_sampling();
                 break;
             case ACC:
                 bno_sampling_state = STATUS;
-                imu_start_sampling();
+                //imu_start_sampling();
                 break;
             case STATUS:
                 if (bno_status != sensor_fusion_algorithm_running) {
@@ -61,7 +61,7 @@ static void bno_sample_callback(bno055_response_t response) {
                     imu_data->imu_ok = true;
                 }
                 bno_sampling_state = CALIB_STAT;
-                imu_start_sampling();
+                //imu_start_sampling();
                 break;
             case CALIB_STAT:
                 current_sample_state_id = 1 - current_sample_state_id;
@@ -70,7 +70,6 @@ static void bno_sample_callback(bno055_response_t response) {
                 break;
         }
     } else if (response != bus_over_run_error) { // Bus overrun just happens...
-
         error_handler_handle_warning(BNO055, response+1);
         imu_data->imu_ok = false;
         current_sample_state_id = 1 - current_sample_state_id;
@@ -120,7 +119,7 @@ void imu_init(void) {
 
     // Set unit selection
     callback_ready = false;
-    bno055_write_unit_selection(mps2, dps, degrees, celsius, android, bno_init_callback);
+    bno055_write_unit_selection(mps2, dps, degrees, celsius, windows, bno_init_callback);
     _delay_ms(INIT_RESPONSE_TIMEOUT_MS);
     if (!callback_ready) {
         error_handler_handle_error(IMU, IMU_ERROR_INIT_TIMEOUT);
@@ -167,7 +166,7 @@ void imu_init(void) {
 
     // Set to NDOF-FMC-OFF
     callback_ready = false;
-    bno055_write_opr_mode(ndof_fmc_off, bno_init_callback+1);
+    bno055_write_opr_mode(ndof_fmc_off, bno_init_callback);
     _delay_ms(INIT_RESPONSE_TIMEOUT_MS);
     if (!callback_ready) {
         error_handler_handle_error(IMU, IMU_ERROR_INIT_TIMEOUT);
