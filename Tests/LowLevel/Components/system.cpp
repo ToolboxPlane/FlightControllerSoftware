@@ -64,9 +64,9 @@ TEST(TEST_NAME, timer_runtime_normal) {
     auto wdtHandle = mock::wdt.getHandle();
     auto timerHandle = mock::timer8bit.getHandle();
 
-    timer_callback_t internalCallback;
+    timer_8bit_callback_t internalCallback = nullptr;
     timerHandle.overrideFunc<timer_8bit_init>(
-            [&internalCallback](timer_clock_option_t /*clock_option*/, timer_callback_t timerCallback) {
+            [&internalCallback](timer_8bit_clock_option_t /*clock_option*/, system_timer_callback_t timerCallback) {
                 internalCallback = timerCallback;
             });
     timerHandle.overrideFunc<timer_8bit_get_count>([]() { return 0; });
@@ -86,9 +86,9 @@ TEST(TEST_NAME, timer_runtime_exception) {
     auto timerHandle = mock::timer8bit.getHandle();
     auto errorHandlerHandle = mock::error_handler.getHandle();
 
-    timer_callback_t internalCallback;
+    timer_8bit_callback_t internalCallback = nullptr;
     timerHandle.overrideFunc<timer_8bit_init>(
-            [&internalCallback](timer_clock_option_t /*clock_option*/, timer_callback_t timerCallback) {
+            [&internalCallback](timer_8bit_clock_option_t /*clock_option*/, system_timer_callback_t timerCallback) {
                 internalCallback = timerCallback;
             });
     timerHandle.overrideFunc<timer_8bit_get_count>([]() { return 255; });

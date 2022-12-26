@@ -15,7 +15,7 @@
 
 enum { MAX_TIME_SLOT_USAGE = (uint8_t) (12 / 16.384 * 255) };
 
-static timer_callback_t callback;
+static system_timer_callback_t callback;
 
 static void internal_timer_callback(void) {
     callback();
@@ -25,7 +25,7 @@ static void internal_timer_callback(void) {
     }
 }
 
-void system_pre_init(timer_callback_t timer_callback) {
+void system_pre_init(system_timer_callback_t timer_callback) {
     cli();
 
     callback = timer_callback;
