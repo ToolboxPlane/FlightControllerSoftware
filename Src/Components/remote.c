@@ -24,6 +24,10 @@ void remote_init(void) {
     sbus_init();
 }
 
+bool remote_data_available(void) {
+    return sbus_data_available();
+}
+
 remote_data_t remote_get_data(void) {
     sbus_data_t sbus_data = sbus_get_latest_data();
     remote_data_t remote_data = {.throttle_mixed = NORMALIZE_TARANIS(sbus_data.channel[0]),
@@ -36,8 +40,4 @@ remote_data_t remote_get_data(void) {
                                  .override_active = (NORMALIZE_TARANIS((sbus_data.channel[7])) > OVERRIDE_THRESH),
                                  .remote_ok = (!sbus_data.failsafe && !sbus_data.frame_lost)};
     return remote_data;
-}
-
-bool remote_data_available(void) {
-    return sbus_data_available();
 }
