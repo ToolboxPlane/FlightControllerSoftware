@@ -16,20 +16,17 @@
  * Set of measurements from
  */
 typedef struct {
-    /**
-     * Orientation in euler angles, in degree, multiplied by 16
-     */
-    int16_t heading_mul_16, pitch_mul_16, roll_mul_16;
+    int16_t heading_mul_16; ///< Heading in euler angles, in degree, multiplied by 16
+    int16_t pitch_mul_16;   ///< Pitch in euler angles, in degree, multiplied by 16
+    int16_t roll_mul_16;    ///< Roll in euler angles, in degree, multiplied by 16
 
-    /**
-     * Angular rates in euler angles, in degree/second, multiplied by 16
-     */
-    int16_t d_heading_mul_16, d_pitch_mul_16, d_roll_mul_16;
+    int16_t d_heading_mul_16; ///< Heading angular rate in euler angles, in degree/second, multiplied by 16
+    int16_t d_pitch_mul_16;   ///< Pitch angular rate in euler angles, in degree/second, multiplied by 16
+    int16_t d_roll_mul_16;    ///< Roll angular rate in euler angles, in degree/second, multiplied by 16
 
-    /**
-     * Acceleration in all three axis, in m/s^2, multiplied by 100
-     */
-    int16_t acc_x_mul_100, acc_y_mul_100, acc_z_mul_100;
+    int16_t acc_x_mul_100; ///< Acceleration along x-axis, in m/s^2, multiplied by 100
+    int16_t acc_y_mul_100; ///< Acceleration along y-axis, in m/s^2, multiplied by 100
+    int16_t acc_z_mul_100; ///< Acceleration along z-axis, in m/s^2, multiplied by 100
 
     /**
      * Signals if the received data is fully usable, i.e.:

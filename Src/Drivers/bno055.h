@@ -102,20 +102,20 @@ typedef enum { windows = 0, android = 1 } bno055_unit_sel_orientation_def;
  * Information in the calibration status register.
  */
 typedef struct {
-    unsigned mag_status : 2;
-    unsigned acc_status : 2;
-    unsigned gyr_status : 2;
-    unsigned sys_status : 2;
+    unsigned mag_status : 2; ///< Status of the magnetometer.
+    unsigned acc_status : 2; ///< Status of the accelerometer.
+    unsigned gyr_status : 2; ///< Status of the gyro.
+    unsigned sys_status : 2; ///< Status of the system.
 } bno055_calib_status_t;
 
 /**
  * Information in the self-test register.
  */
 typedef struct {
-    bool acc_passed : 1;
-    bool mag_passed : 1;
-    bool gyr_passed : 1;
-    bool mcu_passed : 1;
+    bool acc_passed : 1; ///< True if accelerometer passed self test.
+    bool mag_passed : 1; ///< True if magnetometer passed self test.
+    bool gyr_passed : 1; ///< True if the gyro passed self test.
+    bool mcu_passed : 1; ///< True if the bno055-microcontroller passed self test.
 } bno055_self_test_result_t;
 
 /**

@@ -20,8 +20,8 @@
  */
 typedef struct {
     uint16_t motor; ///< The desired motor velocity (in [0, 1000])
-    int16_t pitch; ///< The desired pitch angle (in degree)
-    int16_t roll; ///< The desired roll angle (in degree)
+    int16_t pitch;  ///< The desired pitch angle (in degree)
+    int16_t roll;   ///< The desired roll angle (in degree)
 } flightcomputer_setpoint_t;
 
 /**

@@ -14,15 +14,9 @@
  * Data to write to the actuators.
  */
 typedef struct {
-    /**
-     * The motor command in [0, 1000].
-     */
-    uint16_t motor;
-
-    /**
-     * The elevon commands in [-500, 500].
-     */
-    int16_t elevon_left, elevon_right;
+    uint16_t motor;       ///< The motor command in [0, 1000].
+    int16_t elevon_left;  ///< The command for the left elevon in [-500, 500].
+    int16_t elevon_right; ///< The command for the right elevon in [-500, 500].
 } actuator_cmd_t;
 
 /**

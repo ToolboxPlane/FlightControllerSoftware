@@ -14,10 +14,8 @@
  * Result of the attitude controller.
  */
 typedef struct {
-    /**
-     * Desired command for the actuators, in [-500, 500]
-     */
-    int16_t elevon_left, elevon_right;
+    int16_t elevon_left;  ///< Desired command for the left elevon, in [-500, 500]
+    int16_t elevon_right; ///< Desired command for the right elevon, in [-500, 500]
 } controller_result_t;
 
 /**

@@ -15,25 +15,16 @@
  * Struct containing all data received in a single remote packet.
  */
 typedef struct {
-    /**
-     * The mixed signals for the actuators, in [0,1000].
-     */
-    int16_t throttle_mixed, elevon_left_mixed, elevon_right_mixed;
+    int16_t throttle_mixed;     ///< The mixed signals for the throttle, in [0,1000].
+    int16_t elevon_left_mixed;  ///< The mixed signals for the left elevon , in [0,1000].
+    int16_t elevon_right_mixed; ///< The mixed signals for the right elevon, in [0,1000].
 
-    /**
-     * The raw signals from the joysticks, in [0, 1000].
-     */
-    int16_t throttle_raw, pitch_raw, roll_raw;
+    int16_t throttle_raw; ///< The raw signals from the throttle-joystick-axis, in [0, 1000].
+    int16_t pitch_raw;    ///< The raw signals from the pitch-joystick-axis, in [0, 1000].
+    int16_t roll_raw;     ///< The raw signals from the roll-joystick-axis, in [0, 1000].
 
-    /**
-     * True if the arm switch on the remote is set.
-     */
-    bool is_armed;
-
-    /**
-     * True if the override switch on the remote is set.
-     */
-    bool override_active;
+    bool is_armed;        ///< True if the arm switch on the remote is set.
+    bool override_active; ///< True if the override switch on the remote is set.
 
     /**
      * True if the last remote packet was ok, this means:
