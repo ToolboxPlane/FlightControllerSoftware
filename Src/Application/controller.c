@@ -58,6 +58,8 @@ controller_result_t controller_update(const imu_data_t *imu_data, int16_t roll_s
     int16_t elevon_left_mul_4 = ROLL_L_SIGN * (roll_cmd_mul_8 / 2) + PITCH_L_SIGN * (pitch_cmd_mul_8 / 2);
     int16_t elevon_right_mul_4 = ROLL_R_SIGN * (roll_cmd_mul_8 / 2) + PITCH_R_SIGN * (pitch_cmd_mul_8 / 2);
 
+    // TODO fixed mixing (i.e. positive elevon = up), then fix sign thereafter
+
     // Control limits
     controller_result_t result = {.elevon_left = apply_control_limit(elevon_left_mul_4 / 4),
                                   .elevon_right = apply_control_limit(elevon_right_mul_4 / 4)};
