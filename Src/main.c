@@ -45,6 +45,9 @@ enum { FLIGHTCOMPUTER_SEND_PERIOD = 6 };
  */
 enum { SERVO_REMOTE_OFFSET = 1000U / 2 };
 
+/**
+ * Timer interrupt, called every 16.384ms, if the run-time exceeds 12ms a warning is triggered
+ */
 void timer_tick(void) {
     imu_data_t imu_data;
     remote_data_t remote_data;
@@ -101,6 +104,10 @@ void timer_tick(void) {
     imu_start_sampling();
 }
 
+/**
+ * Main function, performs initialization and resets the watchdog during operation
+ * @return nothing
+ */
 int main(void) {
     system_pre_init(timer_tick);
     error_handler_init();
