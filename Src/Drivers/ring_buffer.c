@@ -1,5 +1,5 @@
 /**
- * @file uart_buffer.c
+ * @file ring_buffer.c
  * @author Paul Nykiel
  * @date 27.12.22
  * @brief Implemtation of the fixed-size, byte sized object ring-buffer utility module .
