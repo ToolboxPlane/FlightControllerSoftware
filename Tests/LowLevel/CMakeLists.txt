@@ -6,6 +6,8 @@ target_link_libraries(Test_Drivers_bno055_uart PRIVATE Mock_HAL_uart)
 make_test(Drivers/bno055)
 target_link_libraries(Test_Drivers_bno055 PRIVATE Mock_Drivers_bno055_uart)
 
+make_test(Drivers/ring_buffer)
+
 make_test(Drivers/sbus)
 target_link_libraries(Test_Drivers_sbus PRIVATE Mock_HAL_uart)
 
