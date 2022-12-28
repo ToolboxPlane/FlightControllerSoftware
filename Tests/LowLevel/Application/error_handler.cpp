@@ -1,6 +1,9 @@
-/**
- * @file error_handler.cpp
- * @author paul
- * @date 05.12.22
- * Description here TODO
- */
+#include <gtest/gtest.h>
+
+extern "C" {
+#include <Application/error_handler.h>
+}
+
+TEST(TEST_NAME, init) {
+
+}

@@ -1,6 +1,8 @@
-/**
- * @file mode_handler.cpp
- * @author Paul Nykiel
- * @date 21.12.22
- * @brief Description here TODO
- */
+#include <gtest/gtest.h>
+
+extern "C" {
+#include <Application/mode_handler.h>
+}
+
+TEST(TEST_NAME, init) {
+}
