@@ -46,7 +46,7 @@ mode_handler_mode_t mode_handler_handle(imu_data_t *imu_data, remote_data_t *rem
     if (remote_timeout_counter >= REMOTE_TIMEOUT) {
         remote_timeout_counter = REMOTE_TIMEOUT;
         remote_active = false;
-        //error_handler_handle_warning(MODE_HANDLER, MODE_HANDLER_ERROR_NO_REMOTE_DATA);
+        // error_handler_handle_warning(MODE_HANDLER, MODE_HANDLER_ERROR_NO_REMOTE_DATA);
     }
     *remote_data = remote_get_data();
 
@@ -59,7 +59,7 @@ mode_handler_mode_t mode_handler_handle(imu_data_t *imu_data, remote_data_t *rem
     if (flightcomputer_timeout_counter >= FLIGHTCOMPUTER_TIMOUT) {
         flightcomputer_timeout_counter = FLIGHTCOMPUTER_TIMOUT;
         flightcomputer_active = false;
-        //error_handler_handle_warning(MODE_HANDLER, MODE_HANDLER_ERROR_NO_FCP_DATA);
+        // error_handler_handle_warning(MODE_HANDLER, MODE_HANDLER_ERROR_NO_FCP_DATA);
     }
     *flightcomputer_setpoint = flightcomputer_get_setpoint();
 

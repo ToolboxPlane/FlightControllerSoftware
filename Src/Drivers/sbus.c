@@ -10,25 +10,22 @@
 
 #include <HAL/uart.h>
 
+#include "ring_buffer.h"
+
 enum { UART_ID = 2 };
 enum { UART_BAUD = 100000 };
-
-enum { RX_BUF_SIZE = 512 };
 
 enum { SBUS_START_BYTE = 0x0F };
 enum { SBUS_END_BYTE = 0x00 };
 enum { SBUS_BITS_PER_CHANNEL = 11U };
 
-static volatile uint8_t rx_buf[RX_BUF_SIZE];
-static volatile uint8_t rx_head, rx_tail;
-static volatile sbus_data_t latest_data;
-static volatile sbus_data_t curr_decode_data;
-static volatile uint8_t decode_byte_count;
+static ring_buffer_data_t ring_buffer_data;
+static sbus_data_t latest_data;
+static sbus_data_t curr_decode_data;
+static uint8_t decode_byte_count;
 
 static void uart_callback(uint8_t data) {
-    rx_buf[rx_head] = data;
-    rx_head = (rx_head + 1) % RX_BUF_SIZE;
-    if (rx_tail == rx_head) {
+    if (ring_buffer_put(&ring_buffer_data, data)) {
         // TODO error handling
     }
 }
@@ -72,20 +69,15 @@ static bool sbus_decode(uint8_t data) {
 }
 
 void sbus_init(void) {
-    uart_init(UART_ID, UART_BAUD, EVEN, 2, uart_callback);
-    rx_head = 0;
-    rx_tail = 0;
     decode_byte_count = 0;
-    latest_data.failsafe = true;
-    latest_data.frame_lost = true;
+    ring_buffer_data = ring_buffer_init();
+    uart_init(UART_ID, UART_BAUD, EVEN, 2, uart_callback);
 }
 
 bool sbus_data_available(void) {
     bool res = false;
-    while (rx_tail != rx_head) {
-        uint8_t data = rx_buf[rx_tail];
-        rx_tail = (rx_tail + 1) % RX_BUF_SIZE;
-
+    uint8_t data = 0;
+    while (ring_buffer_get(&ring_buffer_data, &data)) {
         if (sbus_decode(data)) {
             for (uint8_t index = 0U; index < SBUS_NUM_CHANNELS; ++index) {
                 latest_data.channel[index] = curr_decode_data.channel[index];

@@ -111,7 +111,7 @@ TEST(TEST_NAME, timer_runtime_under_limit) {
     timer_8bit_callback_t internalCallback = nullptr;
     timerHandle.overrideFunc<timer_8bit_init>(
             [&internalCallback](timer_8bit_clock_option_t /*clock_option*/, system_timer_callback_t timerCallback) {
-              internalCallback = timerCallback;
+                internalCallback = timerCallback;
             });
     // 12/16,384*255=186.767578125
     timerHandle.overrideFunc<timer_8bit_get_count>([]() { return 186; });
@@ -134,7 +134,7 @@ TEST(TEST_NAME, timer_runtime_over_limit) {
     timer_8bit_callback_t internalCallback = nullptr;
     timerHandle.overrideFunc<timer_8bit_init>(
             [&internalCallback](timer_8bit_clock_option_t /*clock_option*/, system_timer_callback_t timerCallback) {
-              internalCallback = timerCallback;
+                internalCallback = timerCallback;
             });
     // 12/16,384*255=186.767578125
     timerHandle.overrideFunc<timer_8bit_get_count>([]() { return 187; });

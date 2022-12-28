@@ -12,29 +12,25 @@
 #include <Messages/MessageEncoding.h>
 #include <Messages/MessageIds.h>
 
+#include "ring_buffer.h"
+
 enum { UART_ID = 0 };
 enum { UART_BAUD = 115200U };
 
-enum { RX_BUF_SIZE = 512 };
-
-static volatile uint8_t rx_buf[RX_BUF_SIZE];
-static volatile uint8_t rx_head, rx_tail;
+static ring_buffer_data_t ring_buffer_data;
 static message_decoding_data_t message_decoding_data;
 static setpoint_message_t setpoint_message;
 
 static void uart_callback(uint8_t data) {
-    rx_buf[rx_head] = data;
-    rx_head = (rx_head + 1) % RX_BUF_SIZE;
-    if (rx_tail == rx_head) {
+    if (!ring_buffer_put(&ring_buffer_data, data)) {
         // TODO error handling
     }
 }
 
 void protobuf_init(void) {
-    uart_init(UART_ID, UART_BAUD, NONE, 1, uart_callback);
-    rx_head = 0;
-    rx_tail = 0;
     message_decoding_init(&message_decoding_data, FC_SP_ID);
+    ring_buffer_data = ring_buffer_init();
+    uart_init(UART_ID, UART_BAUD, NONE, 1, uart_callback);
 }
 
 void protobuf_send(const fc_message_t *message) {
@@ -45,10 +41,8 @@ void protobuf_send(const fc_message_t *message) {
 
 bool protobuf_setpoint_available(void) {
     bool res = false;
-    while (rx_tail != rx_head) {
-        uint8_t data = rx_buf[rx_tail];
-        rx_tail = (rx_tail + 1) % RX_BUF_SIZE;
-
+    uint8_t data = 0;
+    while (ring_buffer_get(&ring_buffer_data, &data)) {
         if (message_decoding_decode(&message_decoding_data, data, &ToolboxPlaneMessages_FlightControllerSetpoint_msg,
                                     &setpoint_message)) {
             res = true;

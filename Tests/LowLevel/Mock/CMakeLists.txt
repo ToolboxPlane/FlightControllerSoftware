@@ -3,9 +3,10 @@ add_subdirectory(Lib)
 set(MockedModules
         Drivers/bno055
         Drivers/bno055_uart
-        Drivers/protobuf
-        Drivers/sbus
         Drivers/ppm
+        Drivers/protobuf
+        Drivers/ring_buffer
+        Drivers/sbus
         HAL/adc
         HAL/i2c
         HAL/pwm16bit
