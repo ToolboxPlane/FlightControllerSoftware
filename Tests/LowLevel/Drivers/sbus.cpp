@@ -105,10 +105,10 @@ TEST(TEST_NAME, decode) {
                                  /* 24 */ 0x00};
     std::size_t count = 0;
     ringBufferHandle.overrideFunc<ring_buffer_get>([&count, data](ring_buffer_data_t *ringBufferData, uint8_t *out) {
-      EXPECT_NE(ringBufferData, nullptr);
-      *out = data[count];
-      count += 1;
-      return count <= data.size();
+        EXPECT_NE(ringBufferData, nullptr);
+        *out = data[count];
+        count += 1;
+        return count <= data.size();
     });
 
     sbus_init();
@@ -134,10 +134,10 @@ TEST(TEST_NAME, decode_failsave) {
 
     std::size_t count = 0;
     ringBufferHandle.overrideFunc<ring_buffer_get>([&count, data](ring_buffer_data_t *ringBufferData, uint8_t *out) {
-      EXPECT_NE(ringBufferData, nullptr);
-      *out = data[count];
-      count += 1;
-      return count <= data.size();
+        EXPECT_NE(ringBufferData, nullptr);
+        *out = data[count];
+        count += 1;
+        return count <= data.size();
     });
 
     sbus_init();
@@ -163,10 +163,10 @@ TEST(TEST_NAME, decode_framelost) {
 
     std::size_t count = 0;
     ringBufferHandle.overrideFunc<ring_buffer_get>([&count, data](ring_buffer_data_t *ringBufferData, uint8_t *out) {
-      EXPECT_NE(ringBufferData, nullptr);
-      *out = data[count];
-      count += 1;
-      return count <= data.size();
+        EXPECT_NE(ringBufferData, nullptr);
+        *out = data[count];
+        count += 1;
+        return count <= data.size();
     });
     uart_callback_t uartCallback = nullptr;
     uartHandler.overrideFunc<uart_init>([&uartCallback](uint8_t /*id*/, uint32_t /*baud*/, uart_parity_t /*parity*/,

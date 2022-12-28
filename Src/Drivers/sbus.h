@@ -22,8 +22,8 @@ enum { SBUS_NUM_CHANNELS = 16 };
  */
 typedef struct {
     uint16_t channel[SBUS_NUM_CHANNELS]; ///< The channel data, each channel is in [0, 2047] (11 bit)
-    bool failsafe; ///< Fail-safe bit of the package, set by the receiver
-    bool frame_lost; ///< Frame lost bit of the package set by the receiver
+    bool failsafe;                       ///< Fail-safe bit of the package, set by the receiver
+    bool frame_lost;                     ///< Frame lost bit of the package set by the receiver
 } sbus_data_t;
 
 /**

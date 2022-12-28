@@ -5,9 +5,9 @@
  * @brief Implementation of the actuators interface component.
  * @ingroup Components
  */
-#include <Drivers/ppm.h>
-
 #include "actuators.h"
+
+#include <Drivers/ppm.h>
 
 enum { SERVO_CENTRE_POSITION = 500U };
 

@@ -54,7 +54,7 @@ TEST(TEST_NAME, init__config_mode_error) {
             [](auto /*op_mode*/, bno055_callback_t callback) { callback(write_fail); });
 
     imu_init();
-    EXPECT_TRUE(errorHandlerHandle.functionGotCalled<error_handler_handle_error>(BNO055, write_fail+1));
+    EXPECT_TRUE(errorHandlerHandle.functionGotCalled<error_handler_handle_error>(BNO055, write_fail + 1));
     EXPECT_FALSE(imu_get_latest_data().imu_ok);
     EXPECT_FALSE(imu_data_available());
 }
@@ -75,7 +75,7 @@ TEST(TEST_NAME, init__self_test_error) {
     });
 
     imu_init();
-    EXPECT_TRUE(errorHandlerHandle.functionGotCalled<error_handler_handle_error>(BNO055, read_fail+1));
+    EXPECT_TRUE(errorHandlerHandle.functionGotCalled<error_handler_handle_error>(BNO055, read_fail + 1));
     EXPECT_FALSE(imu_get_latest_data().imu_ok);
     EXPECT_FALSE(imu_data_available());
 }
@@ -185,7 +185,7 @@ TEST(TEST_NAME, init__unit_sel_error) {
                bno055_callback_t callback) { callback(write_fail); });
 
     imu_init();
-    EXPECT_TRUE(errorHandlerHandle.functionGotCalled<error_handler_handle_error>(BNO055, write_fail+1));
+    EXPECT_TRUE(errorHandlerHandle.functionGotCalled<error_handler_handle_error>(BNO055, write_fail + 1));
     EXPECT_FALSE(imu_get_latest_data().imu_ok);
     EXPECT_FALSE(imu_data_available());
 }
@@ -214,7 +214,7 @@ TEST(TEST_NAME, init__remap_fail) {
                bno055_axis_remap_axis_t /*new_z*/, bno055_callback_t callback) { callback(write_fail); });
 
     imu_init();
-    EXPECT_TRUE(errorHandlerHandle.functionGotCalled<error_handler_handle_error>(BNO055, write_fail+1));
+    EXPECT_TRUE(errorHandlerHandle.functionGotCalled<error_handler_handle_error>(BNO055, write_fail + 1));
     EXPECT_FALSE(imu_get_latest_data().imu_ok);
     EXPECT_FALSE(imu_data_available());
 }
@@ -246,7 +246,7 @@ TEST(TEST_NAME, init__remap_sign_fail) {
                bno055_axis_remap_sign_t /*new_z_sign*/, bno055_callback_t callback) { callback(write_fail); });
 
     imu_init();
-    EXPECT_TRUE(errorHandlerHandle.functionGotCalled<error_handler_handle_error>(BNO055, write_fail+1));
+    EXPECT_TRUE(errorHandlerHandle.functionGotCalled<error_handler_handle_error>(BNO055, write_fail + 1));
     EXPECT_FALSE(imu_get_latest_data().imu_ok);
 }
 
@@ -282,7 +282,7 @@ TEST(TEST_NAME, init__ndof_fail) {
                bno055_axis_remap_sign_t /*new_z_sign*/, bno055_callback_t callback) { callback(write_success); });
 
     imu_init();
-    EXPECT_TRUE(errorHandlerHandle.functionGotCalled<error_handler_handle_error>(BNO055, write_fail+1));
+    EXPECT_TRUE(errorHandlerHandle.functionGotCalled<error_handler_handle_error>(BNO055, write_fail + 1));
     EXPECT_FALSE(imu_get_latest_data().imu_ok);
     EXPECT_FALSE(imu_data_available());
 }
@@ -413,7 +413,7 @@ TEST(TEST_NAME, read__error_call_error_handler) {
     auto data = imu_get_latest_data();
 
     EXPECT_EQ(data.imu_ok, false);
-    EXPECT_TRUE(errorHandlerHandle.functionGotCalled<error_handler_handle_warning>(BNO055, read_fail+1));
+    EXPECT_TRUE(errorHandlerHandle.functionGotCalled<error_handler_handle_warning>(BNO055, read_fail + 1));
 }
 
 TEST(TEST_NAME, read__error_restart) {
