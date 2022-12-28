@@ -6,11 +6,6 @@ target_link_libraries(Test_Drivers_bno055_uart PRIVATE Mock_HAL_uart)
 make_test(Drivers/bno055)
 target_link_libraries(Test_Drivers_bno055 PRIVATE Mock_Drivers_bno055_uart)
 
-make_test(Drivers/ring_buffer)
-
-make_test(Drivers/sbus)
-target_link_libraries(Test_Drivers_sbus PRIVATE Mock_HAL_uart)
-
 make_test(Drivers/ppm)
 target_link_libraries(Test_Drivers_ppm PRIVATE Mock_HAL_pwm16bit)
 target_link_libraries(Test_Drivers_ppm PRIVATE Mock_avr_io)
@@ -19,6 +14,13 @@ make_test(Drivers/protobuf)
 target_link_libraries(Test_Drivers_protobuf PRIVATE Mock_HAL_uart)
 target_link_libraries(Test_Drivers_protobuf PRIVATE Mock_Messages_MessageDecoding)
 target_link_libraries(Test_Drivers_protobuf PRIVATE Mock_Messages_MessageEncoding)
+target_link_libraries(Test_Drivers_protobuf PRIVATE Mock_Drivers_ring_buffer)
+
+make_test(Drivers/ring_buffer)
+
+make_test(Drivers/sbus)
+target_link_libraries(Test_Drivers_sbus PRIVATE Mock_HAL_uart)
+target_link_libraries(Test_Drivers_sbus PRIVATE Mock_Drivers_ring_buffer)
 
 make_test(Components/imu)
 target_link_libraries(Test_Components_imu PRIVATE Mock_Drivers_bno055)

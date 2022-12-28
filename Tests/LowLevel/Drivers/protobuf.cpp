@@ -1,3 +1,4 @@
+#include <Mock/Drivers/ring_buffer.hpp>
 #include <Mock/HAL/uart.hpp>
 #include <Mock/Messages/MessageDecoding.hpp>
 #include <Mock/Messages/MessageEncoding.hpp>
@@ -11,17 +12,21 @@ extern "C" {
 TEST(TEST_NAME, init) {
     auto uartHandle = mock::uart.getHandle();
     auto decodeHandle = mock::MessageDecoding.getHandle();
+    auto ringBufferHandle = mock::ring_buffer.getHandle();
+    ringBufferHandle.overrideFunc<ring_buffer_init>([]() { return ring_buffer_data_t{}; });
 
     protobuf_init();
 
     EXPECT_TRUE(uartHandle.functionGotCalled<uart_init>(0, 115200U, NONE, 1, std::ignore));
-    EXPECT_FALSE(protobuf_setpoint_available());
+    EXPECT_TRUE(ringBufferHandle.functionGotCalled<ring_buffer_init>());
 }
 
 TEST(TEST_NAME, send_fc) {
     auto uartHandle = mock::uart.getHandle();
     auto encodingHandle = mock::MessageEncoding.getHandle();
     auto decodeHandle = mock::MessageDecoding.getHandle();
+    auto ringBufferHandle = mock::ring_buffer.getHandle();
+    ringBufferHandle.overrideFunc<ring_buffer_init>([]() { return ring_buffer_data_t{}; });
 
     protobuf_init();
 
@@ -59,110 +64,130 @@ TEST(TEST_NAME, send_fc) {
     EXPECT_TRUE(uartHandle.functionGotCalled<uart_send_buf>());
 }
 
-TEST(TEST_NAME, receive_singler_buffer) {
+TEST(TEST_NAME, rx_fill_buffer) {
     auto uartHandle = mock::uart.getHandle();
     auto decodeHandle = mock::MessageDecoding.getHandle();
-    uart_callback_t uartCallback;
+    auto ringBufferHandle = mock::ring_buffer.getHandle();
+    ringBufferHandle.overrideFunc<ring_buffer_init>([]() { return ring_buffer_data_t{}; });
+    ringBufferHandle.overrideFunc<ring_buffer_put>(
+            [](ring_buffer_data_t * /*ring_buffer_data*/, uint8_t /*data*/) { return true; });
+
+    uart_callback_t uartCallback = nullptr;
     uartHandle.overrideFunc<uart_init>([&uartCallback](uint8_t /*id*/, uint16_t /*baud*/, uart_parity_t /*parity*/,
                                                        uint8_t /*stop_bits*/,
                                                        uart_callback_t callback) { uartCallback = callback; });
+    protobuf_init();
+
+    uartCallback(17);
+    EXPECT_TRUE(ringBufferHandle.functionGotCalled<ring_buffer_put>(std::ignore, 17));
+
+    uartCallback(38);
+    EXPECT_TRUE(ringBufferHandle.functionGotCalled<ring_buffer_put>(std::ignore, 38));
+
+    uartCallback(54);
+    EXPECT_TRUE(ringBufferHandle.functionGotCalled<ring_buffer_put>(std::ignore, 54));
+}
+
+TEST(TEST_NAME, available_read_buffer) {
+    auto uartHandle = mock::uart.getHandle();
+    auto decodeHandle = mock::MessageDecoding.getHandle();
+    auto ringBufferHandle = mock::ring_buffer.getHandle();
+    ringBufferHandle.overrideFunc<ring_buffer_init>([]() { return ring_buffer_data_t{}; });
+    protobuf_init();
+
+    std::size_t count = 0;
+    ringBufferHandle.overrideFunc<ring_buffer_get>([&count](ring_buffer_data_t *ringBufferData, uint8_t *out) {
+        EXPECT_NE(ringBufferData, nullptr);
+        count += 1;
+        *out = count;
+        return count <= 4;
+    });
     decodeHandle.overrideFunc<message_decoding_decode>([](message_decoding_data_t * /*messageDecodingData*/,
                                                           uint8_t /*data*/, const pb_msgdesc_t * /*fields*/,
                                                           void * /*message*/) -> bool { return false; });
 
-    protobuf_init();
-
-    uint8_t bufData;
-
-    for (auto c = 0; c < 10; ++c) {
-        bufData = c * 11;
-        uartCallback(bufData);
-        protobuf_setpoint_available();
-        EXPECT_TRUE(decodeHandle.functionGotCalled<message_decoding_decode>(
-                std::ignore, bufData, &ToolboxPlaneMessages_FlightControllerSetpoint_msg, std::ignore));
-    }
+    protobuf_setpoint_available();
+    EXPECT_TRUE(decodeHandle.functionGotCalled<message_decoding_decode>(
+            std::ignore, 1, &ToolboxPlaneMessages_FlightControllerSetpoint_msg, std::ignore));
+    EXPECT_TRUE(decodeHandle.functionGotCalled<message_decoding_decode>(
+            std::ignore, 2, &ToolboxPlaneMessages_FlightControllerSetpoint_msg, std::ignore));
+    EXPECT_TRUE(decodeHandle.functionGotCalled<message_decoding_decode>(
+            std::ignore, 3, &ToolboxPlaneMessages_FlightControllerSetpoint_msg, std::ignore));
+    EXPECT_TRUE(decodeHandle.functionGotCalled<message_decoding_decode>(
+            std::ignore, 4, &ToolboxPlaneMessages_FlightControllerSetpoint_msg, std::ignore));
 }
 
-TEST(TEST_NAME, receive_200bytes) {
+TEST(TEST_NAME, receive_pb_no_decode) {
     auto uartHandle = mock::uart.getHandle();
     auto decodeHandle = mock::MessageDecoding.getHandle();
-    uart_callback_t uartCallback;
-    uartHandle.overrideFunc<uart_init>([&uartCallback](uint8_t /*id*/, uint16_t /*baud*/, uart_parity_t /*parity*/,
-                                                       uint8_t /*stop_bits*/,
-                                                       uart_callback_t callback) { uartCallback = callback; });
-    int receiveIndex = 10U;
-    decodeHandle.overrideFunc<message_decoding_decode>(
-            [&receiveIndex](message_decoding_data_t * /*messageDecodingData*/, uint8_t data,
-                            const pb_msgdesc_t * /*fields*/, void * /*message*/) -> bool {
-                EXPECT_EQ(receiveIndex, data);
-                receiveIndex += 1;
-                return false;
-            });
+    auto ringBufferHandle = mock::ring_buffer.getHandle();
+    ringBufferHandle.overrideFunc<ring_buffer_init>([]() { return ring_buffer_data_t{}; });
 
     protobuf_init();
 
-    for (auto c = 10U; c < 210U; ++c) {
-        uartCallback(c);
-    }
-    protobuf_setpoint_available();
-    EXPECT_EQ(receiveIndex, 210U);
+    std::size_t count = 0;
+    ringBufferHandle.overrideFunc<ring_buffer_get>(
+            [&count](ring_buffer_data_t * /*ringBufferData*/, uint8_t * /*out*/) {
+                count += 1;
+                return count == 1;
+            });
 
+    decodeHandle.overrideFunc<message_decoding_decode>([](message_decoding_data_t * /*messageDecodingData*/,
+                                                          uint8_t /*data*/, const pb_msgdesc_t * /*fields*/,
+                                                          void * /*message*/) -> bool { return false; });
 
-    for (auto c = 20U; c < 220U; ++c) {
-        uartCallback(c);
-    }
-    receiveIndex = 20U;
-    protobuf_setpoint_available();
-    EXPECT_EQ(receiveIndex, 220U);
+    EXPECT_FALSE(protobuf_setpoint_available());
 }
 
-TEST(TEST_NAME, receive_pb_decode) {
+TEST(TEST_NAME, receive_pb_yes_decode) {
     auto uartHandle = mock::uart.getHandle();
     auto decodeHandle = mock::MessageDecoding.getHandle();
-    uart_callback_t uartCallback;
-    uartHandle.overrideFunc<uart_init>([&uartCallback](uint8_t /*id*/, uint16_t /*baud*/, uart_parity_t /*parity*/,
-                                                       uint8_t /*stop_bits*/,
-                                                       uart_callback_t callback) { uartCallback = callback; });
+    auto ringBufferHandle = mock::ring_buffer.getHandle();
+    ringBufferHandle.overrideFunc<ring_buffer_init>([]() { return ring_buffer_data_t{}; });
 
     protobuf_init();
 
-    // echo "power: 1337, pitch: 17, roll: 34 | protoc
-    // --encode=ToolboxPlaneMessages.FlightControllerSetpoint Src/Messages/Definitions/FlightControllerSetpoint.proto
-    // | xxd
-    std::vector<uint8_t> callbackData{{0x08, 0xb9, 0x0a, 0x10, 0x11, 0x18, 0x22}};
-    std::size_t dataSendIndex = 0;
-    std::size_t dataDecodeIndex = 0;
-
-    decodeHandle.overrideFunc<message_decoding_decode>(
-            [&callbackData, &dataDecodeIndex](message_decoding_data_t *messageDecodingData, uint8_t data,
-                                              const pb_msgdesc_t *fields, void *message) -> bool {
-                EXPECT_EQ(callbackData[dataDecodeIndex], data);
-                EXPECT_NE(messageDecodingData, nullptr);
-                EXPECT_EQ(fields, &ToolboxPlaneMessages_FlightControllerSetpoint_msg);
-                EXPECT_NE(message, nullptr);
-                dataDecodeIndex += 1;
-                if (dataDecodeIndex == callbackData.size()) {
-                    auto fcData = static_cast<ToolboxPlaneMessages_FlightControllerSetpoint *>(message);
-                    fcData->motor = 1337;
-                    fcData->pitch = 17;
-                    fcData->roll = 34;
-                    return true;
-                }
-                return false;
+    std::size_t count = 0;
+    ringBufferHandle.overrideFunc<ring_buffer_get>(
+            [&count](ring_buffer_data_t * /*ringBufferData*/, uint8_t * /*out*/) {
+                count += 1;
+                return count == 1;
             });
 
-    for (; dataSendIndex < callbackData.size(); ++dataSendIndex) {
-        EXPECT_FALSE(protobuf_setpoint_available());
-        uartCallback(callbackData[dataSendIndex]);
-        if (dataSendIndex == callbackData.size() - 1) {
-            EXPECT_TRUE(protobuf_setpoint_available());
+    decodeHandle.overrideFunc<message_decoding_decode>([](message_decoding_data_t * /*messageDecodingData*/,
+                                                          uint8_t /*data*/, const pb_msgdesc_t * /*fields*/,
+                                                          void * /*message*/) -> bool { return true; });
 
-            auto setpoint = protobuf_get_setpoint();
-            EXPECT_EQ(setpoint.motor, 1337);
-            EXPECT_EQ(setpoint.pitch, 17);
-            EXPECT_EQ(setpoint.roll, 34);
-        } else {
-            EXPECT_FALSE(protobuf_setpoint_available());
-        }
-    }
+    EXPECT_TRUE(protobuf_setpoint_available());
+}
+
+TEST(TEST_NAME, receive_pb_decode_data) {
+    auto uartHandle = mock::uart.getHandle();
+    auto decodeHandle = mock::MessageDecoding.getHandle();
+    auto ringBufferHandle = mock::ring_buffer.getHandle();
+    ringBufferHandle.overrideFunc<ring_buffer_init>([]() { return ring_buffer_data_t{}; });
+
+    protobuf_init();
+
+    std::size_t count = 0;
+    ringBufferHandle.overrideFunc<ring_buffer_get>(
+            [&count](ring_buffer_data_t * /*ringBufferData*/, uint8_t * /*out*/) {
+                count += 1;
+                return count == 1;
+            });
+
+    decodeHandle.overrideFunc<message_decoding_decode>([](message_decoding_data_t * /*messageDecodingData*/,
+                                                          uint8_t /*data*/, const pb_msgdesc_t * /*fields*/,
+                                                          void *message) -> bool {
+        auto fcData = static_cast<ToolboxPlaneMessages_FlightControllerSetpoint *>(message);
+        fcData->motor = 1337;
+        fcData->pitch = 17;
+        fcData->roll = 34;
+        return true;
+    });
+
+    EXPECT_TRUE(protobuf_setpoint_available());
+    EXPECT_EQ(protobuf_get_setpoint().motor, 1337);
+    EXPECT_EQ(protobuf_get_setpoint().pitch, 17);
+    EXPECT_EQ(protobuf_get_setpoint().roll, 34);
 }

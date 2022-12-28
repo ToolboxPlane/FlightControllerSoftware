@@ -2,7 +2,7 @@
  * @file uart_buffer.h
  * @author Paul Nykiel
  * @date 27.12.22
- * @brief Utility fixed-size ringbuffer for single bytes.
+ * @brief Declaration of the fixed-size, byte sized object ring-buffer utility module .
  * @ingroup Drivers
  */
 #ifndef FLIGHTCONTROLLER_RING_BUFFER_H

@@ -18,6 +18,9 @@ enum { MAG_CALIB_TRESH = 2 };
 enum { GYR_CALIB_TRESH = 2 };
 enum { SYS_CALIB_TRESH = 3 };
 
+/**
+ * State of the internal sampling state machine.
+ */
 typedef enum {
     EUL,
     GYR,
@@ -26,10 +29,12 @@ typedef enum {
     CALIB_STAT,
 } bno_sampling_state_t;
 
-static volatile bno055_response_t init_response;
-static volatile bool callback_ready;
-static volatile bno_sampling_state_t bno_sampling_state;
+// NOLINTNEXTLINE(cppcoreguidelines-avoid-non-const-global-variables) only read if callback ready, behaviour checked
+static volatile bno055_response_t init_response = write_fail;
+// NOLINTNEXTLINE(cppcoreguidelines-avoid-non-const-global-variables) clear interaction in init, always properly set
+static volatile bool callback_ready = false;
 
+static volatile bno_sampling_state_t bno_sampling_state = EUL;
 static volatile imu_data_t imu_datas[2];
 static bno055_calib_status_t calib_status;
 static bno055_status_t bno_status;
@@ -70,7 +75,7 @@ static void bno_sample_callback(bno055_response_t response) {
             case CALIB_STAT:
                 current_sample_state_id = 1 - current_sample_state_id;
                 if (calib_status.sys_status < SYS_CALIB_TRESH || calib_status.gyr_status < GYR_CALIB_TRESH ||
-                    calib_status.acc_status < GYR_CALIB_TRESH || calib_status.mag_status < MAG_CALIB_TRESH) {
+                    calib_status.acc_status < ACC_CALIB_TRESH || calib_status.mag_status < MAG_CALIB_TRESH) {
                     imu_data->imu_ok = false;
                 }
                 sampling_complete = true;
