@@ -15,10 +15,19 @@ TEST(TEST_NAME, imu_initial_timeout) {
     auto errorHandlerHandle = mock::error_handler.getHandle();
 
     imuHandle.overrideFunc<imu_data_available>([]() { return false; });
-    imuHandle.overrideFunc<imu_get_latest_data>([]() { return imu_data_t{.imu_ok = true}; });
+    imuHandle.overrideFunc<imu_get_latest_data>([]() {
+        imu_data_t res{};
+        res.imu_ok = true;
+        return res;
+    });
     remoteHandle.overrideFunc<remote_data_available>([]() { return true; });
-    remoteHandle.overrideFunc<remote_get_data>(
-            []() { return remote_data_t{.is_armed = true, .override_active = false, .remote_ok = true}; });
+    remoteHandle.overrideFunc<remote_get_data>([]() {
+        remote_data_t res{};
+        res.is_armed = true;
+        res.override_active = false;
+        res.remote_ok = true;
+        return res;
+    });
     flightcomputerHandle.overrideFunc<flightcomputer_setpoint_available>([]() { return true; });
     flightcomputerHandle.overrideFunc<flightcomputer_get_setpoint>([]() { return flightcomputer_setpoint_t{}; });
 
@@ -40,10 +49,19 @@ TEST(TEST_NAME, imu_initial_nok) {
     auto errorHandlerHandle = mock::error_handler.getHandle();
 
     imuHandle.overrideFunc<imu_data_available>([]() { return true; });
-    imuHandle.overrideFunc<imu_get_latest_data>([]() { return imu_data_t{.imu_ok = false}; });
+    imuHandle.overrideFunc<imu_get_latest_data>([]() {
+        imu_data_t res{};
+        res.imu_ok = false;
+        return res;
+    });
     remoteHandle.overrideFunc<remote_data_available>([]() { return true; });
-    remoteHandle.overrideFunc<remote_get_data>(
-            []() { return remote_data_t{.is_armed = true, .override_active = false, .remote_ok = true}; });
+    remoteHandle.overrideFunc<remote_get_data>([]() {
+        remote_data_t res{};
+        res.is_armed = true;
+        res.override_active = false;
+        res.remote_ok = true;
+        return res;
+    });
     flightcomputerHandle.overrideFunc<flightcomputer_setpoint_available>([]() { return true; });
     flightcomputerHandle.overrideFunc<flightcomputer_get_setpoint>([]() { return flightcomputer_setpoint_t{}; });
 
@@ -69,10 +87,19 @@ TEST(TEST_NAME, imu_timeout) {
         frameCounter += 1;
         return frameCounter < 2 or frameCounter > 7;
     });
-    imuHandle.overrideFunc<imu_get_latest_data>([]() { return imu_data_t{.imu_ok = true}; });
+    imuHandle.overrideFunc<imu_get_latest_data>([]() {
+        imu_data_t res{};
+        res.imu_ok = true;
+        return res;
+    });
     remoteHandle.overrideFunc<remote_data_available>([]() { return true; });
-    remoteHandle.overrideFunc<remote_get_data>(
-            []() { return remote_data_t{.is_armed = true, .override_active = false, .remote_ok = true}; });
+    remoteHandle.overrideFunc<remote_get_data>([]() {
+        remote_data_t res{};
+        res.is_armed = true;
+        res.override_active = false;
+        res.remote_ok = true;
+        return res;
+    });
     flightcomputerHandle.overrideFunc<flightcomputer_setpoint_available>([]() { return true; });
     flightcomputerHandle.overrideFunc<flightcomputer_get_setpoint>([]() { return flightcomputer_setpoint_t{}; });
 
@@ -130,10 +157,19 @@ TEST(TEST_NAME, remote_initial_timeout) {
     auto errorHandlerHandle = mock::error_handler.getHandle();
 
     imuHandle.overrideFunc<imu_data_available>([]() { return true; });
-    imuHandle.overrideFunc<imu_get_latest_data>([]() { return imu_data_t{.imu_ok = true}; });
+    imuHandle.overrideFunc<imu_get_latest_data>([]() {
+        imu_data_t res{};
+        res.imu_ok = true;
+        return res;
+    });
     remoteHandle.overrideFunc<remote_data_available>([]() { return false; });
-    remoteHandle.overrideFunc<remote_get_data>(
-            []() { return remote_data_t{.is_armed = true, .override_active = false, .remote_ok = true}; });
+    remoteHandle.overrideFunc<remote_get_data>([]() {
+        remote_data_t res{};
+        res.is_armed = true;
+        res.override_active = false;
+        res.remote_ok = true;
+        return res;
+    });
     flightcomputerHandle.overrideFunc<flightcomputer_setpoint_available>([]() { return true; });
     flightcomputerHandle.overrideFunc<flightcomputer_get_setpoint>([]() { return flightcomputer_setpoint_t{}; });
 
@@ -155,10 +191,19 @@ TEST(TEST_NAME, remote_initial_nok) {
     auto errorHandlerHandle = mock::error_handler.getHandle();
 
     imuHandle.overrideFunc<imu_data_available>([]() { return true; });
-    imuHandle.overrideFunc<imu_get_latest_data>([]() { return imu_data_t{.imu_ok = true}; });
+    imuHandle.overrideFunc<imu_get_latest_data>([]() {
+        imu_data_t res{};
+        res.imu_ok = true;
+        return res;
+    });
     remoteHandle.overrideFunc<remote_data_available>([]() { return true; });
-    remoteHandle.overrideFunc<remote_get_data>(
-            []() { return remote_data_t{.is_armed = true, .override_active = false, .remote_ok = false}; });
+    remoteHandle.overrideFunc<remote_get_data>([]() {
+        remote_data_t res{};
+        res.is_armed = true;
+        res.override_active = false;
+        res.remote_ok = false;
+        return res;
+    });
     flightcomputerHandle.overrideFunc<flightcomputer_setpoint_available>([]() { return true; });
     flightcomputerHandle.overrideFunc<flightcomputer_get_setpoint>([]() { return flightcomputer_setpoint_t{}; });
 
@@ -181,13 +226,22 @@ TEST(TEST_NAME, remote_timeout) {
 
     std::size_t frameCounter = 0;
     imuHandle.overrideFunc<imu_data_available>([]() { return true; });
-    imuHandle.overrideFunc<imu_get_latest_data>([]() { return imu_data_t{.imu_ok = true}; });
+    imuHandle.overrideFunc<imu_get_latest_data>([]() {
+        imu_data_t res{};
+        res.imu_ok = true;
+        return res;
+    });
     remoteHandle.overrideFunc<remote_data_available>([&frameCounter]() {
         frameCounter += 1;
         return frameCounter < 2 or frameCounter > 7;
     });
-    remoteHandle.overrideFunc<remote_get_data>(
-            []() { return remote_data_t{.is_armed = true, .override_active = false, .remote_ok = true}; });
+    remoteHandle.overrideFunc<remote_get_data>([]() {
+        remote_data_t res{};
+        res.is_armed = true;
+        res.override_active = false;
+        res.remote_ok = true;
+        return res;
+    });
     flightcomputerHandle.overrideFunc<flightcomputer_setpoint_available>([]() { return true; });
     flightcomputerHandle.overrideFunc<flightcomputer_get_setpoint>([]() { return flightcomputer_setpoint_t{}; });
 
@@ -245,10 +299,19 @@ TEST(TEST_NAME, fcp_initial_timeout) {
     auto errorHandlerHandle = mock::error_handler.getHandle();
 
     imuHandle.overrideFunc<imu_data_available>([]() { return true; });
-    imuHandle.overrideFunc<imu_get_latest_data>([]() { return imu_data_t{.imu_ok = true}; });
+    imuHandle.overrideFunc<imu_get_latest_data>([]() {
+        imu_data_t res{};
+        res.imu_ok = true;
+        return res;
+    });
     remoteHandle.overrideFunc<remote_data_available>([]() { return true; });
-    remoteHandle.overrideFunc<remote_get_data>(
-            []() { return remote_data_t{.is_armed = true, .override_active = false, .remote_ok = true}; });
+    remoteHandle.overrideFunc<remote_get_data>([]() {
+        remote_data_t res{};
+        res.is_armed = true;
+        res.override_active = false;
+        res.remote_ok = true;
+        return res;
+    });
     flightcomputerHandle.overrideFunc<flightcomputer_setpoint_available>([]() { return false; });
     flightcomputerHandle.overrideFunc<flightcomputer_get_setpoint>([]() { return flightcomputer_setpoint_t{}; });
 
@@ -271,10 +334,19 @@ TEST(TEST_NAME, fcp_timeout) {
 
     std::size_t frameCounter = 0;
     imuHandle.overrideFunc<imu_data_available>([]() { return true; });
-    imuHandle.overrideFunc<imu_get_latest_data>([]() { return imu_data_t{.imu_ok = true}; });
+    imuHandle.overrideFunc<imu_get_latest_data>([]() {
+        imu_data_t res{};
+        res.imu_ok = true;
+        return res;
+    });
     remoteHandle.overrideFunc<remote_data_available>([]() { return true; });
-    remoteHandle.overrideFunc<remote_get_data>(
-            []() { return remote_data_t{.is_armed = true, .override_active = false, .remote_ok = true}; });
+    remoteHandle.overrideFunc<remote_get_data>([]() {
+        remote_data_t res{};
+        res.is_armed = true;
+        res.override_active = false;
+        res.remote_ok = true;
+        return res;
+    });
     flightcomputerHandle.overrideFunc<flightcomputer_setpoint_available>([&frameCounter]() {
         frameCounter += 1;
         return frameCounter < 2 or frameCounter > 13;
@@ -409,12 +481,17 @@ TEST(TEST_NAME, modeselection) {
 
     for (auto [availability_value, expected_mode] : decisionTable) {
         mode_handler_init();
-        imuHandle.overrideFunc<imu_get_latest_data>(
-                [availability_value]() { return imu_data_t{.imu_ok = availability_value.imu}; });
+        imuHandle.overrideFunc<imu_get_latest_data>([availability_value]() {
+            imu_data_t res{};
+            res.imu_ok = availability_value.imu;
+            return res;
+        });
         remoteHandle.overrideFunc<remote_get_data>([availability_value]() {
-            return remote_data_t{.is_armed = availability_value.arm,
-                                 .override_active = availability_value.override,
-                                 .remote_ok = availability_value.remote};
+            remote_data_t res{};
+            res.is_armed = availability_value.arm;
+            res.override_active = availability_value.override;
+            res.remote_ok = availability_value.remote;
+            return res;
         });
         flightcomputerHandle.overrideFunc<flightcomputer_setpoint_available>(
                 [availability_value]() { return availability_value.fcp; });

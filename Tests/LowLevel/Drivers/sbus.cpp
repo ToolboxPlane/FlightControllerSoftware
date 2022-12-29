@@ -174,8 +174,8 @@ TEST(TEST_NAME, decode_framelost) {
     });
     uart_callback_t uartCallback = nullptr;
     uartHandle.overrideFunc<uart_init>([&uartCallback](uint8_t /*id*/, uint32_t /*baud*/, uart_parity_t /*parity*/,
-                                                        uint8_t /*stop_bits*/,
-                                                        uart_callback_t rx_callback) { uartCallback = rx_callback; });
+                                                       uint8_t /*stop_bits*/,
+                                                       uart_callback_t rx_callback) { uartCallback = rx_callback; });
     sbus_init();
     EXPECT_TRUE(uartHandle.functionGotCalled<uart_init>());
 
