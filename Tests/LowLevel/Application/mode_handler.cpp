@@ -8,29 +8,6 @@ extern "C" {
 #include <Application/mode_handler.h>
 }
 
-TEST(TEST_NAME, all_ok) {
-    auto imuHandle = mock::imu.getHandle();
-    auto flightcomputerHandle = mock::flightcomputer.getHandle();
-    auto remoteHandle = mock::remote.getHandle();
-    auto errorHandlerHandle = mock::error_handler.getHandle();
-
-    imuHandle.overrideFunc<imu_data_available>([]() { return true; });
-    imuHandle.overrideFunc<imu_get_latest_data>([]() { return imu_data_t{.imu_ok = true}; });
-    remoteHandle.overrideFunc<remote_data_available>([]() { return true; });
-    remoteHandle.overrideFunc<remote_get_data>(
-            []() { return remote_data_t{.is_armed = true, .override_active = false, .remote_ok = true}; });
-    flightcomputerHandle.overrideFunc<flightcomputer_setpoint_available>([]() { return true; });
-    flightcomputerHandle.overrideFunc<flightcomputer_get_setpoint>([]() { return flightcomputer_setpoint_t{}; });
-
-    mode_handler_init();
-
-    imu_data_t imuData;
-    remote_data_t remoteData;
-    flightcomputer_setpoint_t flightcomputerSetpoint;
-
-    EXPECT_EQ(mode_handler_handle(&imuData, &remoteData, &flightcomputerSetpoint), MODE_FLIGHTCOMPUTER);
-}
-
 TEST(TEST_NAME, imu_initial_timeout) {
     auto imuHandle = mock::imu.getHandle();
     auto flightcomputerHandle = mock::flightcomputer.getHandle();
@@ -379,4 +356,88 @@ TEST(TEST_NAME, fcp_timeout) {
     EXPECT_EQ(mode_handler_handle(&imuData, &remoteData, &flightcomputerSetpoint), MODE_FLIGHTCOMPUTER);
     EXPECT_FALSE(errorHandlerHandle.functionGotCalled<error_handler_handle_warning>(MODE_HANDLER,
                                                                                     MODE_HANDLER_ERROR_NO_FCP_DATA));
+}
+
+TEST(TEST_NAME, modeselection) {
+    auto imuHandle = mock::imu.getHandle();
+    auto flightcomputerHandle = mock::flightcomputer.getHandle();
+    auto remoteHandle = mock::remote.getHandle();
+    auto errorHandlerHandle = mock::error_handler.getHandle();
+
+    imuHandle.overrideFunc<imu_data_available>([]() { return true; });
+    remoteHandle.overrideFunc<remote_data_available>([]() { return true; });
+    flightcomputerHandle.overrideFunc<flightcomputer_get_setpoint>([]() { return flightcomputer_setpoint_t{}; });
+
+    struct availability_values {
+        bool imu, remote, fcp, override, arm;
+    };
+
+    const std::vector<std::pair<availability_values, mode_handler_mode_t>> decisionTable{
+            {{false, false, false, false, false}, MODE_FAILSAVE},
+            {{false, false, false, false, true}, MODE_FAILSAVE},
+            {{false, false, false, true, false}, MODE_FAILSAVE},
+            {{false, false, false, true, true}, MODE_FAILSAVE},
+            {{false, false, true, false, false}, MODE_FAILSAVE},
+            {{false, false, true, false, true}, MODE_FAILSAVE},
+            {{false, false, true, true, false}, MODE_FAILSAVE},
+            {{false, false, true, true, true}, MODE_FAILSAVE},
+            {{false, true, false, false, false}, MODE_REMOTE},
+            {{false, true, false, false, true}, MODE_REMOTE},
+            {{false, true, false, true, false}, MODE_REMOTE},
+            {{false, true, false, true, true}, MODE_REMOTE},
+            {{false, true, true, false, false}, MODE_REMOTE},
+            {{false, true, true, false, true}, MODE_REMOTE},
+            {{false, true, true, true, false}, MODE_REMOTE},
+            {{false, true, true, true, true}, MODE_REMOTE},
+            {{true, false, false, false, false}, MODE_STABILISED_FAILSAVE},
+            {{true, false, false, false, true}, MODE_STABILISED_FAILSAVE},
+            {{true, false, false, true, false}, MODE_STABILISED_FAILSAVE},
+            {{true, false, false, true, true}, MODE_STABILISED_FAILSAVE},
+            {{true, false, true, false, false}, MODE_STABILISED_FAILSAVE},
+            {{true, false, true, false, true}, MODE_STABILISED_FAILSAVE},
+            {{true, false, true, true, false}, MODE_STABILISED_FAILSAVE},
+            {{true, false, true, true, true}, MODE_STABILISED_FAILSAVE},
+            {{true, true, false, false, false}, MODE_REMOTE},
+            {{true, true, false, false, true}, MODE_REMOTE},
+            {{true, true, false, true, false}, MODE_REMOTE},
+            {{true, true, false, true, true}, MODE_REMOTE},
+            {{true, true, true, false, false}, MODE_STABILISED_FAILSAVE},
+            {{true, true, true, false, true}, MODE_FLIGHTCOMPUTER},
+            {{true, true, true, true, false}, MODE_REMOTE},
+            {{true, true, true, true, true}, MODE_REMOTE},
+    };
+
+    for (auto [availability_value, expected_mode] : decisionTable) {
+        mode_handler_init();
+        imuHandle.overrideFunc<imu_get_latest_data>(
+                [availability_value]() { return imu_data_t{.imu_ok = availability_value.imu}; });
+        remoteHandle.overrideFunc<remote_get_data>([availability_value]() {
+            return remote_data_t{.is_armed = availability_value.arm,
+                                 .override_active = availability_value.override,
+                                 .remote_ok = availability_value.remote};
+        });
+        flightcomputerHandle.overrideFunc<flightcomputer_setpoint_available>(
+                [availability_value]() { return availability_value.fcp; });
+
+        imu_data_t imuData;
+        remote_data_t remoteData;
+        flightcomputer_setpoint_t flightcomputerSetpoint;
+        EXPECT_EQ(mode_handler_handle(&imuData, &remoteData, &flightcomputerSetpoint), expected_mode);
+        if (!availability_value.remote) {
+            EXPECT_TRUE(errorHandlerHandle.functionGotCalled<error_handler_handle_warning>(
+                    MODE_HANDLER, MODE_HANDLER_ERROR_NO_REMOTE_DATA));
+        }
+        if (!availability_value.imu) {
+            EXPECT_TRUE(errorHandlerHandle.functionGotCalled<error_handler_handle_warning>(
+                    MODE_HANDLER, MODE_HANDLER_ERROR_NO_IMU_DATA));
+        }
+        if (!availability_value.fcp) {
+            EXPECT_TRUE(errorHandlerHandle.functionGotCalled<error_handler_handle_warning>(
+                    MODE_HANDLER, MODE_HANDLER_ERROR_NO_FCP_DATA));
+        }
+    }
+}
+
+TEST(TEST_NAME, fill_out_vars) {
+    EXPECT_FALSE(true);
 }

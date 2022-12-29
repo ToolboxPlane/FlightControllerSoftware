@@ -89,9 +89,11 @@ mode_handler_mode_t mode_handler_handle(imu_data_t *imu_data, remote_data_t *rem
     /*
      * Setpoint selection
      */
-    if (imu_active && remote_active && flightcomputer_active && !remote_data->override_active &&
-        remote_data->is_armed) {
-        return MODE_FLIGHTCOMPUTER;
+    if (imu_active && remote_active && flightcomputer_active && !remote_data->override_active) {
+        if (remote_data->is_armed) {
+            return MODE_FLIGHTCOMPUTER;
+        }
+        return MODE_STABILISED_FAILSAVE;
     }
 
     if (remote_active) {

@@ -47,9 +47,10 @@ void mode_handler_init(void);
  * | IMU | Remote | FCP | Override | Armed | Mode                 |
  * | --- | ------ | --- | -------- | ----- | -------------------- |
  * |  Y  |   Y    |  Y  |    N     |   Y   | FCP                  |
- * |     |   Y    |     |          |       | Remote               |
+ * |  Y  |   Y    |  Y  |    N     |   N   | Stabilisied Failsave |
  * |  Y  |   N    |     |          |       | Stabilisied Failsave |
- * |  N  |   N    |     |          |       | Failsave             |
+ * |     |   Y    |     |          |       | Remote               |
+ * |     |        |     |          |       | Failsave             |
  *
  *
  * @param imu_data out-parameter, contains the last valid imu measurement
