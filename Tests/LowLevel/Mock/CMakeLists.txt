@@ -1,3 +1,13 @@
+# Download GTest
+include(FetchContent)
+FetchContent_Declare(
+        gtest
+        GIT_REPOSITORY "https://github.com/google/googletest.git"
+        GIT_TAG "main"
+)
+FetchContent_MakeAvailable(gtest)
+
+# Load mocking lib
 add_subdirectory(Lib)
 
 set(MockedModules
@@ -83,15 +93,6 @@ foreach (MockedModule ${MockedSystemModules})
     target_include_directories(${MockLibTarget} PUBLIC ${CMAKE_SOURCE_DIR}/Tests/LowLevel/Mock/System)
     target_include_directories(${MockLibTarget} INTERFACE ${CMAKE_CURRENT_BINARY_DIR}/Mock)
 endforeach ()
-
-# Download GTest
-include(FetchContent)
-FetchContent_Declare(
-        gtest
-        GIT_REPOSITORY "https://github.com/google/googletest.git"
-        GIT_TAG "main"
-)
-FetchContent_MakeAvailable(gtest)
 
 set(AllTests)
 
