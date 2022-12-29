@@ -11,20 +11,22 @@
 #include <avr/wdt.h>
 #include <stdbool.h>
 
+enum { DDRL_INIT = 0xFF };
+enum { GROUP_MASK = 0x0FU };
+
 void error_handler_init(void) {
-    DDRL = 0xFF;
+    DDRL = DDRL_INIT;
     PORTL = 0;
 }
 
 void error_handler_handle_error(error_group_t group, uint8_t error_id) {
-    uint8_t code = (error_id & 0x0F) << 4 | (group & 0x0F);
-    PORTL = code;
+    error_handler_handle_warning(group, error_id);
     while (true) {
         wdt_reset();
     }
 }
 
 void error_handler_handle_warning(error_group_t group, uint8_t error_id) {
-    uint8_t code = (error_id & 0x0F) << 4 | (group & 0x0F);
+    uint8_t code = ((uint8_t) error_id & GROUP_MASK) << 4U | (group & GROUP_MASK);
     PORTL = code;
 }
