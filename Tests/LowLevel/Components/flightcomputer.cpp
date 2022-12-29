@@ -16,6 +16,7 @@ TEST(TEST_NAME, send) {
     auto handle = mock::protobuf.getHandle();
 
     flightcomputer_init();
+    EXPECT_TRUE(handle.functionGotCalled<protobuf_init>());
 
     handle.overrideFunc<protobuf_send>([](const fc_message_t *message) {
         EXPECT_TRUE(message->has_imu);
@@ -76,6 +77,7 @@ TEST(TEST_NAME, data_available_true) {
     auto handle = mock::protobuf.getHandle();
 
     flightcomputer_init();
+    EXPECT_TRUE(handle.functionGotCalled<protobuf_init>());
 
     handle.overrideFunc<protobuf_setpoint_available>([]() { return true; });
 
@@ -86,6 +88,7 @@ TEST(TEST_NAME, data_available_false) {
     auto handle = mock::protobuf.getHandle();
 
     flightcomputer_init();
+    EXPECT_TRUE(handle.functionGotCalled<protobuf_init>());
 
     handle.overrideFunc<protobuf_setpoint_available>([]() { return false; });
 
@@ -96,6 +99,7 @@ TEST(TEST_NAME, get_setpoint) {
     auto handle = mock::protobuf.getHandle();
 
     flightcomputer_init();
+    EXPECT_TRUE(handle.functionGotCalled<protobuf_init>());
 
     handle.overrideFunc<protobuf_get_setpoint>([]() {
         return ToolboxPlaneMessages_FlightControllerSetpoint{

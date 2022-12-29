@@ -8,6 +8,7 @@
 #define FLIGHTCONTROLLER_HANDLER_HPP
 
 #include <cassert>
+#include <gtest/gtest.h>
 #include <utility>
 
 #include "FunctionInfo.hpp"
@@ -35,6 +36,10 @@ namespace mock {
         auto operator=(Handler<mockedFunctions...> &&) = delete;
 
         ~Handler() {
+            auto allCallsHandled = ((getFunctionInfo<mockedFunctions>().calls.empty() or
+                                     getFunctionInfo<mockedFunctions>().override.has_value()) &&
+                                    ...);
+            EXPECT_TRUE(allCallsHandled);
             releaseFunc();
         }
 
@@ -63,7 +68,10 @@ namespace mock {
                 }
                 return false;
             } else {
-                return not funcInfo.calls.empty();
+                auto numElems = funcInfo.calls.size();
+                funcInfo.calls.clear();
+                EXPECT_LE(numElems, 1);
+                return numElems == 1;
             }
         }
 

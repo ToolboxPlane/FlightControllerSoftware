@@ -95,6 +95,7 @@ TEST(TEST_NAME, write_register__write_success) {
     uint8_t data[] = {38, 45};
 
     bno055_uart_write_register(0, data, 2, bnoCallback);
+    EXPECT_TRUE(handle.functionGotCalled<uart_send_buf>());
 
     uartCallback(0xEE);
     uartCallback(0x01);
@@ -118,6 +119,7 @@ TEST(TEST_NAME, write_register__invalid_sync) {
     uint8_t data[] = {38, 45};
 
     bno055_uart_write_register(0, data, 2, bnoCallback);
+    EXPECT_TRUE(handle.functionGotCalled<uart_send_buf>());
 
     uartCallback(0x00);
 
@@ -140,6 +142,7 @@ TEST(TEST_NAME, write_register__write_response_write_fail) {
     uint8_t data[] = {38, 45};
 
     bno055_uart_write_register(0, data, 2, bnoCallback);
+    EXPECT_TRUE(handle.functionGotCalled<uart_send_buf>());
 
     uartCallback(0xEE);
     uartCallback(0x03);
@@ -162,6 +165,7 @@ TEST(TEST_NAME, read_register__read_success_8bit) {
     // Actual test
     uint8_t result;
     bno055_uart_read_register(0, 1, bnoCallback, &result);
+    EXPECT_TRUE(handle.functionGotCalled<uart_send_buf>());
 
     uartCallback(0xBB);
     uartCallback(0x01);
@@ -186,6 +190,7 @@ TEST(TEST_NAME, read_register__read_success_16bit) {
     // Actual test
     uint16_t result;
     bno055_uart_read_register(0, 2, bnoCallback, &result);
+    EXPECT_TRUE(handle.functionGotCalled<uart_send_buf>());
 
     uartCallback(0xBB);
     uartCallback(0x02);
@@ -210,6 +215,7 @@ TEST(TEST_NAME, read_register__buffer_invalid) {
 
     // Actual test
     bno055_uart_read_register(0, 1, bnoCallback, nullptr);
+    EXPECT_TRUE(handle.functionGotCalled<uart_send_buf>());
 
     uartCallback(0xBB);
     uartCallback(0x01);
@@ -232,6 +238,7 @@ TEST(TEST_NAME, read_register__read_fail) {
 
     // Actual test
     bno055_uart_read_register(0, 1, bnoCallback, nullptr);
+    EXPECT_TRUE(handle.functionGotCalled<uart_send_buf>());
 
     uartCallback(0xEE);
     uartCallback(0x02);

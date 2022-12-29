@@ -7,7 +7,7 @@ extern "C" {
 }
 
 TEST(TEST_NAME, init) {
-    auto uartHandler = mock::uart.getHandle();
+    auto uartHandle = mock::uart.getHandle();
     auto ringBufferHandle = mock::ring_buffer.getHandle();
     ringBufferHandle.overrideFunc<ring_buffer_init>([]() { return ring_buffer_data_t{}; });
     ringBufferHandle.overrideFunc<ring_buffer_put>(
@@ -18,7 +18,7 @@ TEST(TEST_NAME, init) {
      * The SBUS protocol uses an inverted serial logic with a baud rate of 100000, 8 data bits, even parity, and 2 stop
      * bits
      */
-    EXPECT_TRUE(uartHandler.functionGotCalled<uart_init>(2, 100000U, EVEN, 2, std::ignore));
+    EXPECT_TRUE(uartHandle.functionGotCalled<uart_init>(2, 100000U, EVEN, 2, std::ignore));
     EXPECT_TRUE(ringBufferHandle.functionGotCalled<ring_buffer_init>());
 }
 
@@ -34,6 +34,7 @@ TEST(TEST_NAME, rx_fill_buffer) {
                                                        uint8_t /*stop_bits*/,
                                                        uart_callback_t callback) { uartCallback = callback; });
     sbus_init();
+    EXPECT_TRUE(uartHandle.functionGotCalled<uart_init>());
 
     uartCallback(17);
     EXPECT_TRUE(ringBufferHandle.functionGotCalled<ring_buffer_put>(std::ignore, 17));
@@ -50,6 +51,7 @@ TEST(TEST_NAME, available_read_buffer) {
     auto ringBufferHandle = mock::ring_buffer.getHandle();
     ringBufferHandle.overrideFunc<ring_buffer_init>([]() { return ring_buffer_data_t{}; });
     sbus_init();
+    EXPECT_TRUE(uartHandle.functionGotCalled<uart_init>());
 
     std::size_t count = 0;
     ringBufferHandle.overrideFunc<ring_buffer_get>([&count](ring_buffer_data_t *ringBufferData, uint8_t *out) {
@@ -61,7 +63,7 @@ TEST(TEST_NAME, available_read_buffer) {
 }
 
 TEST(TEST_NAME, decode) {
-    auto uartHandler = mock::uart.getHandle();
+    auto uartHandle = mock::uart.getHandle();
     auto ringBufferHandle = mock::ring_buffer.getHandle();
     ringBufferHandle.overrideFunc<ring_buffer_init>([]() { return ring_buffer_data_t{}; });
 
@@ -112,6 +114,7 @@ TEST(TEST_NAME, decode) {
     });
 
     sbus_init();
+    EXPECT_TRUE(uartHandle.functionGotCalled<uart_init>());
 
     EXPECT_TRUE(sbus_data_available());
     EXPECT_FALSE(sbus_get_latest_data().failsafe);
@@ -123,7 +126,7 @@ TEST(TEST_NAME, decode) {
 }
 
 TEST(TEST_NAME, decode_failsave) {
-    auto uartHandler = mock::uart.getHandle();
+    auto uartHandle = mock::uart.getHandle();
     auto ringBufferHandle = mock::ring_buffer.getHandle();
     ringBufferHandle.overrideFunc<ring_buffer_init>([]() { return ring_buffer_data_t{}; });
 
@@ -141,6 +144,7 @@ TEST(TEST_NAME, decode_failsave) {
     });
 
     sbus_init();
+    EXPECT_TRUE(uartHandle.functionGotCalled<uart_init>());
 
     EXPECT_TRUE(sbus_data_available());
     EXPECT_TRUE(sbus_get_latest_data().failsafe);
@@ -152,7 +156,7 @@ TEST(TEST_NAME, decode_failsave) {
 }
 
 TEST(TEST_NAME, decode_framelost) {
-    auto uartHandler = mock::uart.getHandle();
+    auto uartHandle = mock::uart.getHandle();
     auto ringBufferHandle = mock::ring_buffer.getHandle();
     ringBufferHandle.overrideFunc<ring_buffer_init>([]() { return ring_buffer_data_t{}; });
 
@@ -169,10 +173,11 @@ TEST(TEST_NAME, decode_framelost) {
         return count <= data.size();
     });
     uart_callback_t uartCallback = nullptr;
-    uartHandler.overrideFunc<uart_init>([&uartCallback](uint8_t /*id*/, uint32_t /*baud*/, uart_parity_t /*parity*/,
+    uartHandle.overrideFunc<uart_init>([&uartCallback](uint8_t /*id*/, uint32_t /*baud*/, uart_parity_t /*parity*/,
                                                         uint8_t /*stop_bits*/,
                                                         uart_callback_t rx_callback) { uartCallback = rx_callback; });
     sbus_init();
+    EXPECT_TRUE(uartHandle.functionGotCalled<uart_init>());
 
     EXPECT_TRUE(sbus_data_available());
     EXPECT_FALSE(sbus_get_latest_data().failsafe);

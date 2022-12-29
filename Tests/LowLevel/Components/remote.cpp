@@ -26,6 +26,7 @@ TEST(TEST_NAME, no_data_available) {
 TEST(TEST_NAME, get_data_ok) {
     auto handle = mock::sbus.getHandle();
     remote_init();
+    EXPECT_TRUE(handle.functionGotCalled<sbus_init>());
 
     handle.overrideFunc<sbus_get_latest_data>([]() {
         return sbus_data_t{
@@ -51,6 +52,7 @@ TEST(TEST_NAME, get_data_ok) {
 TEST(TEST_NAME, get_data_failsve) {
     auto handle = mock::sbus.getHandle();
     remote_init();
+    EXPECT_TRUE(handle.functionGotCalled<sbus_init>());
 
     handle.overrideFunc<sbus_get_latest_data>([]() {
         return sbus_data_t{
@@ -68,6 +70,7 @@ TEST(TEST_NAME, get_data_failsve) {
 TEST(TEST_NAME, get_data_frame_lost) {
     auto handle = mock::sbus.getHandle();
     remote_init();
+    EXPECT_TRUE(handle.functionGotCalled<sbus_init>());
 
     handle.overrideFunc<sbus_get_latest_data>([]() {
         return sbus_data_t{

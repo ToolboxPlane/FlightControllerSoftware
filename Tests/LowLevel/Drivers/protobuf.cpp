@@ -19,6 +19,7 @@ TEST(TEST_NAME, init) {
 
     EXPECT_TRUE(uartHandle.functionGotCalled<uart_init>(0, 115200U, NONE, 1, std::ignore));
     EXPECT_TRUE(ringBufferHandle.functionGotCalled<ring_buffer_init>());
+    EXPECT_TRUE(decodeHandle.functionGotCalled<message_decoding_init>(std::ignore, 0x40));
 }
 
 TEST(TEST_NAME, send_fc) {
@@ -29,6 +30,8 @@ TEST(TEST_NAME, send_fc) {
     ringBufferHandle.overrideFunc<ring_buffer_init>([]() { return ring_buffer_data_t{}; });
 
     protobuf_init();
+    EXPECT_TRUE(uartHandle.functionGotCalled<uart_init>());
+    EXPECT_TRUE(decodeHandle.functionGotCalled<message_decoding_init>());
 
     fc_message_t to_send{};
 
@@ -77,6 +80,7 @@ TEST(TEST_NAME, rx_fill_buffer) {
                                                        uint8_t /*stop_bits*/,
                                                        uart_callback_t callback) { uartCallback = callback; });
     protobuf_init();
+    EXPECT_TRUE(decodeHandle.functionGotCalled<message_decoding_init>());
 
     uartCallback(17);
     EXPECT_TRUE(ringBufferHandle.functionGotCalled<ring_buffer_put>(std::ignore, 17));
@@ -94,6 +98,8 @@ TEST(TEST_NAME, available_read_buffer) {
     auto ringBufferHandle = mock::ring_buffer.getHandle();
     ringBufferHandle.overrideFunc<ring_buffer_init>([]() { return ring_buffer_data_t{}; });
     protobuf_init();
+    EXPECT_TRUE(uartHandle.functionGotCalled<uart_init>());
+    EXPECT_TRUE(decodeHandle.functionGotCalled<message_decoding_init>());
 
     std::size_t count = 0;
     ringBufferHandle.overrideFunc<ring_buffer_get>([&count](ring_buffer_data_t *ringBufferData, uint8_t *out) {
@@ -124,6 +130,8 @@ TEST(TEST_NAME, receive_pb_no_decode) {
     ringBufferHandle.overrideFunc<ring_buffer_init>([]() { return ring_buffer_data_t{}; });
 
     protobuf_init();
+    EXPECT_TRUE(uartHandle.functionGotCalled<uart_init>());
+    EXPECT_TRUE(decodeHandle.functionGotCalled<message_decoding_init>());
 
     std::size_t count = 0;
     ringBufferHandle.overrideFunc<ring_buffer_get>(
@@ -146,6 +154,8 @@ TEST(TEST_NAME, receive_pb_yes_decode) {
     ringBufferHandle.overrideFunc<ring_buffer_init>([]() { return ring_buffer_data_t{}; });
 
     protobuf_init();
+    EXPECT_TRUE(uartHandle.functionGotCalled<uart_init>());
+    EXPECT_TRUE(decodeHandle.functionGotCalled<message_decoding_init>());
 
     std::size_t count = 0;
     ringBufferHandle.overrideFunc<ring_buffer_get>(
@@ -168,6 +178,8 @@ TEST(TEST_NAME, receive_pb_decode_data) {
     ringBufferHandle.overrideFunc<ring_buffer_init>([]() { return ring_buffer_data_t{}; });
 
     protobuf_init();
+    EXPECT_TRUE(uartHandle.functionGotCalled<uart_init>());
+    EXPECT_TRUE(decodeHandle.functionGotCalled<message_decoding_init>());
 
     std::size_t count = 0;
     ringBufferHandle.overrideFunc<ring_buffer_get>(

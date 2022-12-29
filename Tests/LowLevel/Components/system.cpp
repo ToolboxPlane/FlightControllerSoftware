@@ -20,8 +20,9 @@ TEST(TEST_NAME, pre_init_ok) {
 
     system_pre_init(timer_callback);
 
-    EXPECT_TRUE(interruptHandle.functionGotCalled<sei>());
+    EXPECT_TRUE(interruptHandle.functionGotCalled<cli>());
     EXPECT_TRUE(wdtHandle.functionGotCalled<wdt_enable>(WDTO_250MS));
+    EXPECT_TRUE(interruptHandle.functionGotCalled<sei>());
     EXPECT_EQ(MCUSR, 0);
 }
 
@@ -33,6 +34,9 @@ TEST(TEST_NAME, pre_init_watchdog) {
     MCUSR |= (1U << WDRF);
 
     system_pre_init(timer_callback);
+    EXPECT_TRUE(interruptHandle.functionGotCalled<cli>());
+    EXPECT_TRUE(wdtHandle.functionGotCalled<wdt_enable>(WDTO_250MS));
+    EXPECT_TRUE(interruptHandle.functionGotCalled<sei>());
     EXPECT_TRUE(errorHandlerHandle.functionGotCalled<error_handler_handle_warning>(SYSTEM, SYSTEM_ERROR_WATCHDOG));
 }
 
@@ -44,6 +48,9 @@ TEST(TEST_NAME, pre_init_brownout) {
     MCUSR |= (1U << BORF);
 
     system_pre_init(timer_callback);
+    EXPECT_TRUE(interruptHandle.functionGotCalled<cli>());
+    EXPECT_TRUE(wdtHandle.functionGotCalled<wdt_enable>(WDTO_250MS));
+    EXPECT_TRUE(interruptHandle.functionGotCalled<sei>());
     EXPECT_TRUE(errorHandlerHandle.functionGotCalled<error_handler_handle_warning>(SYSTEM, SYSTEM_ERROR_BROWNOUT));
 }
 
@@ -53,6 +60,10 @@ TEST(TEST_NAME, post_init) {
     auto timerHandle = mock::timer8bit.getHandle();
 
     system_pre_init(timer_callback);
+    EXPECT_TRUE(interruptHandle.functionGotCalled<cli>());
+    EXPECT_TRUE(wdtHandle.functionGotCalled<wdt_enable>(WDTO_250MS));
+    EXPECT_TRUE(interruptHandle.functionGotCalled<sei>());
+
     system_post_init();
 
     EXPECT_TRUE(timerHandle.functionGotCalled<timer_8bit_init>(prescaler_1024, std::ignore));
@@ -72,7 +83,12 @@ TEST(TEST_NAME, timer_runtime_0) {
     timerHandle.overrideFunc<timer_8bit_get_count>([]() { return 0; });
 
     system_pre_init(timer_callback);
+    EXPECT_TRUE(interruptHandle.functionGotCalled<cli>());
+    EXPECT_TRUE(wdtHandle.functionGotCalled<wdt_enable>(WDTO_250MS));
+    EXPECT_TRUE(interruptHandle.functionGotCalled<sei>());
+
     system_post_init();
+    EXPECT_TRUE(wdtHandle.functionGotCalled<wdt_enable>(WDTO_30MS));
 
     timer_got_called = false;
     internalCallback();
@@ -94,7 +110,12 @@ TEST(TEST_NAME, timer_runtime_max) {
     timerHandle.overrideFunc<timer_8bit_get_count>([]() { return 255; });
 
     system_pre_init(timer_callback);
+    EXPECT_TRUE(interruptHandle.functionGotCalled<cli>());
+    EXPECT_TRUE(wdtHandle.functionGotCalled<wdt_enable>(WDTO_250MS));
+    EXPECT_TRUE(interruptHandle.functionGotCalled<sei>());
+
     system_post_init();
+    EXPECT_TRUE(wdtHandle.functionGotCalled<wdt_enable>(WDTO_30MS));
 
     timer_got_called = false;
     internalCallback();
@@ -117,7 +138,12 @@ TEST(TEST_NAME, timer_runtime_under_limit) {
     timerHandle.overrideFunc<timer_8bit_get_count>([]() { return 186; });
 
     system_pre_init(timer_callback);
+    EXPECT_TRUE(interruptHandle.functionGotCalled<cli>());
+    EXPECT_TRUE(wdtHandle.functionGotCalled<wdt_enable>(WDTO_250MS));
+    EXPECT_TRUE(interruptHandle.functionGotCalled<sei>());
+
     system_post_init();
+    EXPECT_TRUE(wdtHandle.functionGotCalled<wdt_enable>(WDTO_30MS));
 
     timer_got_called = false;
     internalCallback();
@@ -140,7 +166,12 @@ TEST(TEST_NAME, timer_runtime_over_limit) {
     timerHandle.overrideFunc<timer_8bit_get_count>([]() { return 187; });
 
     system_pre_init(timer_callback);
+    EXPECT_TRUE(interruptHandle.functionGotCalled<cli>());
+    EXPECT_TRUE(wdtHandle.functionGotCalled<wdt_enable>(WDTO_250MS));
+    EXPECT_TRUE(interruptHandle.functionGotCalled<sei>());
+
     system_post_init();
+    EXPECT_TRUE(wdtHandle.functionGotCalled<wdt_enable>(WDTO_30MS));
 
     timer_got_called = false;
     internalCallback();
