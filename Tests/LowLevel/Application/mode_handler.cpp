@@ -439,5 +439,67 @@ TEST(TEST_NAME, modeselection) {
 }
 
 TEST(TEST_NAME, fill_out_vars) {
-    EXPECT_FALSE(true);
+    auto imuHandle = mock::imu.getHandle();
+    auto flightcomputerHandle = mock::flightcomputer.getHandle();
+    auto remoteHandle = mock::remote.getHandle();
+    auto errorHandlerHandle = mock::error_handler.getHandle();
+
+    imuHandle.overrideFunc<imu_data_available>([]() { return true; });
+    imuHandle.overrideFunc<imu_get_latest_data>([]() {
+        return imu_data_t{.heading_mul_16 = 17,
+                          .pitch_mul_16 = 18,
+                          .roll_mul_16 = 19,
+                          .d_heading_mul_16 = 20,
+                          .d_pitch_mul_16 = 21,
+                          .d_roll_mul_16 = 22,
+                          .acc_x_mul_100 = 23,
+                          .acc_y_mul_100 = 24,
+                          .acc_z_mul_100 = 25,
+                          .imu_ok = true};
+    });
+    remoteHandle.overrideFunc<remote_data_available>([]() { return true; });
+    remoteHandle.overrideFunc<remote_get_data>([]() {
+        return remote_data_t{.throttle_mixed = 26,
+                             .elevon_left_mixed = 27,
+                             .elevon_right_mixed = 28,
+                             .throttle_raw = 29,
+                             .pitch_raw = 30,
+                             .roll_raw = 31,
+                             .is_armed = true,
+                             .override_active = false,
+                             .remote_ok = true};
+    });
+    flightcomputerHandle.overrideFunc<flightcomputer_setpoint_available>([]() { return true; });
+    flightcomputerHandle.overrideFunc<flightcomputer_get_setpoint>(
+            []() { return flightcomputer_setpoint_t{.motor = 32, .pitch = 33, .roll = 34}; });
+
+    mode_handler_init();
+
+    imu_data_t imuData;
+    remote_data_t remoteData;
+    flightcomputer_setpoint_t flightcomputerSetpoint;
+
+    mode_handler_handle(&imuData, &remoteData, &flightcomputerSetpoint);
+    EXPECT_EQ(imuData.heading_mul_16, 17);
+    EXPECT_EQ(imuData.pitch_mul_16, 18);
+    EXPECT_EQ(imuData.roll_mul_16, 19);
+    EXPECT_EQ(imuData.d_heading_mul_16, 20);
+    EXPECT_EQ(imuData.d_pitch_mul_16, 21);
+    EXPECT_EQ(imuData.d_roll_mul_16, 22);
+    EXPECT_EQ(imuData.acc_x_mul_100, 23);
+    EXPECT_EQ(imuData.acc_y_mul_100, 24);
+    EXPECT_EQ(imuData.acc_z_mul_100, 25);
+    EXPECT_EQ(imuData.imu_ok, true);
+    EXPECT_EQ(remoteData.throttle_mixed, 26);
+    EXPECT_EQ(remoteData.elevon_left_mixed, 27);
+    EXPECT_EQ(remoteData.elevon_right_mixed, 28);
+    EXPECT_EQ(remoteData.throttle_raw, 29);
+    EXPECT_EQ(remoteData.pitch_raw, 30);
+    EXPECT_EQ(remoteData.roll_raw, 31);
+    EXPECT_EQ(remoteData.is_armed, true);
+    EXPECT_EQ(remoteData.override_active, false);
+    EXPECT_EQ(remoteData.remote_ok, true);
+    EXPECT_EQ(flightcomputerSetpoint.motor, 32);
+    EXPECT_EQ(flightcomputerSetpoint.pitch, 33);
+    EXPECT_EQ(flightcomputerSetpoint.roll, 34);
 }
