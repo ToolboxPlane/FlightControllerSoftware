@@ -27,8 +27,30 @@ enum {
 typedef enum { MODE_FLIGHTCOMPUTER, MODE_REMOTE, MODE_STABILISED_FAILSAVE, MODE_FAILSAVE } mode_handler_mode_t;
 
 /**
- * Query all components for new data, check the timeouts and whether the data is ok.
- * The mode is then returned based on the availability.
+ * Initialize the mode handler by setting the timeouts for all devices to true.
+ */
+void mode_handler_init(void);
+
+/**
+ * @brief Query all components for new data, check the timeouts and whether the data is ok, the mode is then returned
+ * based on the availability.
+ *
+ * First the timeout is checked for all devices, a device is set to not have a timeout if [device]_data_available()
+ * return true at least once in the last [device]_TIMEOUT calls.
+ * Next the integrity of the data is checked, a device is set to be active if it has no timeout and
+ * [device]_get_data().[device]_ok. For every non-active device error_handle_warning(MODE_HANDLER,
+ * MODE_HANDLER_ERROR_NO_[device]_DATA) is called.
+ *
+ * Depending on the active-status of all devices and the remote.override_active and remote.armed the mode is decided
+ * according to the following decision table:
+ *
+ * | IMU | Remote | FCP | Override | Armed | Mode                 |
+ * | --- | ------ | --- | -------- | ----- | -------------------- |
+ * |  Y  |   Y    |  Y  |    N     |   Y   | FCP                  |
+ * |     |   Y    |     |          |       | Remote               |
+ * |  Y  |   N    |     |          |       | Stabilisied Failsave |
+ * |  N  |   N    |     |          |       | Failsave             |
+ *
  *
  * @param imu_data out-parameter, contains the last valid imu measurement
  * @param remote_data out-parameter, contains the last valid remote package

@@ -116,6 +116,7 @@ int main(void) {
     remote_init();
     flightcomputer_init();
     actuators_init();
+    mode_handler_init();
 
     imu_start_sampling();
 

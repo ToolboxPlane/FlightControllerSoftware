@@ -52,11 +52,12 @@ namespace mock {
          */
         template<auto func>
         auto functionGotCalled(auto... args) {
-            auto funcInfo = getFunctionInfo<func>();
+            auto &funcInfo = getFunctionInfo<func>();
             if constexpr (sizeof...(args) > 0) {
-                static_assert(sizeof...(args) == decltype(funcInfo)::NUM_ARGS);
-                for (const auto &call : funcInfo.calls) {
-                    if (util::argsMatch(call, args...)) {
+                static_assert(sizeof...(args) == std::remove_reference_t<decltype(funcInfo)>::NUM_ARGS);
+                for (auto it = funcInfo.calls.begin(); it != funcInfo.calls.end(); ++it) {
+                    if (util::argsMatch(*it, args...)) {
+                        funcInfo.calls.erase(it);
                         return true;
                     }
                 }
