@@ -36,6 +36,9 @@ typedef struct {
     bool imu_ok;
 } imu_data_t;
 
+/**
+ * Errors reported by the imu to the error handler component.
+ */
 typedef enum {
     IMU_ERROR_INIT_TIMEOUT = 1,
     IMU_ERROR_INIT_SELF_TEST = 2,
