@@ -1,5 +1,7 @@
 add_subdirectory(Mock)
 
+declare_mock(${CMAKE_SOURCE_DIR}/Src/HAL/uart.h)
+
 make_test(Drivers/bno055_uart)
 target_link_libraries(Test_Drivers_bno055_uart PRIVATE Mock_HAL_uart)
 
@@ -54,6 +56,7 @@ target_link_libraries(Test_Application_mode_handler PRIVATE Mock_Application_err
 target_link_libraries(Test_Application_mode_handler PRIVATE Mock_Components_imu)
 target_link_libraries(Test_Application_mode_handler PRIVATE Mock_Components_remote)
 target_link_libraries(Test_Application_mode_handler PRIVATE Mock_Components_flightcomputer)
+
 
 add_custom_target(RunAllTests DEPENDS ${AllTests})
 

@@ -40,6 +40,26 @@ set(MockedSystemModules
         avr/io
         avr/wdt)
 
+function(declare_mock mocked_module_header)
+    # Build names/paths
+    get_filename_component(module_name ${mocked_module_header} NAME_WE)
+    set(mock_path ${CMAKE_CURRENT_BINARY_DIR}/Mock/Mock)
+    set(mock_cpp ${mock_path}/${module_name}.cpp)
+    set(mock_hpp ${mock_path}/${module_name}.hpp)
+    set(mock_lib ${module_name}.mock)
+
+    # Add a target which will autogenerate the mock source files
+    add_custom_command(
+            COMMAND python3 ${CMAKE_CURRENT_FUNCTION_LIST_DIR}/Lib/generate_mock.py ${mocked_module_header} ${mock_path}
+            DEPENDS ${mocked_module_header} ${CMAKE_CURRENT_FUNCTION_LIST_DIR}/Lib/generate_mock.py
+            OUTPUT ${mock_cpp} ${mock_hpp})
+
+    # Add a library for the mocked module
+    add_library(${mock_lib} STATIC ${mock_cpp} ${mock_hpp})
+    target_link_libraries(${mock_lib} PUBLIC MockLib)
+    target_include_directories(${mock_lib} INTERFACE ${CMAKE_CURRENT_BINARY_DIR}/Mock)
+endfunction()
+
 # Build mock sources and target for module mocks
 foreach (MockedModule ${MockedModules})
     # For the name generation replace all / in the path with _

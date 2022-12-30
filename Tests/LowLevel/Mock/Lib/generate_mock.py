@@ -2,11 +2,10 @@ import os
 import re
 import sys
 
-header_path = sys.argv[1]
-module = sys.argv[2]
-out_dir = sys.argv[3]
+header_file_path = sys.argv[1]  # Path to the header file, i.e. Src/HAL/uart.h
+out_dir = sys.argv[2]  # Path to generate the mock file to, i.e. cmake-build-debug/..../Mock/
 
-header_file = "".join(open(header_path, "r").readlines())
+header_file = "".join(open(header_file_path, "r").readlines())
 
 # https://regex101.com/r/weFtWH/1
 matches = re.findall(r"([a-zA-Z0-9_]+)\s+([a-zA-Z0-9_]+)\s*\((([a-zA-Z0-9_*\s,]+)*)\);", header_file)
@@ -31,26 +30,27 @@ variables = []
 for match in matches:
     variables.append(match[0])
 
-mock_name = module.split("/")[-1]
 function_list = ", ".join([function[1] for function in functions])
 
-out_dir = os.path.dirname(f"{out_dir}/{module}")
+module_name = os.path.basename(header_file_path).split(".")[0]  # Name of the module i.e. uart
+
 os.makedirs(out_dir, exist_ok=True)
-mock_header = open(f"{out_dir}/{mock_name}.hpp", "w")
+mock_header = open(f"{out_dir}/{module_name}.hpp", "w")
+print(f"{out_dir}/{module_name}.hpp")
 mock_header.write(
-    f"#ifndef MOCK_{mock_name}_HPP \n"
-    f"#define MOCK_{mock_name}_HPP \n"
+    f"#ifndef MOCK_{module_name.upper()}_HPP \n"
+    f"#define MOCK_{module_name.upper()}_HPP \n"
     f"#include \"Lib/Base.hpp\" \n"
     f"extern \"C\" {{\n"
-    f"  #include \"{module}.h\"\n"
+    f"  #include \"{header_file_path}\"\n"
     f"}}\n"
-    f"namespace mock {{extern Base<{function_list}> {mock_name}; }}\n"
+    f"namespace mock {{extern Base<{function_list}> {module_name}; }}\n"
     f"#endif")
 
-mock_src = open(f"{out_dir}/{mock_name}.cpp", "w")
+mock_src = open(f"{out_dir}/{module_name}.cpp", "w")
 mock_src.write(
-    f"#include \"{mock_name}.hpp\"\n"
-    f"namespace mock {{Base<{function_list}> {mock_name}; }}\n\n"
+    f"#include \"{module_name}.hpp\"\n"
+    f"namespace mock {{Base<{function_list}> {module_name}; }}\n\n"
 )
 for return_type, name, args_with_name in functions:
     args = ", ".join([arg[0] for arg in args_with_name])
@@ -60,7 +60,7 @@ for return_type, name, args_with_name in functions:
 
     mock_src.write(
         f"{return_type} {name} ({args}) {{\n"
-        f"\t{return_statement} mock::{mock_name}.functionCallDelegate<{name}>({args_forward});\n"
+        f"\t{return_statement} mock::{module_name}.functionCallDelegate<{name}>({args_forward});\n"
         f"}}\n\n"
     )
 
