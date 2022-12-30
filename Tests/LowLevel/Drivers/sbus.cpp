@@ -10,8 +10,6 @@ TEST(TEST_NAME, init) {
     auto uartHandle = mock::uart.getHandle();
     auto ringBufferHandle = mock::ring_buffer.getHandle();
     ringBufferHandle.overrideFunc<ring_buffer_init>([]() { return ring_buffer_data_t{}; });
-    ringBufferHandle.overrideFunc<ring_buffer_put>(
-            [](ring_buffer_data_t * /*ring_buffer_data*/, uint8_t /*data*/) { return true; });
     sbus_init();
     /*
      * https://github.com/bolderflight/sbus/blob/main/README.md:
@@ -44,22 +42,6 @@ TEST(TEST_NAME, rx_fill_buffer) {
 
     uartCallback(54);
     EXPECT_TRUE(ringBufferHandle.functionGotCalled<ring_buffer_put>(std::ignore, 54));
-}
-
-TEST(TEST_NAME, available_read_buffer) {
-    auto uartHandle = mock::uart.getHandle();
-    auto ringBufferHandle = mock::ring_buffer.getHandle();
-    ringBufferHandle.overrideFunc<ring_buffer_init>([]() { return ring_buffer_data_t{}; });
-    sbus_init();
-    EXPECT_TRUE(uartHandle.functionGotCalled<uart_init>());
-
-    std::size_t count = 0;
-    ringBufferHandle.overrideFunc<ring_buffer_get>([&count](ring_buffer_data_t *ringBufferData, uint8_t *out) {
-        EXPECT_NE(ringBufferData, nullptr);
-        count += 1;
-        *out = count;
-        return count <= 4;
-    });
 }
 
 TEST(TEST_NAME, decode) {
