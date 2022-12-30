@@ -42,9 +42,6 @@ TEST(TEST_NAME, get_data_ok) {
     EXPECT_LE(data.throttle_mixed, 0 + 1);
     EXPECT_GE(data.elevon_left_mixed, 1000 - 1);
     EXPECT_LE(data.elevon_right_mixed, 0 + 1);
-    EXPECT_GE(data.throttle_raw, 1000 - 1);
-    EXPECT_LE(data.pitch_raw, 0 + 1);
-    EXPECT_GE(data.roll_raw, 1000 - 1);
     EXPECT_TRUE(data.is_armed);
     EXPECT_TRUE(data.override_active);
 }

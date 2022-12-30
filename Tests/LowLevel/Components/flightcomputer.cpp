@@ -36,9 +36,6 @@ TEST(TEST_NAME, send) {
         EXPECT_EQ(message->remote.throttleMixed, 10);
         EXPECT_EQ(message->remote.elevonLeftMixed, 11);
         EXPECT_EQ(message->remote.elevonRightMixed, 12);
-        EXPECT_EQ(message->remote.throttleRaw, 13);
-        EXPECT_EQ(message->remote.pitchRaw, 14);
-        EXPECT_EQ(message->remote.rollRaw, 15);
         EXPECT_EQ(message->remote.isArmed, true);
         EXPECT_EQ(message->remote.overrideActive, false);
         EXPECT_EQ(message->remote.remote_ok, true);
@@ -61,9 +58,6 @@ TEST(TEST_NAME, send) {
     remote_data_t remoteData = {.throttle_mixed = 10,
                                 .elevon_left_mixed = 11,
                                 .elevon_right_mixed = 12,
-                                .throttle_raw = 13,
-                                .pitch_raw = 14,
-                                .roll_raw = 15,
                                 .is_armed = true,
                                 .override_active = false,
                                 .remote_ok = true};

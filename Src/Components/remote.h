@@ -19,10 +19,6 @@ typedef struct {
     int16_t elevon_left_mixed;  ///< The mixed signals for the left elevon , in [0,1000].
     int16_t elevon_right_mixed; ///< The mixed signals for the right elevon, in [0,1000].
 
-    int16_t throttle_raw; ///< The raw signals from the throttle-joystick-axis, in [0, 1000].
-    int16_t pitch_raw;    ///< The raw signals from the pitch-joystick-axis, in [0, 1000].
-    int16_t roll_raw;     ///< The raw signals from the roll-joystick-axis, in [0, 1000].
-
     bool is_armed;        ///< True if the arm switch on the remote is set.
     bool override_active; ///< True if the override switch on the remote is set.
 

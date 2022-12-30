@@ -545,9 +545,6 @@ TEST(TEST_NAME, fill_out_vars) {
         return remote_data_t{.throttle_mixed = 26,
                              .elevon_left_mixed = 27,
                              .elevon_right_mixed = 28,
-                             .throttle_raw = 29,
-                             .pitch_raw = 30,
-                             .roll_raw = 31,
                              .is_armed = true,
                              .override_active = false,
                              .remote_ok = true};
@@ -576,9 +573,6 @@ TEST(TEST_NAME, fill_out_vars) {
     EXPECT_EQ(remoteData.throttle_mixed, 26);
     EXPECT_EQ(remoteData.elevon_left_mixed, 27);
     EXPECT_EQ(remoteData.elevon_right_mixed, 28);
-    EXPECT_EQ(remoteData.throttle_raw, 29);
-    EXPECT_EQ(remoteData.pitch_raw, 30);
-    EXPECT_EQ(remoteData.roll_raw, 31);
     EXPECT_EQ(remoteData.is_armed, true);
     EXPECT_EQ(remoteData.override_active, false);
     EXPECT_EQ(remoteData.remote_ok, true);

@@ -35,9 +35,6 @@ remote_data_t remote_get_data(void) {
     remote_data_t remote_data = {.throttle_mixed = NORMALIZE_TARANIS(sbus_data.channel[0]),
                                  .elevon_left_mixed = NORMALIZE_TARANIS(sbus_data.channel[1]),
                                  .elevon_right_mixed = NORMALIZE_TARANIS(sbus_data.channel[2]),
-                                 .throttle_raw = NORMALIZE_TARANIS(sbus_data.channel[3]),
-                                 .pitch_raw = NORMALIZE_TARANIS(sbus_data.channel[4]),
-                                 .roll_raw = NORMALIZE_TARANIS(sbus_data.channel[5]),
                                  .is_armed = (NORMALIZE_TARANIS(sbus_data.channel[6]) < ARMED_THRESH),
                                  .override_active = (NORMALIZE_TARANIS((sbus_data.channel[7])) > OVERRIDE_THRESH),
                                  .remote_ok = (!sbus_data.failsafe && !sbus_data.frame_lost)};
