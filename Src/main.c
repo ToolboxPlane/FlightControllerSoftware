@@ -68,7 +68,7 @@ void timer_tick(void) {
             break;
         }
         case MODE_REMOTE:
-            actuator_cmd.motor = remote_data.throttle_raw;
+            actuator_cmd.motor = remote_data.throttle_mixed;
             actuator_cmd.elevon_left = remote_data.elevon_left_mixed - SERVO_REMOTE_OFFSET;
             actuator_cmd.elevon_right = remote_data.elevon_right_mixed - SERVO_REMOTE_OFFSET;
             break;
