@@ -13,10 +13,12 @@
 enum { ARMED_THRESH = 400 };
 enum { OVERRIDE_THRESH = 600 };
 
-/*
- * (x-172)/(1811-172)*1000
- *
- * 1000/(1811-172) = 1000/1639 \approx 1000/1640 = 25/41
+/**
+ * Map the remote channels, which are in [172, 1822] to [0, 1000].
+ * The transformation is thus given by:
+ *  (x-172)/(1811-172)*1000
+ * The factor can be approximated to avoid floating point operations:
+ *  1000/(1811-172) = 1000/1639 approx 1000/1640 = 25/41
  */
 #define NORMALIZE_TARANIS(x) ((uint16_t) (((x) -172) * 25 / 41))
 
