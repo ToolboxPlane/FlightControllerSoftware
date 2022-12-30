@@ -4,9 +4,9 @@
 * [Test Reports](https://toolboxplane.github.io/FlightControllerSoftware/report/)
 * [Coverage Reports](https://toolboxplane.github.io/FlightControllerSoftware/coverage/)
 
-## Building and deploy
+## Building and flashing 
 
-### Compile
+### Build 
 
 To compile the firmware run:
 
@@ -14,8 +14,6 @@ To compile the firmware run:
 cmake -B build
 cmake --build build --target FlightController.hex
 ```
-
-To compile the tests run the same commands in the test directory
 
 ### How to flash to firmware
 
