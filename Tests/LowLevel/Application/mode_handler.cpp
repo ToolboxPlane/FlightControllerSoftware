@@ -479,7 +479,13 @@ TEST(TEST_NAME, modeselection) {
             {{true, true, true, true, true}, MODE_REMOTE},
     };
 
-    for (auto [availability_value, expected_mode] : decisionTable) {
+    for (auto row : decisionTable) {
+        /*
+         * Should be a structure binding but clang < 16 does not support capturing of structure bindings
+         * as those are by definition no variables...
+         */
+        auto availability_value = row.first;
+        auto expected_mode = row.second;
         mode_handler_init();
         imuHandle.overrideFunc<imu_get_latest_data>([availability_value]() {
             imu_data_t res{};
