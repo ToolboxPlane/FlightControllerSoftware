@@ -3,6 +3,7 @@ project(FlightController)
 
 if (${CMAKE_C_COMPILER} MATCHES "avr")
     add_executable(${PROJECT_NAME} main.c
+            Application/application.c
             Application/controller.c
             Application/error_handler.c
             Application/mode_handler.c)
