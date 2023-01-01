@@ -33,6 +33,7 @@
  *      * In failsave mode: set all three commands to 0
  *  * Pass the actuator commands to the actuators
  *  * Every FLIGHTCOMPUTER_SEND_PERIOD frame: pass the current data to flightcomputer_send
+ *  * Call imu_start_sampling
  */
 void application_init(void);
 
