@@ -43,7 +43,6 @@ target_link_libraries(MessageEncoding.mock PUBLIC ToolboxPlaneMessageDefs)
 target_link_libraries(MessageDecoding.mock PUBLIC ToolboxPlaneMessageDefs)
 target_link_libraries(protobuf.mock PUBLIC ToolboxPlaneMessageDefs)
 
-#add_custom_target(RunAllTests DEPENDS ${AllTests})
 #
 #add_custom_target(coverage.info
 #        COMMAND lcov --capture --directory ${CMAKE_CURRENT_BINARY_DIR} --output-file ${CMAKE_CURRENT_BINARY_DIR}/coverage.info

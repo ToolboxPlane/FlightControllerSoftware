@@ -39,7 +39,7 @@ endfunction()
 
 
 
-set(AllTestResults)
+add_custom_target(RunAllTests)
 
 # Function to build a mock test for a module
 function(make_test)
@@ -79,12 +79,11 @@ function(make_test)
     endforeach ()
 
     # Create a target to run the test to be used as a dependency
-    add_custom_command(
-            OUTPUT ${test_name}.xml
+    add_custom_target(${test_name}.run
             COMMAND ${TestExecutable} --gtest_repeat=10 --gtest_shuffle --gtest_output=xml:${test_name}.xml
             DEPENDS ${TestExecutable})
 
     # Add test to list of tests
-    set(AllTestResults ${AllTestResults} ${test_name}.xml PARENT_SCOPE)
+    add_dependencies(RunAllTests ${test_name}.run)
 endfunction()
 
