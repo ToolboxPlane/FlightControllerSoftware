@@ -1,7 +1,7 @@
-#include <Mock/ring_buffer.hpp>
-#include <Mock/uart.hpp>
 #include <Mock/MessageDecoding.hpp>
 #include <Mock/MessageEncoding.hpp>
+#include <Mock/ring_buffer.hpp>
+#include <Mock/uart.hpp>
 #include <gtest/gtest.h>
 #include <queue>
 
