@@ -24,6 +24,16 @@ function(make_fc_test)
             REQUIRED_HEADERS ${headers})
 endfunction()
 
+make_fc_test(MODULE Application/application
+        DEPS
+        Application/controller
+        Application/error_handler
+        Application/mode_handler
+        Components/actuators
+        Components/flightcomputer
+        Components/imu
+        Components/remote
+        Components/system)
 make_fc_test(MODULE Application/controller)
 make_fc_test(MODULE Application/error_handler DEPS avr/io avr/wdt)
 make_fc_test(MODULE Application/mode_handler DEPS Application/error_handler Components/imu Components/remote Components/flightcomputer)

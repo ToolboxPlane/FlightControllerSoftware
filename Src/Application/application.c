@@ -93,8 +93,6 @@ void application_init(void) {
     actuators_init();
     mode_handler_init();
 
-    imu_start_sampling();
-
     system_post_init();
 
     while (true) {

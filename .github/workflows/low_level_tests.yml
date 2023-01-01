@@ -87,7 +87,7 @@ jobs:
       - name: Set up Build
         run: cmake -B build
       - name: Run LCOV
-        run: lcov --no-external --capture --directory . --output-file coverage.info
+        run: lcov --no-external -r "build/*" --capture --directory . --output-file coverage.info
       - name: Gen HTML
         run: genhtml coverage.info --output-directory coverage
       - name: Move HTML
