@@ -4,3 +4,6 @@
 [submodule "Messages"]
 	path = Src/Messages
 	url = https://github.com/ToolboxPlane/Messages.git
+[submodule "Tests/LowLevel/Mock"]
+	path = Tests/LowLevel/Mock
+	url = https://github.com/ToolboxPlane/MockTools.git
