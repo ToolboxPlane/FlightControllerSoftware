@@ -10,37 +10,8 @@ FetchContent_MakeAvailable(gtest)
 # Load mocking lib
 add_subdirectory(Lib)
 
-set(MockedModules
-        Drivers/bno055
-        Drivers/bno055_uart
-        Drivers/ppm
-        Drivers/protobuf
-        Drivers/ring_buffer
-        Drivers/sbus
-        HAL/adc
-        HAL/i2c
-        HAL/pwm16bit
-        HAL/spi
-        HAL/timer8bit
-        HAL/uart
-        Messages/MessageEncoding
-        Messages/MessageDecoding
-        Components/actuators
-        Components/flightcomputer
-        Components/imu
-        Components/remote
-        Components/system
-        Application/controller
-        Application/error_handler
-        Application/mode_handler)
 
-set(MockedSystemModules
-        util/delay
-        avr/interrupt
-        avr/io
-        avr/wdt)
-
-function(declare_mock mocked_module_header)
+function(declare_mock mocked_module_header mock_lib_out)
     # Build names/paths
     get_filename_component(module_name ${mocked_module_header} NAME_WE)
     set(mock_path ${CMAKE_CURRENT_BINARY_DIR}/Mock/Mock)
@@ -48,105 +19,72 @@ function(declare_mock mocked_module_header)
     set(mock_hpp ${mock_path}/${module_name}.hpp)
     set(mock_lib ${module_name}.mock)
 
-    # Add a target which will autogenerate the mock source files
-    add_custom_command(
-            COMMAND python3 ${CMAKE_CURRENT_FUNCTION_LIST_DIR}/Lib/generate_mock.py ${mocked_module_header} ${mock_path}
-            DEPENDS ${mocked_module_header} ${CMAKE_CURRENT_FUNCTION_LIST_DIR}/Lib/generate_mock.py
-            OUTPUT ${mock_cpp} ${mock_hpp})
+    # Set out name
+    set(${mock_lib_out} ${mock_lib} PARENT_SCOPE)
 
-    # Add a library for the mocked module
-    add_library(${mock_lib} STATIC ${mock_cpp} ${mock_hpp})
-    target_link_libraries(${mock_lib} PUBLIC MockLib)
-    target_include_directories(${mock_lib} INTERFACE ${CMAKE_CURRENT_BINARY_DIR}/Mock)
+    # Only create lib if not already exists
+    if (NOT TARGET ${mock_lib})
+        # Add a target which will autogenerate the mock source files
+        add_custom_command(
+                COMMAND python3 ${CMAKE_CURRENT_FUNCTION_LIST_DIR}/Lib/generate_mock.py ${mocked_module_header} ${mock_path}
+                DEPENDS ${mocked_module_header} ${CMAKE_CURRENT_FUNCTION_LIST_DIR}/Lib/generate_mock.py
+                OUTPUT ${mock_cpp} ${mock_hpp})
+
+        # Add a library for the mocked module
+        add_library(${mock_lib} STATIC ${mock_cpp} ${mock_hpp})
+        target_link_libraries(${mock_lib} PUBLIC MockLib)
+        target_include_directories(${mock_lib} INTERFACE ${CMAKE_CURRENT_BINARY_DIR}/Mock)
+    endif ()
 endfunction()
 
-# Build mock sources and target for module mocks
-foreach (MockedModule ${MockedModules})
-    # For the name generation replace all / in the path with _
-    string(REPLACE "/" "_" MockedModuleName ${MockedModule})
-    set(MockLibTarget Mock_${MockedModuleName})
-    set(MockPath ${CMAKE_CURRENT_BINARY_DIR}/Mock/Mock)
-    set(MockCpp ${MockPath}/${MockedModule}.cpp)
-    set(MockHpp ${MockPath}/${MockedModule}.hpp)
+#target_link_libraries(Mock_Messages_MessageEncoding PUBLIC ToolboxPlaneMessageDefs)
+#target_link_libraries(Mock_Messages_MessageDecoding PUBLIC ToolboxPlaneMessageDefs)
+#target_link_libraries(Mock_Drivers_protobuf PUBLIC ToolboxPlaneMessageDefs)
 
-    # Add a target which will autogenerate the mock source files
-    add_custom_command(
-            COMMAND python3 ${CMAKE_SOURCE_DIR}/Tests/LowLevel/Mock/Lib/generate_mock.py ${CMAKE_SOURCE_DIR}/Src/${MockedModule}.h ${MockedModule} ${MockPath}
-            WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
-            DEPENDS
-            ${CMAKE_SOURCE_DIR}/Src/${MockedModule}.h
-            ${CMAKE_SOURCE_DIR}/Src/${MockedModule}.c
-            Lib/generate_mock.py
-            OUTPUT ${MockCpp} ${MockHpp})
 
-    # Add a library for the mocked module
-    add_library(${MockLibTarget} STATIC ${MockCpp} ${MockHpp})
-    target_link_libraries(${MockLibTarget} PUBLIC MockLib)
-    target_include_directories(${MockLibTarget} INTERFACE ${CMAKE_CURRENT_BINARY_DIR}/Mock)
-endforeach ()
-
-target_link_libraries(Mock_Messages_MessageEncoding PUBLIC ToolboxPlaneMessageDefs)
-target_link_libraries(Mock_Messages_MessageDecoding PUBLIC ToolboxPlaneMessageDefs)
-target_link_libraries(Mock_Drivers_protobuf PUBLIC ToolboxPlaneMessageDefs)
-
-# Build mock sources and target for system mocks
-foreach (MockedModule ${MockedSystemModules})
-    # For the name generation replace all / in the path with _
-    string(REPLACE "/" "_" MockedModuleName ${MockedModule})
-    set(MockLibTarget Mock_${MockedModuleName})
-    set(MockPath ${CMAKE_CURRENT_BINARY_DIR}/Mock/Mock)
-    set(MockCpp ${MockPath}/${MockedModule}.cpp)
-    set(MockHpp ${MockPath}/${MockedModule}.hpp)
-
-    # Add a target which will autogenerate the mock source files
-    add_custom_command(
-            COMMAND python3 ${CMAKE_SOURCE_DIR}/Tests/LowLevel/Mock/Lib/generate_mock.py ${CMAKE_SOURCE_DIR}/Tests/LowLevel/Mock/System/${MockedModule}.h ${MockedModule} ${MockPath}
-            WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
-            DEPENDS
-            ${CMAKE_SOURCE_DIR}/Tests/LowLevel/Mock/System/${MockedModule}.h
-            Lib/generate_mock.py
-            OUTPUT ${MockCpp} ${MockHpp})
-
-    # Add a library for the mocked module
-    add_library(${MockLibTarget} STATIC ${MockCpp} ${MockHpp})
-    target_link_libraries(${MockLibTarget} PUBLIC MockLib)
-    target_include_directories(${MockLibTarget} PUBLIC ${CMAKE_SOURCE_DIR}/Tests/LowLevel/Mock/System)
-    target_include_directories(${MockLibTarget} INTERFACE ${CMAKE_CURRENT_BINARY_DIR}/Mock)
-endforeach ()
-
-set(AllTests)
+set(AllTestResults)
 
 # Function to build a mock test for a module
-function(make_test file_under_test)
-    string(REPLACE "/" "_" TestSuite ${file_under_test})
-    set(TestExecutable Test_${TestSuite})
+function(make_test)
+    cmake_parse_arguments(MAKE_TEST
+            "" # Options
+            "MODULE_UNDER_TEST;TEST_DEFINITION" # One-Value Args
+            "REQUIRED_HEADERS" # Multi-Value Args
+            ${ARGN})
+
+    get_filename_component(TestSuite ${MAKE_TEST_MODULE_UNDER_TEST} NAME_WE)
+    set(TestExecutable ${TestSuite}.test)
 
     # Add a executable consisting of the function .c file and the test .cpp file
     add_executable(${TestExecutable}
             main.cpp
-            ${CMAKE_SOURCE_DIR}/Src/${file_under_test}.c
-            ${file_under_test}.cpp)
-
-    # Link against GTest libraries
-    target_link_libraries(${TestExecutable} PRIVATE gtest gmock pthread)
+            ${MAKE_TEST_MODULE_UNDER_TEST}
+            ${MAKE_TEST_TEST_DEFINITION})
 
     # Enable coverage tracking
     target_compile_options(${TestExecutable} PRIVATE --coverage -fprofile-arcs -ftest-coverage)
     target_link_options(${TestExecutable} PRIVATE --coverage -fprofile-arcs -ftest-coverage)
 
     # Set the macro TEST_NAME to the name of the tested module
-    string(REPLACE "/" "_" test_name ${file_under_test})
-    string(REPLACE "." "_" compiler_version ${CMAKE_C_COMPILER_VERSION})
-    set(test_name "${CMAKE_C_COMPILER_ID}_${compiler_version}_${CMAKE_BUILD_TYPE}_${test_name}")
+    set(test_name "${CMAKE_C_COMPILER_ID}_${compiler_version}_${CMAKE_BUILD_TYPE}_${TestSuite}")
     target_compile_definitions(${TestExecutable} PRIVATE -DTEST_NAME=${test_name})
 
-    # Add target to run test
-    set(RunTargetName ${TestExecutable}_Run)
-    add_custom_target(${RunTargetName}
+    # Link against GTest libraries
+    target_link_libraries(${TestExecutable} PRIVATE gtest gmock pthread)
+
+    # Generate mocked libraries and link against them
+    foreach (REQUIRED_HEADER ${MAKE_TEST_REQUIRED_HEADERS})
+        declare_mock(${REQUIRED_HEADER} mock_name)
+        target_link_libraries(${TestExecutable} PRIVATE ${mock_name})
+    endforeach ()
+
+    # Create a target to run the test to be used as a dependency
+    add_custom_command(
+            OUTPUT ${test_name}.xml
             COMMAND ${TestExecutable} --gtest_repeat=10 --gtest_shuffle --gtest_output=xml:${test_name}.xml
             DEPENDS ${TestExecutable})
 
     # Add test to list of tests
-    set(AllTests ${AllTests} ${RunTargetName} PARENT_SCOPE)
+    set(AllTestResults ${AllTestResults} ${test_name}.xml PARENT_SCOPE)
 endfunction()
 
