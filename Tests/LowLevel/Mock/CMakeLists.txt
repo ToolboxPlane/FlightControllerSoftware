@@ -10,7 +10,7 @@ FetchContent_MakeAvailable(gtest)
 # Load mocking lib
 add_subdirectory(Lib)
 
-
+# Function to declare a library for a mocked module
 function(declare_mock mocked_module_header mock_lib_out)
     # Build names/paths
     get_filename_component(module_name ${mocked_module_header} NAME_WE)
@@ -37,9 +37,6 @@ function(declare_mock mocked_module_header mock_lib_out)
     endif ()
 endfunction()
 
-#target_link_libraries(Mock_Messages_MessageEncoding PUBLIC ToolboxPlaneMessageDefs)
-#target_link_libraries(Mock_Messages_MessageDecoding PUBLIC ToolboxPlaneMessageDefs)
-#target_link_libraries(Mock_Drivers_protobuf PUBLIC ToolboxPlaneMessageDefs)
 
 
 set(AllTestResults)
@@ -68,6 +65,9 @@ function(make_test)
     # Set the macro TEST_NAME to the name of the tested module
     set(test_name "${CMAKE_C_COMPILER_ID}_${compiler_version}_${CMAKE_BUILD_TYPE}_${TestSuite}")
     target_compile_definitions(${TestExecutable} PRIVATE -DTEST_NAME=${test_name})
+
+    # Include mocked system directory
+    target_include_directories(${TestExecutable} PRIVATE ${CMAKE_CURRENT_FUNCTION_LIST_DIR}/System)
 
     # Link against GTest libraries
     target_link_libraries(${TestExecutable} PRIVATE gtest gmock pthread)

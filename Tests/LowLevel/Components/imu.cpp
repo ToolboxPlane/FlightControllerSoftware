@@ -1,6 +1,6 @@
-#include <Mock/Application/error_handler.hpp>
-#include <Mock/Drivers/bno055.hpp>
-#include <Mock/util/delay.hpp>
+#include <Mock/error_handler.hpp>
+#include <Mock/bno055.hpp>
+#include <Mock/delay.hpp>
 #include <gtest/gtest.h>
 
 extern "C" {

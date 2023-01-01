@@ -1,5 +1,5 @@
-#include <Mock/avr/io.hpp>
-#include <Mock/avr/wdt.hpp>
+#include <Mock/io.hpp>
+#include <Mock/wdt.hpp>
 #include <gtest/gtest.h>
 
 extern "C" {

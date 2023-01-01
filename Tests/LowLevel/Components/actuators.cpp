@@ -1,4 +1,4 @@
-#include <Mock/Drivers/ppm.hpp>
+#include <Mock/ppm.hpp>
 #include <gtest/gtest.h>
 
 extern "C" {

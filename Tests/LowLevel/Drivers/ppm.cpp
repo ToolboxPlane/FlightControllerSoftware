@@ -1,4 +1,4 @@
-#include <Mock/HAL/pwm16bit.hpp>
+#include <Mock/pwm16bit.hpp>
 #include <gtest/gtest.h>
 
 extern "C" {

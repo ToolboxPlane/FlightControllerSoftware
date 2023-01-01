@@ -1,5 +1,5 @@
-#include <Mock/Drivers/ring_buffer.hpp>
-#include <Mock/HAL/uart.hpp>
+#include <Mock/ring_buffer.hpp>
+#include <Mock/uart.hpp>
 #include <gtest/gtest.h>
 
 extern "C" {

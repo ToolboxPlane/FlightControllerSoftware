@@ -24,58 +24,25 @@ function(make_fc_test)
             REQUIRED_HEADERS ${headers})
 endfunction()
 
-make_fc_test(MODULE Drivers/bno055_uart DEPS HAL/uart)
+make_fc_test(MODULE Application/controller)
+make_fc_test(MODULE Application/error_handler DEPS avr/io avr/wdt)
+make_fc_test(MODULE Application/mode_handler DEPS Application/error_handler Components/imu Components/remote Components/flightcomputer)
+make_fc_test(MODULE Components/actuators DEPS Drivers/ppm)
+make_fc_test(MODULE Components/flightcomputer DEPS Drivers/protobuf)
+make_fc_test(MODULE Components/imu DEPS Drivers/bno055 util/delay Application/error_handler)
+make_fc_test(MODULE Components/remote DEPS Drivers/sbus)
+make_fc_test(MODULE Components/system DEPS avr/io avr/wdt avr/interrupt HAL/timer8bit Application/error_handler)
 make_fc_test(MODULE Drivers/bno055 DEPS Drivers/bno055_uart)
+make_fc_test(MODULE Drivers/bno055_uart DEPS HAL/uart)
 make_fc_test(MODULE Drivers/ppm DEPS HAL/pwm16bit avr/io)
-make_fc_test(MODULE Drivers/protobuf DEPS HAL/uart)
+make_fc_test(MODULE Drivers/protobuf DEPS HAL/uart Messages/MessageDecoding Messages/MessageEncoding Drivers/ring_buffer)
+make_fc_test(MODULE Drivers/ring_buffer)
+make_fc_test(MODULE Drivers/sbus DEPS HAL/uart Drivers/ring_buffer)
 
+target_link_libraries(MessageEncoding.mock PUBLIC ToolboxPlaneMessageDefs)
+target_link_libraries(MessageDecoding.mock PUBLIC ToolboxPlaneMessageDefs)
+target_link_libraries(protobuf.mock PUBLIC ToolboxPlaneMessageDefs)
 
-#make_test(Drivers/protobuf)
-#target_link_libraries(Test_Drivers_protobuf PRIVATE Mock_HAL_uart)
-#target_link_libraries(Test_Drivers_protobuf PRIVATE Mock_Messages_MessageDecoding)
-#target_link_libraries(Test_Drivers_protobuf PRIVATE Mock_Messages_MessageEncoding)
-#target_link_libraries(Test_Drivers_protobuf PRIVATE Mock_Drivers_ring_buffer)
-#
-#make_test(Drivers/ring_buffer)
-#
-#make_test(Drivers/sbus)
-#target_link_libraries(Test_Drivers_sbus PRIVATE Mock_HAL_uart)
-#target_link_libraries(Test_Drivers_sbus PRIVATE Mock_Drivers_ring_buffer)
-#
-#make_test(Components/imu)
-#target_link_libraries(Test_Components_imu PRIVATE Mock_Drivers_bno055)
-#target_link_libraries(Test_Components_imu PRIVATE Mock_util_delay)
-#target_link_libraries(Test_Components_imu PRIVATE Mock_Application_error_handler)
-#
-#make_test(Components/remote)
-#target_link_libraries(Test_Components_remote PRIVATE Mock_Drivers_sbus)
-#
-#make_test(Components/flightcomputer)
-#target_link_libraries(Test_Components_flightcomputer PRIVATE Mock_Drivers_protobuf)
-#
-#make_test(Components/actuators)
-#target_link_libraries(Test_Components_actuators PRIVATE Mock_Drivers_ppm)
-#
-#make_test(Components/system)
-#target_link_libraries(Test_Components_system PRIVATE Mock_avr_io)
-#target_link_libraries(Test_Components_system PRIVATE Mock_avr_wdt)
-#target_link_libraries(Test_Components_system PRIVATE Mock_avr_interrupt)
-#target_link_libraries(Test_Components_system PRIVATE Mock_HAL_timer8bit)
-#target_link_libraries(Test_Components_system PRIVATE Mock_Application_error_handler)
-#
-#make_test(Application/controller)
-#
-#make_test(Application/error_handler)
-#target_link_libraries(Test_Application_error_handler PRIVATE Mock_avr_io)
-#target_link_libraries(Test_Application_error_handler PRIVATE Mock_avr_wdt)
-#
-#make_test(Application/mode_handler)
-#target_link_libraries(Test_Application_mode_handler PRIVATE Mock_Application_error_handler)
-#target_link_libraries(Test_Application_mode_handler PRIVATE Mock_Components_imu)
-#target_link_libraries(Test_Application_mode_handler PRIVATE Mock_Components_remote)
-#target_link_libraries(Test_Application_mode_handler PRIVATE Mock_Components_flightcomputer)
-#
-#
 #add_custom_target(RunAllTests DEPENDS ${AllTests})
 #
 #add_custom_target(coverage.info

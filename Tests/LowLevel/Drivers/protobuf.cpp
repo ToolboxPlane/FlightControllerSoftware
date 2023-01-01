@@ -1,7 +1,7 @@
-#include <Mock/Drivers/ring_buffer.hpp>
-#include <Mock/HAL/uart.hpp>
-#include <Mock/Messages/MessageDecoding.hpp>
-#include <Mock/Messages/MessageEncoding.hpp>
+#include <Mock/ring_buffer.hpp>
+#include <Mock/uart.hpp>
+#include <Mock/MessageDecoding.hpp>
+#include <Mock/MessageEncoding.hpp>
 #include <gtest/gtest.h>
 #include <queue>
 

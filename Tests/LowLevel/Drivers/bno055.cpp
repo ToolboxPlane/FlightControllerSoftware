@@ -1,4 +1,4 @@
-#include <Mock/Drivers/bno055_uart.hpp>
+#include <Mock/bno055_uart.hpp>
 #include <gtest/gtest.h>
 
 extern "C" {

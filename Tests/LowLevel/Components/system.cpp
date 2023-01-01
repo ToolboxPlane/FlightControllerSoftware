@@ -1,8 +1,8 @@
-#include <Mock/Application/error_handler.hpp>
-#include <Mock/HAL/timer8bit.hpp>
-#include <Mock/avr/interrupt.hpp>
-#include <Mock/avr/io.hpp>
-#include <Mock/avr/wdt.hpp>
+#include <Mock/error_handler.hpp>
+#include <Mock/timer8bit.hpp>
+#include <Mock/interrupt.hpp>
+#include <Mock/io.hpp>
+#include <Mock/wdt.hpp>
 #include <gtest/gtest.h>
 
 extern "C" {

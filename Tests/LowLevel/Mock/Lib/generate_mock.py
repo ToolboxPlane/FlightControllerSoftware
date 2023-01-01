@@ -58,11 +58,11 @@ for return_type_with_name, name, args_with_name in functions:
     args = ", ".join([f"{arg[0]}" for arg in args_with_name])
     args_forward = ", ".join([arg[1] for arg in args_with_name])
 
-    return_statement = "return" if return_type_with_name.startswith("void") else ""
+    return_statement = "" if return_type_with_name.startswith("void") else "return "
 
     mock_src.write(
         f"{return_type_with_name}({args}) {{\n"
-        f"\t{return_statement} mock::{module_name}.functionCallDelegate<{name}>({args_forward});\n"
+        f"\t{return_statement}mock::{module_name}.functionCallDelegate<{name}>({args_forward});\n"
         f"}}\n\n"
     )
 
