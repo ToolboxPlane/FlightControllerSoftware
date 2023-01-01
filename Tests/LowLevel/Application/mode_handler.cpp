@@ -179,7 +179,7 @@ TEST(TEST_NAME, remote_initial_timeout) {
     remote_data_t remoteData;
     flightcomputer_setpoint_t flightcomputerSetpoint;
 
-    EXPECT_EQ(mode_handler_handle(&imuData, &remoteData, &flightcomputerSetpoint), MODE_STABILISED_FAILSAVE);
+    EXPECT_EQ(mode_handler_handle(&imuData, &remoteData, &flightcomputerSetpoint), MODE_STABILISED_FAILSAFE);
     EXPECT_TRUE(errorHandlerHandle.functionGotCalled<error_handler_handle_warning>(MODE_HANDLER,
                                                                                    MODE_HANDLER_ERROR_NO_REMOTE_DATA));
 }
@@ -213,7 +213,7 @@ TEST(TEST_NAME, remote_initial_nok) {
     remote_data_t remoteData;
     flightcomputer_setpoint_t flightcomputerSetpoint;
 
-    EXPECT_EQ(mode_handler_handle(&imuData, &remoteData, &flightcomputerSetpoint), MODE_STABILISED_FAILSAVE);
+    EXPECT_EQ(mode_handler_handle(&imuData, &remoteData, &flightcomputerSetpoint), MODE_STABILISED_FAILSAFE);
     EXPECT_TRUE(errorHandlerHandle.functionGotCalled<error_handler_handle_warning>(MODE_HANDLER,
                                                                                    MODE_HANDLER_ERROR_NO_REMOTE_DATA));
 }
@@ -282,7 +282,7 @@ TEST(TEST_NAME, remote_timeout) {
                                                                                     MODE_HANDLER_ERROR_NO_REMOTE_DATA));
 
     // 7 - no data available (6. frame) -> timeout
-    EXPECT_EQ(mode_handler_handle(&imuData, &remoteData, &flightcomputerSetpoint), MODE_STABILISED_FAILSAVE);
+    EXPECT_EQ(mode_handler_handle(&imuData, &remoteData, &flightcomputerSetpoint), MODE_STABILISED_FAILSAFE);
     EXPECT_TRUE(errorHandlerHandle.functionGotCalled<error_handler_handle_warning>(MODE_HANDLER,
                                                                                    MODE_HANDLER_ERROR_NO_REMOTE_DATA));
 
@@ -445,14 +445,14 @@ TEST(TEST_NAME, modeselection) {
     };
 
     const std::vector<std::pair<availability_values, mode_handler_mode_t>> decisionTable{
-            {{false, false, false, false, false}, MODE_FAILSAVE},
-            {{false, false, false, false, true}, MODE_FAILSAVE},
-            {{false, false, false, true, false}, MODE_FAILSAVE},
-            {{false, false, false, true, true}, MODE_FAILSAVE},
-            {{false, false, true, false, false}, MODE_FAILSAVE},
-            {{false, false, true, false, true}, MODE_FAILSAVE},
-            {{false, false, true, true, false}, MODE_FAILSAVE},
-            {{false, false, true, true, true}, MODE_FAILSAVE},
+            {{false, false, false, false, false}, MODE_FAILSAFE},
+            {{false, false, false, false, true}, MODE_FAILSAFE},
+            {{false, false, false, true, false}, MODE_FAILSAFE},
+            {{false, false, false, true, true}, MODE_FAILSAFE},
+            {{false, false, true, false, false}, MODE_FAILSAFE},
+            {{false, false, true, false, true}, MODE_FAILSAFE},
+            {{false, false, true, true, false}, MODE_FAILSAFE},
+            {{false, false, true, true, true}, MODE_FAILSAFE},
             {{false, true, false, false, false}, MODE_REMOTE},
             {{false, true, false, false, true}, MODE_REMOTE},
             {{false, true, false, true, false}, MODE_REMOTE},
@@ -461,19 +461,19 @@ TEST(TEST_NAME, modeselection) {
             {{false, true, true, false, true}, MODE_REMOTE},
             {{false, true, true, true, false}, MODE_REMOTE},
             {{false, true, true, true, true}, MODE_REMOTE},
-            {{true, false, false, false, false}, MODE_STABILISED_FAILSAVE},
-            {{true, false, false, false, true}, MODE_STABILISED_FAILSAVE},
-            {{true, false, false, true, false}, MODE_STABILISED_FAILSAVE},
-            {{true, false, false, true, true}, MODE_STABILISED_FAILSAVE},
-            {{true, false, true, false, false}, MODE_STABILISED_FAILSAVE},
-            {{true, false, true, false, true}, MODE_STABILISED_FAILSAVE},
-            {{true, false, true, true, false}, MODE_STABILISED_FAILSAVE},
-            {{true, false, true, true, true}, MODE_STABILISED_FAILSAVE},
+            {{true, false, false, false, false}, MODE_STABILISED_FAILSAFE},
+            {{true, false, false, false, true}, MODE_STABILISED_FAILSAFE},
+            {{true, false, false, true, false}, MODE_STABILISED_FAILSAFE},
+            {{true, false, false, true, true}, MODE_STABILISED_FAILSAFE},
+            {{true, false, true, false, false}, MODE_STABILISED_FAILSAFE},
+            {{true, false, true, false, true}, MODE_STABILISED_FAILSAFE},
+            {{true, false, true, true, false}, MODE_STABILISED_FAILSAFE},
+            {{true, false, true, true, true}, MODE_STABILISED_FAILSAFE},
             {{true, true, false, false, false}, MODE_REMOTE},
             {{true, true, false, false, true}, MODE_REMOTE},
             {{true, true, false, true, false}, MODE_REMOTE},
             {{true, true, false, true, true}, MODE_REMOTE},
-            {{true, true, true, false, false}, MODE_STABILISED_FAILSAVE},
+            {{true, true, true, false, false}, MODE_STABILISED_FAILSAFE},
             {{true, true, true, false, true}, MODE_FLIGHTCOMPUTER},
             {{true, true, true, true, false}, MODE_REMOTE},
             {{true, true, true, true, true}, MODE_REMOTE},

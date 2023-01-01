@@ -24,7 +24,7 @@ enum {
 /**
  * Possible flight modes depending on availability and integrity of data.
  */
-typedef enum { MODE_FLIGHTCOMPUTER, MODE_REMOTE, MODE_STABILISED_FAILSAVE, MODE_FAILSAVE } mode_handler_mode_t;
+typedef enum { MODE_FLIGHTCOMPUTER, MODE_REMOTE, MODE_STABILISED_FAILSAFE, MODE_FAILSAFE } mode_handler_mode_t;
 
 /**
  * Initialize the mode handler by setting the timeouts for all devices to true.

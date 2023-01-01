@@ -93,7 +93,7 @@ mode_handler_mode_t mode_handler_handle(imu_data_t *imu_data, remote_data_t *rem
         if (remote_data->is_armed) {
             return MODE_FLIGHTCOMPUTER;
         }
-        return MODE_STABILISED_FAILSAVE;
+        return MODE_STABILISED_FAILSAFE;
     }
 
     if (remote_active) {
@@ -101,8 +101,8 @@ mode_handler_mode_t mode_handler_handle(imu_data_t *imu_data, remote_data_t *rem
     }
 
     if (imu_active) {
-        return MODE_STABILISED_FAILSAVE;
+        return MODE_STABILISED_FAILSAFE;
     }
 
-    return MODE_FAILSAVE;
+    return MODE_FAILSAFE;
 }
