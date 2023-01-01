@@ -1,7 +1,7 @@
-#include <Mock/Application/error_handler.hpp>
-#include <Mock/Components/flightcomputer.hpp>
-#include <Mock/Components/imu.hpp>
-#include <Mock/Components/remote.hpp>
+#include <Mock/error_handler.hpp>
+#include <Mock/flightcomputer.hpp>
+#include <Mock/imu.hpp>
+#include <Mock/remote.hpp>
 #include <gtest/gtest.h>
 
 extern "C" {

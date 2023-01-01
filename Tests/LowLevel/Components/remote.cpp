@@ -1,4 +1,4 @@
-#include <Mock/Drivers/sbus.hpp>
+#include <Mock/sbus.hpp>
 #include <gtest/gtest.h>
 
 extern "C" {

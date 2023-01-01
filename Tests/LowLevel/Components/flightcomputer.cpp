@@ -1,4 +1,4 @@
-#include <Mock/Drivers/protobuf.hpp>
+#include <Mock/protobuf.hpp>
 #include <gtest/gtest.h>
 
 extern "C" {

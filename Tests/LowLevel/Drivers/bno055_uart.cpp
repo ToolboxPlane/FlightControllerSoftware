@@ -1,4 +1,4 @@
-#include <Mock/HAL/uart.hpp>
+#include <Mock/uart.hpp>
 #include <gtest/gtest.h>
 
 extern "C" {
