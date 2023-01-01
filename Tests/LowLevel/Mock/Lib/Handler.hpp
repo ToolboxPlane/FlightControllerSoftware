@@ -4,8 +4,8 @@
  * @date 08.11.22
  * Description here TODO
  */
-#ifndef FLIGHTCONTROLLER_HANDLER_HPP
-#define FLIGHTCONTROLLER_HANDLER_HPP
+#ifndef MOCK_HANDLER_HPP
+#define MOCK_HANDLER_HPP
 
 #include <cassert>
 #include <gtest/gtest.h>
@@ -103,4 +103,4 @@ namespace mock {
     };
 } // namespace mock
 
-#endif // FLIGHTCONTROLLER_HANDLER_HPP
+#endif // MOCK_HANDLER_HPP

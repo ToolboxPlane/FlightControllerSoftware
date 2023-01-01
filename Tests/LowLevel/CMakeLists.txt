@@ -42,20 +42,3 @@ make_fc_test(MODULE Drivers/sbus DEPS HAL/uart Drivers/ring_buffer)
 target_link_libraries(MessageEncoding.mock PUBLIC ToolboxPlaneMessageDefs)
 target_link_libraries(MessageDecoding.mock PUBLIC ToolboxPlaneMessageDefs)
 target_link_libraries(protobuf.mock PUBLIC ToolboxPlaneMessageDefs)
-
-#
-#add_custom_target(coverage.info
-#        COMMAND lcov --capture --directory ${CMAKE_CURRENT_BINARY_DIR} --output-file ${CMAKE_CURRENT_BINARY_DIR}/coverage.info
-#        DEPENDS ${AllTests})
-#
-#add_custom_target(Coverage
-#        COMMAND genhtml ${CMAKE_CURRENT_BINARY_DIR}/coverage.info --output-directory ${CMAKE_CURRENT_BINARY_DIR}/coverage
-#        DEPENDS coverage.info)
-#
-#add_custom_target(report.xml
-#        COMMAND junit2html . --merge report.xml
-#        DEPENDS ${AllTests})
-#
-#add_custom_target(LLReport
-#        COMMAND junit2html report.xml --report-matrix LLReport.html
-#        DEPENDS report.xml)

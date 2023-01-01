@@ -4,8 +4,8 @@
  * @date 08.11.22
  * Description here TODO
  */
-#ifndef FLIGHTCONTROLLER_MOCKUTIL_HPP
-#define FLIGHTCONTROLLER_MOCKUTIL_HPP
+#ifndef MOCK_UTIL_HPP
+#define MOCK_UTIL_HPP
 
 #include <tuple>
 #include <type_traits>
@@ -88,4 +88,4 @@ namespace mock::util {
     }
 } // namespace mock::util
 
-#endif // FLIGHTCONTROLLER_MOCKUTIL_HPP
+#endif // MOCK_UTIL_HPP

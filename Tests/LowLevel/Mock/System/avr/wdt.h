@@ -4,8 +4,8 @@
  * @date 22.12.22
  * @brief Description here TODO
  */
-#ifndef FLIGHTCONTROLLER_WDT_H
-#define FLIGHTCONTROLLER_WDT_H
+#ifndef MOCK_AVR_WDT_H
+#define MOCK_AVR_WDT_H
 
 typedef enum {
     WDTO_15MS = 0,
@@ -23,4 +23,4 @@ typedef enum {
 void wdt_enable(wdt_t wdt);
 void wdt_reset(void);
 
-#endif // FLIGHTCONTROLLER_WDT_H
+#endif // MOCK_AVR_WDT_H

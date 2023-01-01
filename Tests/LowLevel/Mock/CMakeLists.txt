@@ -1,12 +1,3 @@
-# Download GTest
-include(FetchContent)
-FetchContent_Declare(
-        gtest
-        GIT_REPOSITORY "https://github.com/google/googletest.git"
-        GIT_TAG "main"
-)
-FetchContent_MakeAvailable(gtest)
-
 # Load mocking lib
 add_subdirectory(Lib)
 
@@ -37,8 +28,7 @@ function(declare_mock mocked_module_header mock_lib_out)
     endif ()
 endfunction()
 
-
-
+# Add a target which can be used to run all tests
 add_custom_target(RunAllTests)
 
 # Function to build a mock test for a module
@@ -62,7 +52,8 @@ function(make_test)
     target_compile_options(${TestExecutable} PRIVATE --coverage -fprofile-arcs -ftest-coverage)
     target_link_options(${TestExecutable} PRIVATE --coverage -fprofile-arcs -ftest-coverage)
 
-    # Set the macro TEST_NAME to the name of the tested module
+    # Set the macro TEST_NAME to the name of the tested module and the compiler
+    string(REPLACE "." "_" compiler_version ${CMAKE_C_COMPILER_VERSION})
     set(test_name "${CMAKE_C_COMPILER_ID}_${compiler_version}_${CMAKE_BUILD_TYPE}_${TestSuite}")
     target_compile_definitions(${TestExecutable} PRIVATE -DTEST_NAME=${test_name})
 
@@ -70,7 +61,7 @@ function(make_test)
     target_include_directories(${TestExecutable} PRIVATE ${CMAKE_CURRENT_FUNCTION_LIST_DIR}/System)
 
     # Link against GTest libraries
-    target_link_libraries(${TestExecutable} PRIVATE gtest gmock pthread)
+    target_link_libraries(${TestExecutable} PRIVATE gtest pthread)
 
     # Generate mocked libraries and link against them
     foreach (REQUIRED_HEADER ${MAKE_TEST_REQUIRED_HEADERS})
@@ -79,11 +70,11 @@ function(make_test)
     endforeach ()
 
     # Create a target to run the test to be used as a dependency
-    add_custom_target(${test_name}.run
+    add_custom_target(${TestExecutable}.run
             COMMAND ${TestExecutable} --gtest_repeat=10 --gtest_shuffle --gtest_output=xml:${test_name}.xml
             DEPENDS ${TestExecutable})
 
-    # Add test to list of tests
-    add_dependencies(RunAllTests ${test_name}.run)
+    # Add test run as dependency to RunAllTests
+    add_dependencies(RunAllTests ${TestExecutable}.run)
 endfunction()
 

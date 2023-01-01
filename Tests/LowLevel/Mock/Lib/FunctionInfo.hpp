@@ -4,8 +4,8 @@
  * @date 08.11.22
  * Description here TODO
  */
-#ifndef FLIGHTCONTROLLER_FUNCTIONINFO_HPP
-#define FLIGHTCONTROLLER_FUNCTIONINFO_HPP
+#ifndef MOCK_FUNCTIONINFO_HPP
+#define MOCK_FUNCTIONINFO_HPP
 
 #include <functional>
 #include <optional>
@@ -39,4 +39,4 @@ namespace mock {
     using GetFunctionInfo = decltype(getFunctionInfoImpl(fun));
 } // namespace mock
 
-#endif // FLIGHTCONTROLLER_FUNCTIONINFO_HPP
+#endif // MOCK_FUNCTIONINFO_HPP

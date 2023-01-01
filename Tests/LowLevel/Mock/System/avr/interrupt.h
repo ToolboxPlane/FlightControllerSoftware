@@ -4,10 +4,10 @@
  * @date 22.12.22
  * @brief Description here TODO
  */
-#ifndef FLIGHTCONTROLLER_INTERRUPT_H
-#define FLIGHTCONTROLLER_INTERRUPT_H
+#ifndef MOCK_AVR_INTERRUPT_H
+#define MOCK_AVR_INTERRUPT_H
 
 void cli(void);
 void sei(void);
 
-#endif // FLIGHTCONTROLLER_INTERRUPT_H
+#endif // MOCK_AVR_INTERRUPT_H

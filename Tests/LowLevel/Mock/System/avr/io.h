@@ -4,8 +4,8 @@
  * @date 27.11.22
  * Description here TODO
  */
-#ifndef FLIGHTCONTROLLER_IO_H
-#define FLIGHTCONTROLLER_IO_H
+#ifndef MOCK_AVR_IO_H
+#define MOCK_AVR_IO_H
 
 #include <stdint.h>
 
@@ -27,4 +27,4 @@ extern uint8_t MCUSR;
 
 enum { WDRF, BORF };
 
-#endif // FLIGHTCONTROLLER_IO_H
+#endif // MOCK_AVR_IO_H

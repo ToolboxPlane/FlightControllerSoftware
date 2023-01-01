@@ -4,8 +4,8 @@
  * @date 08.11.22
  * Description here TODO
  */
-#ifndef FLIGHTCONTROLLER_MOCKBASE_HPP
-#define FLIGHTCONTROLLER_MOCKBASE_HPP
+#ifndef MOCK_BASE_HPP
+#define MOCK_BASE_HPP
 
 #include <cassert>
 #include <stdexcept>
@@ -81,4 +81,4 @@ namespace mock {
     };
 } // namespace mock
 
-#endif // FLIGHTCONTROLLER_MOCKBASE_HPP
+#endif // MOCK_BASE_HPP
