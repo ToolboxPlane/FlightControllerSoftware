@@ -24,21 +24,34 @@ typedef enum {
 } error_group_t;
 
 /**
- * Initialization of the error handler by initializing the LEDs used for signalling errors.
+ * @brief Initialization of the error handler by initializing the LEDs used for signalling errors.
+ *
+ * The initialization consists of the following tasks:
+ *  * Initializing the Port-L as output by setting all bits in Data-Direction-Register-L
+ *  * Disabling all LEDs by setting all bits in Register PORT-L to 0
  */
 void error_handler_init(void);
 
 /**
- * Handle any error occurred by the flight-controller. This will signal the error on the LEDs and
- * stops the flight-computer.
+ * @brief Handler for fatal errors, will signal the error and disable the flight-controller.
+ *
+ * This function performs the following tasks:
+ *  * Set LED 1-4 to the binary encoded group ID
+ *  * Set LED 5-8 to the binary encoded error ID
+ *  * Call system_reset_watchdog in an infinite loop
+ *
  * @param group the component that triggered the error_handler
  * @param error_id the id of the error of the component
  */
 void error_handler_handle_error(error_group_t group, uint8_t error_id);
 
 /**
- * Handle any error occurred by the flight-controller. This will signal the error on the LEDs and
- * but then resumes nominal operation.
+ * @brief Handler for non-fatal errors, will signal the error and resume nominal operation.
+ *
+ * This function performs the following tasks:
+ *  * Set LED 1-4 to the binary encoded group ID
+ *  * Set LED 5-8 to the binary encoded error ID
+ *
  * @param group the component that triggered the error_handler
  * @param error_id the id of the error of the component
  */

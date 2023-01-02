@@ -30,15 +30,15 @@ make_fc_test(MODULE Application/application
         Application/error_handler
         Application/mode_handler
         Components/actuators
-        Components/flightcomputer
+        Components/flight_computer
         Components/imu
         Components/remote
         Components/system)
 make_fc_test(MODULE Application/controller)
-make_fc_test(MODULE Application/error_handler DEPS avr/io avr/wdt)
-make_fc_test(MODULE Application/mode_handler DEPS Application/error_handler Components/imu Components/remote Components/flightcomputer)
+make_fc_test(MODULE Application/error_handler DEPS avr/io Components/system)
+make_fc_test(MODULE Application/mode_handler DEPS Application/error_handler Components/imu Components/remote Components/flight_computer)
 make_fc_test(MODULE Components/actuators DEPS Drivers/ppm)
-make_fc_test(MODULE Components/flightcomputer DEPS Drivers/protobuf)
+make_fc_test(MODULE Components/flight_computer DEPS Drivers/protobuf)
 make_fc_test(MODULE Components/imu DEPS Drivers/bno055 util/delay Application/error_handler)
 make_fc_test(MODULE Components/remote DEPS Drivers/sbus)
 make_fc_test(MODULE Components/system DEPS avr/io avr/wdt avr/interrupt HAL/timer8bit Application/error_handler)
@@ -48,6 +48,9 @@ make_fc_test(MODULE Drivers/ppm DEPS HAL/pwm16bit avr/io)
 make_fc_test(MODULE Drivers/protobuf DEPS HAL/uart Messages/MessageDecoding Messages/MessageEncoding Drivers/ring_buffer)
 make_fc_test(MODULE Drivers/ring_buffer)
 make_fc_test(MODULE Drivers/sbus DEPS HAL/uart Drivers/ring_buffer)
+make_fc_test(MODULE HAL/pwm16bit DEPS avr/io)
+make_fc_test(MODULE HAL/timer8bit DEPS avr/io)
+make_fc_test(MODULE HAL/uart DEPS avr/io)
 
 target_link_libraries(MessageEncoding.mock PUBLIC ToolboxPlaneMessageDefs)
 target_link_libraries(MessageDecoding.mock PUBLIC ToolboxPlaneMessageDefs)

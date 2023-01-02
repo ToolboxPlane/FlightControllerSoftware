@@ -1,5 +1,5 @@
 #include <Mock/error_handler.hpp>
-#include <Mock/flightcomputer.hpp>
+#include <Mock/flight_computer.hpp>
 #include <Mock/imu.hpp>
 #include <Mock/remote.hpp>
 #include <gtest/gtest.h>
@@ -10,7 +10,7 @@ extern "C" {
 
 TEST(TEST_NAME, imu_initial_timeout) {
     auto imuHandle = mock::imu.getHandle();
-    auto flightcomputerHandle = mock::flightcomputer.getHandle();
+    auto flightComputerHandle = mock::flight_computer.getHandle();
     auto remoteHandle = mock::remote.getHandle();
     auto errorHandlerHandle = mock::error_handler.getHandle();
 
@@ -28,14 +28,14 @@ TEST(TEST_NAME, imu_initial_timeout) {
         res.remote_ok = true;
         return res;
     });
-    flightcomputerHandle.overrideFunc<flightcomputer_setpoint_available>([]() { return true; });
-    flightcomputerHandle.overrideFunc<flightcomputer_get_setpoint>([]() { return flightcomputer_setpoint_t{}; });
+    flightComputerHandle.overrideFunc<flight_computer_set_point_available>([]() { return true; });
+    flightComputerHandle.overrideFunc<flight_computer_get_set_point>([]() { return flight_computer_set_point_t{}; });
 
     mode_handler_init();
 
     imu_data_t imuData;
     remote_data_t remoteData;
-    flightcomputer_setpoint_t flightcomputerSetpoint;
+    flight_computer_set_point_t flightcomputerSetpoint;
 
     EXPECT_EQ(mode_handler_handle(&imuData, &remoteData, &flightcomputerSetpoint), MODE_REMOTE);
     EXPECT_TRUE(errorHandlerHandle.functionGotCalled<error_handler_handle_warning>(MODE_HANDLER,
@@ -44,7 +44,7 @@ TEST(TEST_NAME, imu_initial_timeout) {
 
 TEST(TEST_NAME, imu_initial_nok) {
     auto imuHandle = mock::imu.getHandle();
-    auto flightcomputerHandle = mock::flightcomputer.getHandle();
+    auto flightComputerHandle = mock::flight_computer.getHandle();
     auto remoteHandle = mock::remote.getHandle();
     auto errorHandlerHandle = mock::error_handler.getHandle();
 
@@ -62,14 +62,14 @@ TEST(TEST_NAME, imu_initial_nok) {
         res.remote_ok = true;
         return res;
     });
-    flightcomputerHandle.overrideFunc<flightcomputer_setpoint_available>([]() { return true; });
-    flightcomputerHandle.overrideFunc<flightcomputer_get_setpoint>([]() { return flightcomputer_setpoint_t{}; });
+    flightComputerHandle.overrideFunc<flight_computer_set_point_available>([]() { return true; });
+    flightComputerHandle.overrideFunc<flight_computer_get_set_point>([]() { return flight_computer_set_point_t{}; });
 
     mode_handler_init();
 
     imu_data_t imuData;
     remote_data_t remoteData;
-    flightcomputer_setpoint_t flightcomputerSetpoint;
+    flight_computer_set_point_t flightcomputerSetpoint;
 
     EXPECT_EQ(mode_handler_handle(&imuData, &remoteData, &flightcomputerSetpoint), MODE_REMOTE);
     EXPECT_TRUE(errorHandlerHandle.functionGotCalled<error_handler_handle_warning>(MODE_HANDLER,
@@ -78,7 +78,7 @@ TEST(TEST_NAME, imu_initial_nok) {
 
 TEST(TEST_NAME, imu_timeout) {
     auto imuHandle = mock::imu.getHandle();
-    auto flightcomputerHandle = mock::flightcomputer.getHandle();
+    auto flightComputerHandle = mock::flight_computer.getHandle();
     auto remoteHandle = mock::remote.getHandle();
     auto errorHandlerHandle = mock::error_handler.getHandle();
 
@@ -100,14 +100,14 @@ TEST(TEST_NAME, imu_timeout) {
         res.remote_ok = true;
         return res;
     });
-    flightcomputerHandle.overrideFunc<flightcomputer_setpoint_available>([]() { return true; });
-    flightcomputerHandle.overrideFunc<flightcomputer_get_setpoint>([]() { return flightcomputer_setpoint_t{}; });
+    flightComputerHandle.overrideFunc<flight_computer_set_point_available>([]() { return true; });
+    flightComputerHandle.overrideFunc<flight_computer_get_set_point>([]() { return flight_computer_set_point_t{}; });
 
     mode_handler_init();
 
     imu_data_t imuData;
     remote_data_t remoteData;
-    flightcomputer_setpoint_t flightcomputerSetpoint;
+    flight_computer_set_point_t flightcomputerSetpoint;
 
     // 1 - data available
     EXPECT_EQ(mode_handler_handle(&imuData, &remoteData, &flightcomputerSetpoint), MODE_FLIGHTCOMPUTER);
@@ -152,7 +152,7 @@ TEST(TEST_NAME, imu_timeout) {
 
 TEST(TEST_NAME, remote_initial_timeout) {
     auto imuHandle = mock::imu.getHandle();
-    auto flightcomputerHandle = mock::flightcomputer.getHandle();
+    auto flightComputerHandle = mock::flight_computer.getHandle();
     auto remoteHandle = mock::remote.getHandle();
     auto errorHandlerHandle = mock::error_handler.getHandle();
 
@@ -170,14 +170,14 @@ TEST(TEST_NAME, remote_initial_timeout) {
         res.remote_ok = true;
         return res;
     });
-    flightcomputerHandle.overrideFunc<flightcomputer_setpoint_available>([]() { return true; });
-    flightcomputerHandle.overrideFunc<flightcomputer_get_setpoint>([]() { return flightcomputer_setpoint_t{}; });
+    flightComputerHandle.overrideFunc<flight_computer_set_point_available>([]() { return true; });
+    flightComputerHandle.overrideFunc<flight_computer_get_set_point>([]() { return flight_computer_set_point_t{}; });
 
     mode_handler_init();
 
     imu_data_t imuData;
     remote_data_t remoteData;
-    flightcomputer_setpoint_t flightcomputerSetpoint;
+    flight_computer_set_point_t flightcomputerSetpoint;
 
     EXPECT_EQ(mode_handler_handle(&imuData, &remoteData, &flightcomputerSetpoint), MODE_STABILISED_FAILSAFE);
     EXPECT_TRUE(errorHandlerHandle.functionGotCalled<error_handler_handle_warning>(MODE_HANDLER,
@@ -186,7 +186,7 @@ TEST(TEST_NAME, remote_initial_timeout) {
 
 TEST(TEST_NAME, remote_initial_nok) {
     auto imuHandle = mock::imu.getHandle();
-    auto flightcomputerHandle = mock::flightcomputer.getHandle();
+    auto flightComputerHandle = mock::flight_computer.getHandle();
     auto remoteHandle = mock::remote.getHandle();
     auto errorHandlerHandle = mock::error_handler.getHandle();
 
@@ -204,14 +204,14 @@ TEST(TEST_NAME, remote_initial_nok) {
         res.remote_ok = false;
         return res;
     });
-    flightcomputerHandle.overrideFunc<flightcomputer_setpoint_available>([]() { return true; });
-    flightcomputerHandle.overrideFunc<flightcomputer_get_setpoint>([]() { return flightcomputer_setpoint_t{}; });
+    flightComputerHandle.overrideFunc<flight_computer_set_point_available>([]() { return true; });
+    flightComputerHandle.overrideFunc<flight_computer_get_set_point>([]() { return flight_computer_set_point_t{}; });
 
     mode_handler_init();
 
     imu_data_t imuData;
     remote_data_t remoteData;
-    flightcomputer_setpoint_t flightcomputerSetpoint;
+    flight_computer_set_point_t flightcomputerSetpoint;
 
     EXPECT_EQ(mode_handler_handle(&imuData, &remoteData, &flightcomputerSetpoint), MODE_STABILISED_FAILSAFE);
     EXPECT_TRUE(errorHandlerHandle.functionGotCalled<error_handler_handle_warning>(MODE_HANDLER,
@@ -220,7 +220,7 @@ TEST(TEST_NAME, remote_initial_nok) {
 
 TEST(TEST_NAME, remote_timeout) {
     auto imuHandle = mock::imu.getHandle();
-    auto flightcomputerHandle = mock::flightcomputer.getHandle();
+    auto flightComputerHandle = mock::flight_computer.getHandle();
     auto remoteHandle = mock::remote.getHandle();
     auto errorHandlerHandle = mock::error_handler.getHandle();
 
@@ -242,14 +242,14 @@ TEST(TEST_NAME, remote_timeout) {
         res.remote_ok = true;
         return res;
     });
-    flightcomputerHandle.overrideFunc<flightcomputer_setpoint_available>([]() { return true; });
-    flightcomputerHandle.overrideFunc<flightcomputer_get_setpoint>([]() { return flightcomputer_setpoint_t{}; });
+    flightComputerHandle.overrideFunc<flight_computer_set_point_available>([]() { return true; });
+    flightComputerHandle.overrideFunc<flight_computer_get_set_point>([]() { return flight_computer_set_point_t{}; });
 
     mode_handler_init();
 
     imu_data_t imuData;
     remote_data_t remoteData;
-    flightcomputer_setpoint_t flightcomputerSetpoint;
+    flight_computer_set_point_t flightcomputerSetpoint;
 
     // 1 - data available
     EXPECT_EQ(mode_handler_handle(&imuData, &remoteData, &flightcomputerSetpoint), MODE_FLIGHTCOMPUTER);
@@ -294,7 +294,7 @@ TEST(TEST_NAME, remote_timeout) {
 
 TEST(TEST_NAME, fcp_initial_timeout) {
     auto imuHandle = mock::imu.getHandle();
-    auto flightcomputerHandle = mock::flightcomputer.getHandle();
+    auto flightComputerHandle = mock::flight_computer.getHandle();
     auto remoteHandle = mock::remote.getHandle();
     auto errorHandlerHandle = mock::error_handler.getHandle();
 
@@ -312,14 +312,14 @@ TEST(TEST_NAME, fcp_initial_timeout) {
         res.remote_ok = true;
         return res;
     });
-    flightcomputerHandle.overrideFunc<flightcomputer_setpoint_available>([]() { return false; });
-    flightcomputerHandle.overrideFunc<flightcomputer_get_setpoint>([]() { return flightcomputer_setpoint_t{}; });
+    flightComputerHandle.overrideFunc<flight_computer_set_point_available>([]() { return false; });
+    flightComputerHandle.overrideFunc<flight_computer_get_set_point>([]() { return flight_computer_set_point_t{}; });
 
     mode_handler_init();
 
     imu_data_t imuData;
     remote_data_t remoteData;
-    flightcomputer_setpoint_t flightcomputerSetpoint;
+    flight_computer_set_point_t flightcomputerSetpoint;
 
     EXPECT_EQ(mode_handler_handle(&imuData, &remoteData, &flightcomputerSetpoint), MODE_REMOTE);
     EXPECT_TRUE(errorHandlerHandle.functionGotCalled<error_handler_handle_warning>(MODE_HANDLER,
@@ -328,7 +328,7 @@ TEST(TEST_NAME, fcp_initial_timeout) {
 
 TEST(TEST_NAME, fcp_timeout) {
     auto imuHandle = mock::imu.getHandle();
-    auto flightcomputerHandle = mock::flightcomputer.getHandle();
+    auto flightComputerHandle = mock::flight_computer.getHandle();
     auto remoteHandle = mock::remote.getHandle();
     auto errorHandlerHandle = mock::error_handler.getHandle();
 
@@ -347,17 +347,17 @@ TEST(TEST_NAME, fcp_timeout) {
         res.remote_ok = true;
         return res;
     });
-    flightcomputerHandle.overrideFunc<flightcomputer_setpoint_available>([&frameCounter]() {
+    flightComputerHandle.overrideFunc<flight_computer_set_point_available>([&frameCounter]() {
         frameCounter += 1;
         return frameCounter < 2 or frameCounter > 13;
     });
-    flightcomputerHandle.overrideFunc<flightcomputer_get_setpoint>([]() { return flightcomputer_setpoint_t{}; });
+    flightComputerHandle.overrideFunc<flight_computer_get_set_point>([]() { return flight_computer_set_point_t{}; });
 
     mode_handler_init();
 
     imu_data_t imuData;
     remote_data_t remoteData;
-    flightcomputer_setpoint_t flightcomputerSetpoint;
+    flight_computer_set_point_t flightcomputerSetpoint;
 
     // 1 - data available
     EXPECT_EQ(mode_handler_handle(&imuData, &remoteData, &flightcomputerSetpoint), MODE_FLIGHTCOMPUTER);
@@ -432,13 +432,13 @@ TEST(TEST_NAME, fcp_timeout) {
 
 TEST(TEST_NAME, modeselection) {
     auto imuHandle = mock::imu.getHandle();
-    auto flightcomputerHandle = mock::flightcomputer.getHandle();
+    auto flightComputerHandle = mock::flight_computer.getHandle();
     auto remoteHandle = mock::remote.getHandle();
     auto errorHandlerHandle = mock::error_handler.getHandle();
 
     imuHandle.overrideFunc<imu_data_available>([]() { return true; });
     remoteHandle.overrideFunc<remote_data_available>([]() { return true; });
-    flightcomputerHandle.overrideFunc<flightcomputer_get_setpoint>([]() { return flightcomputer_setpoint_t{}; });
+    flightComputerHandle.overrideFunc<flight_computer_get_set_point>([]() { return flight_computer_set_point_t{}; });
 
     struct availability_values {
         bool imu, remote, fcp, override, arm;
@@ -499,12 +499,12 @@ TEST(TEST_NAME, modeselection) {
             res.remote_ok = availability_value.remote;
             return res;
         });
-        flightcomputerHandle.overrideFunc<flightcomputer_setpoint_available>(
+        flightComputerHandle.overrideFunc<flight_computer_set_point_available>(
                 [availability_value]() { return availability_value.fcp; });
 
         imu_data_t imuData;
         remote_data_t remoteData;
-        flightcomputer_setpoint_t flightcomputerSetpoint;
+        flight_computer_set_point_t flightcomputerSetpoint;
         EXPECT_EQ(mode_handler_handle(&imuData, &remoteData, &flightcomputerSetpoint), expected_mode);
         if (!availability_value.remote) {
             EXPECT_TRUE(errorHandlerHandle.functionGotCalled<error_handler_handle_warning>(
@@ -523,7 +523,7 @@ TEST(TEST_NAME, modeselection) {
 
 TEST(TEST_NAME, fill_out_vars) {
     auto imuHandle = mock::imu.getHandle();
-    auto flightcomputerHandle = mock::flightcomputer.getHandle();
+    auto flightComputerHandle = mock::flight_computer.getHandle();
     auto remoteHandle = mock::remote.getHandle();
     auto errorHandlerHandle = mock::error_handler.getHandle();
 
@@ -549,17 +549,17 @@ TEST(TEST_NAME, fill_out_vars) {
                              .override_active = false,
                              .remote_ok = true};
     });
-    flightcomputerHandle.overrideFunc<flightcomputer_setpoint_available>([]() { return true; });
-    flightcomputerHandle.overrideFunc<flightcomputer_get_setpoint>(
-            []() { return flightcomputer_setpoint_t{.motor = 32, .pitch = 33, .roll = 34}; });
+    flightComputerHandle.overrideFunc<flight_computer_set_point_available>([]() { return true; });
+    flightComputerHandle.overrideFunc<flight_computer_get_set_point>(
+            []() { return flight_computer_set_point_t{.motor = 32, .pitch = 33, .roll = 34}; });
 
     mode_handler_init();
 
     imu_data_t imuData;
     remote_data_t remoteData;
-    flightcomputer_setpoint_t flightcomputerSetpoint;
+    flight_computer_set_point_t flightComputerSetPoint;
 
-    mode_handler_handle(&imuData, &remoteData, &flightcomputerSetpoint);
+    mode_handler_handle(&imuData, &remoteData, &flightComputerSetPoint);
     EXPECT_EQ(imuData.heading_mul_16, 17);
     EXPECT_EQ(imuData.pitch_mul_16, 18);
     EXPECT_EQ(imuData.roll_mul_16, 19);
@@ -576,7 +576,7 @@ TEST(TEST_NAME, fill_out_vars) {
     EXPECT_EQ(remoteData.is_armed, true);
     EXPECT_EQ(remoteData.override_active, false);
     EXPECT_EQ(remoteData.remote_ok, true);
-    EXPECT_EQ(flightcomputerSetpoint.motor, 32);
-    EXPECT_EQ(flightcomputerSetpoint.pitch, 33);
-    EXPECT_EQ(flightcomputerSetpoint.roll, 34);
+    EXPECT_EQ(flightComputerSetPoint.motor, 32);
+    EXPECT_EQ(flightComputerSetPoint.pitch, 33);
+    EXPECT_EQ(flightComputerSetPoint.roll, 34);
 }

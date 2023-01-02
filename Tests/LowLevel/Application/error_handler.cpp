@@ -1,5 +1,5 @@
 #include <Mock/io.hpp>
-#include <Mock/wdt.hpp>
+#include <Mock/system.hpp>
 #include <gtest/gtest.h>
 
 extern "C" {
@@ -18,9 +18,9 @@ TEST(TEST_NAME, handle_warning) {
 }
 
 TEST(TEST_NAME, handle_error) {
-    auto wdtHandle = mock::wdt.getHandle();
+    auto systemHandle = mock::system.getHandle();
     std::size_t count = 0;
-    wdtHandle.overrideFunc<wdt_reset>([&count]() {
+    systemHandle.overrideFunc<system_reset_watchdog>([&count]() {
         EXPECT_EQ(PORTL, 16 * 11 + 6);
         count += 1;
         if (count >= 10) { // This solves the halting problem...

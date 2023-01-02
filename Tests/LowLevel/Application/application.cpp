@@ -1,7 +1,7 @@
 #include <Mock/actuators.hpp>
 #include <Mock/controller.hpp>
 #include <Mock/error_handler.hpp>
-#include <Mock/flightcomputer.hpp>
+#include <Mock/flight_computer.hpp>
 #include <Mock/imu.hpp>
 #include <Mock/mode_handler.hpp>
 #include <Mock/remote.hpp>
@@ -15,7 +15,7 @@ extern "C" {
 TEST(TEST_NAME, init) {
     auto actuatorsHandle = mock::actuators.getHandle();
     auto errorHandlerHandle = mock::error_handler.getHandle();
-    auto flighcomputerHandle = mock::flightcomputer.getHandle();
+    auto flightComputerHandle = mock::flight_computer.getHandle();
     auto imuHandle = mock::imu.getHandle();
     auto modeHandlerHandle = mock::mode_handler.getHandle();
     auto remoteHandlerHandle = mock::remote.getHandle();
@@ -30,7 +30,7 @@ TEST(TEST_NAME, init) {
     EXPECT_TRUE(errorHandlerHandle.functionGotCalled<error_handler_init>());
     EXPECT_TRUE(imuHandle.functionGotCalled<imu_init>());
     EXPECT_TRUE(remoteHandlerHandle.functionGotCalled<remote_init>());
-    EXPECT_TRUE(flighcomputerHandle.functionGotCalled<flightcomputer_init>());
+    EXPECT_TRUE(flightComputerHandle.functionGotCalled<flight_computer_init>());
     EXPECT_TRUE(actuatorsHandle.functionGotCalled<actuators_init>());
     EXPECT_TRUE(modeHandlerHandle.functionGotCalled<mode_handler_init>());
     EXPECT_TRUE(systemHandle.functionGotCalled<system_post_init>());
@@ -39,7 +39,7 @@ TEST(TEST_NAME, init) {
 TEST(TEST_NAME, timer_mode_fcp) {
     auto actuatorsHandle = mock::actuators.getHandle();
     auto errorHandlerHandle = mock::error_handler.getHandle();
-    auto flighcomputerHandle = mock::flightcomputer.getHandle();
+    auto flightComputerHandle = mock::flight_computer.getHandle();
     auto imuHandle = mock::imu.getHandle();
     auto modeHandlerHandle = mock::mode_handler.getHandle();
     auto remoteHandlerHandle = mock::remote.getHandle();
@@ -58,14 +58,14 @@ TEST(TEST_NAME, timer_mode_fcp) {
     EXPECT_TRUE(errorHandlerHandle.functionGotCalled<error_handler_init>());
     EXPECT_TRUE(imuHandle.functionGotCalled<imu_init>());
     EXPECT_TRUE(remoteHandlerHandle.functionGotCalled<remote_init>());
-    EXPECT_TRUE(flighcomputerHandle.functionGotCalled<flightcomputer_init>());
+    EXPECT_TRUE(flightComputerHandle.functionGotCalled<flight_computer_init>());
     EXPECT_TRUE(actuatorsHandle.functionGotCalled<actuators_init>());
     EXPECT_TRUE(modeHandlerHandle.functionGotCalled<mode_handler_init>());
     EXPECT_TRUE(systemHandle.functionGotCalled<system_post_init>());
 
     // Actual test
     modeHandlerHandle.overrideFunc<mode_handler_handle>(
-            [](imu_data_t *imu_data, remote_data_t *remote_data, flightcomputer_setpoint_t *flightcomputer_setpoint) {
+            [](imu_data_t *imu_data, remote_data_t *remote_data, flight_computer_set_point_t *flightcomputer_setpoint) {
                 imu_data->heading_mul_16 = 17;
                 imu_data->pitch_mul_16 = 18;
                 imu_data->roll_mul_16 = 19;
@@ -120,7 +120,7 @@ TEST(TEST_NAME, timer_mode_fcp) {
 TEST(TEST_NAME, timer_mode_remote) {
     auto actuatorsHandle = mock::actuators.getHandle();
     auto errorHandlerHandle = mock::error_handler.getHandle();
-    auto flighcomputerHandle = mock::flightcomputer.getHandle();
+    auto flightComputerHandle = mock::flight_computer.getHandle();
     auto imuHandle = mock::imu.getHandle();
     auto modeHandlerHandle = mock::mode_handler.getHandle();
     auto remoteHandlerHandle = mock::remote.getHandle();
@@ -139,14 +139,14 @@ TEST(TEST_NAME, timer_mode_remote) {
     EXPECT_TRUE(errorHandlerHandle.functionGotCalled<error_handler_init>());
     EXPECT_TRUE(imuHandle.functionGotCalled<imu_init>());
     EXPECT_TRUE(remoteHandlerHandle.functionGotCalled<remote_init>());
-    EXPECT_TRUE(flighcomputerHandle.functionGotCalled<flightcomputer_init>());
+    EXPECT_TRUE(flightComputerHandle.functionGotCalled<flight_computer_init>());
     EXPECT_TRUE(actuatorsHandle.functionGotCalled<actuators_init>());
     EXPECT_TRUE(modeHandlerHandle.functionGotCalled<mode_handler_init>());
     EXPECT_TRUE(systemHandle.functionGotCalled<system_post_init>());
 
     // Actual test
     modeHandlerHandle.overrideFunc<mode_handler_handle>(
-            [](imu_data_t *imu_data, remote_data_t *remote_data, flightcomputer_setpoint_t *flightcomputer_setpoint) {
+            [](imu_data_t *imu_data, remote_data_t *remote_data, flight_computer_set_point_t *flightcomputer_setpoint) {
                 imu_data->heading_mul_16 = 17;
                 imu_data->pitch_mul_16 = 18;
                 imu_data->roll_mul_16 = 19;
@@ -183,7 +183,7 @@ TEST(TEST_NAME, timer_mode_remote) {
 TEST(TEST_NAME, timer_mode_stabilised_failsafe) {
     auto actuatorsHandle = mock::actuators.getHandle();
     auto errorHandlerHandle = mock::error_handler.getHandle();
-    auto flighcomputerHandle = mock::flightcomputer.getHandle();
+    auto flightComputerHandle = mock::flight_computer.getHandle();
     auto imuHandle = mock::imu.getHandle();
     auto modeHandlerHandle = mock::mode_handler.getHandle();
     auto remoteHandlerHandle = mock::remote.getHandle();
@@ -202,14 +202,14 @@ TEST(TEST_NAME, timer_mode_stabilised_failsafe) {
     EXPECT_TRUE(errorHandlerHandle.functionGotCalled<error_handler_init>());
     EXPECT_TRUE(imuHandle.functionGotCalled<imu_init>());
     EXPECT_TRUE(remoteHandlerHandle.functionGotCalled<remote_init>());
-    EXPECT_TRUE(flighcomputerHandle.functionGotCalled<flightcomputer_init>());
+    EXPECT_TRUE(flightComputerHandle.functionGotCalled<flight_computer_init>());
     EXPECT_TRUE(actuatorsHandle.functionGotCalled<actuators_init>());
     EXPECT_TRUE(modeHandlerHandle.functionGotCalled<mode_handler_init>());
     EXPECT_TRUE(systemHandle.functionGotCalled<system_post_init>());
 
     // Actual test
     modeHandlerHandle.overrideFunc<mode_handler_handle>(
-            [](imu_data_t *imu_data, remote_data_t *remote_data, flightcomputer_setpoint_t *flightcomputer_setpoint) {
+            [](imu_data_t *imu_data, remote_data_t *remote_data, flight_computer_set_point_t *flightcomputer_setpoint) {
                 imu_data->heading_mul_16 = 17;
                 imu_data->pitch_mul_16 = 18;
                 imu_data->roll_mul_16 = 19;
@@ -264,7 +264,7 @@ TEST(TEST_NAME, timer_mode_stabilised_failsafe) {
 TEST(TEST_NAME, timer_mode_failsafe) {
     auto actuatorsHandle = mock::actuators.getHandle();
     auto errorHandlerHandle = mock::error_handler.getHandle();
-    auto flighcomputerHandle = mock::flightcomputer.getHandle();
+    auto flightComputerHandle = mock::flight_computer.getHandle();
     auto imuHandle = mock::imu.getHandle();
     auto modeHandlerHandle = mock::mode_handler.getHandle();
     auto remoteHandlerHandle = mock::remote.getHandle();
@@ -283,14 +283,14 @@ TEST(TEST_NAME, timer_mode_failsafe) {
     EXPECT_TRUE(errorHandlerHandle.functionGotCalled<error_handler_init>());
     EXPECT_TRUE(imuHandle.functionGotCalled<imu_init>());
     EXPECT_TRUE(remoteHandlerHandle.functionGotCalled<remote_init>());
-    EXPECT_TRUE(flighcomputerHandle.functionGotCalled<flightcomputer_init>());
+    EXPECT_TRUE(flightComputerHandle.functionGotCalled<flight_computer_init>());
     EXPECT_TRUE(actuatorsHandle.functionGotCalled<actuators_init>());
     EXPECT_TRUE(modeHandlerHandle.functionGotCalled<mode_handler_init>());
     EXPECT_TRUE(systemHandle.functionGotCalled<system_post_init>());
 
     // Actual test
     modeHandlerHandle.overrideFunc<mode_handler_handle>(
-            [](imu_data_t *imu_data, remote_data_t *remote_data, flightcomputer_setpoint_t *flightcomputer_setpoint) {
+            [](imu_data_t *imu_data, remote_data_t *remote_data, flight_computer_set_point_t *flightcomputer_setpoint) {
                 imu_data->heading_mul_16 = 17;
                 imu_data->pitch_mul_16 = 18;
                 imu_data->roll_mul_16 = 19;
@@ -328,7 +328,7 @@ TEST(TEST_NAME, timer_mode_failsafe) {
 TEST(TEST_NAME, timer_send_period) {
     auto actuatorsHandle = mock::actuators.getHandle();
     auto errorHandlerHandle = mock::error_handler.getHandle();
-    auto flighcomputerHandle = mock::flightcomputer.getHandle();
+    auto flightComputerHandle = mock::flight_computer.getHandle();
     auto imuHandle = mock::imu.getHandle();
     auto modeHandlerHandle = mock::mode_handler.getHandle();
     auto remoteHandlerHandle = mock::remote.getHandle();
@@ -347,14 +347,14 @@ TEST(TEST_NAME, timer_send_period) {
     EXPECT_TRUE(errorHandlerHandle.functionGotCalled<error_handler_init>());
     EXPECT_TRUE(imuHandle.functionGotCalled<imu_init>());
     EXPECT_TRUE(remoteHandlerHandle.functionGotCalled<remote_init>());
-    EXPECT_TRUE(flighcomputerHandle.functionGotCalled<flightcomputer_init>());
+    EXPECT_TRUE(flightComputerHandle.functionGotCalled<flight_computer_init>());
     EXPECT_TRUE(actuatorsHandle.functionGotCalled<actuators_init>());
     EXPECT_TRUE(modeHandlerHandle.functionGotCalled<mode_handler_init>());
     EXPECT_TRUE(systemHandle.functionGotCalled<system_post_init>());
 
     // Actual test
     modeHandlerHandle.overrideFunc<mode_handler_handle>(
-            [](imu_data_t *imu_data, remote_data_t *remote_data, flightcomputer_setpoint_t *flightcomputer_setpoint) {
+            [](imu_data_t *imu_data, remote_data_t *remote_data, flight_computer_set_point_t *flightcomputer_setpoint) {
                 imu_data->heading_mul_16 = 17;
                 imu_data->pitch_mul_16 = 18;
                 imu_data->roll_mul_16 = 19;
@@ -400,7 +400,7 @@ TEST(TEST_NAME, timer_send_period) {
         EXPECT_EQ(actuator_cmd->motor, 31);
     });
 
-    flighcomputerHandle.overrideFunc<flightcomputer_send>(
+    flightComputerHandle.overrideFunc<flight_computer_send>(
             [](const imu_data_t *imu_data, const remote_data_t *remote_data, const actuator_cmd_t *actuator_cmd) {
                 EXPECT_EQ(imu_data->heading_mul_16, 17);
                 EXPECT_EQ(imu_data->pitch_mul_16, 18);
@@ -430,7 +430,7 @@ TEST(TEST_NAME, timer_send_period) {
         EXPECT_TRUE(modeHandlerHandle.functionGotCalled<mode_handler_handle>());
         EXPECT_TRUE(controllerHandle.functionGotCalled<controller_update>());
         EXPECT_TRUE(actuatorsHandle.functionGotCalled<actuators_set>());
-        EXPECT_FALSE(flighcomputerHandle.functionGotCalled<flightcomputer_send>());
+        EXPECT_FALSE(flightComputerHandle.functionGotCalled<flight_computer_send>());
         EXPECT_TRUE(imuHandle.functionGotCalled<imu_start_sampling>());
     }
 
@@ -438,13 +438,13 @@ TEST(TEST_NAME, timer_send_period) {
     EXPECT_TRUE(modeHandlerHandle.functionGotCalled<mode_handler_handle>());
     EXPECT_TRUE(controllerHandle.functionGotCalled<controller_update>());
     EXPECT_TRUE(actuatorsHandle.functionGotCalled<actuators_set>());
-    EXPECT_TRUE(flighcomputerHandle.functionGotCalled<flightcomputer_send>());
+    EXPECT_TRUE(flightComputerHandle.functionGotCalled<flight_computer_send>());
     EXPECT_TRUE(imuHandle.functionGotCalled<imu_start_sampling>());
 
     timer_callback();
     EXPECT_TRUE(modeHandlerHandle.functionGotCalled<mode_handler_handle>());
     EXPECT_TRUE(controllerHandle.functionGotCalled<controller_update>());
     EXPECT_TRUE(actuatorsHandle.functionGotCalled<actuators_set>());
-    EXPECT_FALSE(flighcomputerHandle.functionGotCalled<flightcomputer_send>());
+    EXPECT_FALSE(flightComputerHandle.functionGotCalled<flight_computer_send>());
     EXPECT_TRUE(imuHandle.functionGotCalled<imu_start_sampling>());
 }

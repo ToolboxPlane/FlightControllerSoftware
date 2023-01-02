@@ -11,7 +11,7 @@
 #include "Application/error_handler.h"
 #include "Application/mode_handler.h"
 #include "Components/actuators.h"
-#include "Components/flightcomputer.h"
+#include "Components/flight_computer.h"
 #include "Components/imu.h"
 #include "Components/remote.h"
 #include "Components/system.h"
@@ -31,7 +31,7 @@ static volatile uint8_t fcps_send_mux = 0;
 static void timer_tick(void) {
     imu_data_t imu_data;
     remote_data_t remote_data;
-    flightcomputer_setpoint_t flightcomputer_setpoint;
+    flight_computer_set_point_t flightcomputer_setpoint;
     mode_handler_mode_t mode = mode_handler_handle(&imu_data, &remote_data, &flightcomputer_setpoint);
 
     /*
@@ -73,7 +73,7 @@ static void timer_tick(void) {
      */
     fcps_send_mux += 1;
     if (fcps_send_mux >= FLIGHTCOMPUTER_SEND_PERIOD) {
-        flightcomputer_send(&imu_data, &remote_data, &actuator_cmd);
+        flight_computer_send(&imu_data, &remote_data, &actuator_cmd);
         fcps_send_mux = 0;
     }
 
@@ -89,7 +89,7 @@ void application_init(void) {
 
     imu_init();
     remote_init();
-    flightcomputer_init();
+    flight_computer_init();
     actuators_init();
     mode_handler_init();
 

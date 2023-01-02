@@ -19,7 +19,23 @@ typedef struct {
 } controller_result_t;
 
 /**
- * Update the attitude P-controller.
+ * @brief Update the attitude P-controller.
+ *
+ * This function performs the following calculations for both the roll and pitch axis:
+ *  * Calculate the error along the axis as the current value subtracted from the set point
+ *  * Normalize the error to the range [-180, 180] to find the shortest rotation direction
+ *  * Multiply the error with the respective P-constant to get a command along the axis.
+
+ * The individual pseudo elevon commands are then calculated as:
+ *  * elevon_left = - roll_cmd - pitch_cmd
+ *  * elevon_right = roll_cmd - pitch_cmd
+ *
+ * The actual controller-result is then calculated by clamping the elevon signals to [-500, 500].
+ *
+ * A positive roll error, respective roll command shall result in the plane banking right;
+ * a positive pitch error, respective pitch command shall result in the plane pitching down.
+ * A positive elevon command shall result in the elevon deflecting upwards.
+ *
  * @param imu_data the current state of the plane
  * @param roll_setpoint the desired roll angle in degree
  * @param pitch_setpoint the desired pitch angle in degree

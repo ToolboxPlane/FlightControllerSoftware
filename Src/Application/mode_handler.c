@@ -26,7 +26,7 @@ void mode_handler_init(void) {
 }
 
 mode_handler_mode_t mode_handler_handle(imu_data_t *imu_data, remote_data_t *remote_data,
-                                        flightcomputer_setpoint_t *flightcomputer_setpoint) {
+                                        flight_computer_set_point_t *flightcomputer_setpoint) {
     /*
      * Timeout Handling
      */
@@ -54,7 +54,7 @@ mode_handler_mode_t mode_handler_handle(imu_data_t *imu_data, remote_data_t *rem
     }
     *remote_data = remote_get_data();
 
-    if (!flightcomputer_setpoint_available()) {
+    if (!flight_computer_set_point_available()) {
         flightcomputer_timeout_counter += 1;
     } else {
         flightcomputer_timeout_counter = 0;
@@ -64,7 +64,7 @@ mode_handler_mode_t mode_handler_handle(imu_data_t *imu_data, remote_data_t *rem
         flightcomputer_timeout_counter = FLIGHTCOMPUTER_TIMEOUT;
         flightcomputer_active = false;
     }
-    *flightcomputer_setpoint = flightcomputer_get_setpoint();
+    *flightcomputer_setpoint = flight_computer_get_set_point();
 
     /*
      * Set only as active with both active and ok

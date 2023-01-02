@@ -1,19 +1,19 @@
 /**
- * @file flightcomputer.c
+ * @file flight_computer.c
  * @author Paul Nykiel
  * @date 14.11.22
  * @brief Implementation of the Flight-Computer interface component.
  * @ingroup Components
  */
-#include "flightcomputer.h"
-
 #include <Drivers/protobuf.h>
 
-void flightcomputer_init(void) {
+#include "flight_computer.h"
+
+void flight_computer_init(void) {
     protobuf_init();
 }
 
-void flightcomputer_send(const imu_data_t *imu_data, const remote_data_t *remote_data,
+void flight_computer_send(const imu_data_t *imu_data, const remote_data_t *remote_data,
                          const actuator_cmd_t *actuator_cmd) {
     fc_message_t message = {.has_imu = true,
                             .imu =
@@ -43,13 +43,13 @@ void flightcomputer_send(const imu_data_t *imu_data, const remote_data_t *remote
     protobuf_send(&message);
 }
 
-bool flightcomputer_setpoint_available(void) {
+bool flight_computer_set_point_available(void) {
     return protobuf_setpoint_available();
 }
 
-flightcomputer_setpoint_t flightcomputer_get_setpoint(void) {
+flight_computer_set_point_t flight_computer_get_set_point(void) {
     setpoint_message_t message = protobuf_get_setpoint();
-    flightcomputer_setpoint_t setpoint = {.motor = message.motor,
+    flight_computer_set_point_t setpoint = {.motor = message.motor,
                                           .pitch = (int16_t) message.pitch,
                                           .roll = (int16_t) message.roll};
 
