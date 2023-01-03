@@ -31,7 +31,10 @@ typedef struct {
 } remote_data_t;
 
 /**
- * Initialize the remote module by initializing the sbus module.
+ * @brief Initialize the remote module.
+ *
+ * The initialization consists of the following task:
+ *  * call sbus_init
  */
 void remote_init(void);
 

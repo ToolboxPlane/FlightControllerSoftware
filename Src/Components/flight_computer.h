@@ -25,7 +25,10 @@ typedef struct {
 } flight_computer_set_point_t;
 
 /**
- * Initialize the connection to the flight-computer by initializing the protobuf module.
+ * @brief Initialize the flight-computer module.
+ *
+ * The initialization consists of the following tasks:
+ *  * call protobuf_init
  */
 void flight_computer_init(void);
 

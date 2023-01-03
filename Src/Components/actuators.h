@@ -20,7 +20,10 @@ typedef struct {
 } actuator_cmd_t;
 
 /**
- * Initialize the actuators module by initializing the PPM module.
+ * @brief Initialize the actuators module.
+ *
+ * The initialization consists of the following tasks:
+ *  * Call ppm_init
  */
 void actuators_init(void);
 

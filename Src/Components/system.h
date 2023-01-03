@@ -19,17 +19,22 @@ typedef enum { SYSTEM_ERROR_TIMER_RUNTIME = 1, SYSTEM_ERROR_WATCHDOG = 2, SYSTEM
 typedef void (*system_timer_16_384ms_callback)(void);
 
 /**
- * Run initial system setup. This performs the following operations:
+ * @brief Run initial system setup.
+ *
+ * The pre-initialization consists of the following tasks:
  *  * Disable all interrupts
  *  * Check the source of the last reset and trigger a warning if it was a watchdog or brownout
  *  * Set the watchdog to 250ms for component initialization
  *  * Re-enable the interrupts
+ *
  * @param timer_callback the function to be called by the timer.
  */
 void system_pre_init(system_timer_16_384ms_callback timer_callback);
 
 /**
- * Run system setup after component initialization. This performs the following operations:
+ * @brief Run system setup after component initialization.
+ *
+ * The post-initialization consists of the following task:
  *  * Start the timer with a period of 16.384ms
  *  * Set the watchdog to 30ms
  */

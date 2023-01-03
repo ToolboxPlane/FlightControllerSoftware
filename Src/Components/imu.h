@@ -46,18 +46,47 @@ typedef enum {
 } imu_error_t;
 
 /**
- * Initialize the IMU component.
- * First the bno055 module is initialized and then the following operations are performed:
- *  * Set the chip to config mode
- *  * Run the self test, and check the result
- *  * Configure the units
- *  * Remap the axis and corresponding signs
- *  * Set the sensor NDOF-FMC-OFF, i.e. 9 degrees of freedom - fast magnetic calibration off
+ * @brief Initialize the IMU component.
+ *
+ * The initialization consists of the following task:
+ *  * Call bno055_init to initialize the connection to the sensor
+ *  * Set the chip to config mode by calling bno055_write_opr_mode
+ *  * Wait for 20ms for a response:
+ *      * if the chip did not respond call error_handle_error(IMU, IMU_ERROR_INIT_TIMEOUT)
+ *      * if the response is not write-success call error_handle_error(BNO, response)
+ *  * Run the self tests by calling bno055_read_self_test
+ *  * Wait for 20ms for a response:
+ *      * if the chip did not respond call error_handle_error(IMU, IMU_ERROR_INIT_TIMEOUT)
+ *      * if the response is not read-success call error_handle_error(BNO, response)
+ *  * check that [acc, gyr, mag, mcu]_passed are all set, if not call error_handle_error(IMU, IMU_ERROR_INIT_SELF_TEST)
+ *  * Configure the units (by calling bno055_write_unit_selection) to the following units:
+ *      * Acceleration to m/s^2
+ *      * Angular velocity to deg/s
+ *      * Angles to deg
+ *      * Temperature to celsius
+ *      * Orientation frame to windows
+ *  * Wait for 20ms for a response:
+ *      * if the chip did not respond call error_handle_error(IMU, IMU_ERROR_INIT_TIMEOUT)
+ *      * if the response is not write-success call error_handle_error(BNO, response)
+ *  * Configure the axis by calling bno055_write_remap_axis with y as the new x-axis, x as the new y-axis and z as the
+ *      z-axis.
+ *  * Wait for 20ms for a response:
+ *      * if the chip did not respond call error_handle_error(IMU, IMU_ERROR_INIT_TIMEOUT)
+ *      * if the response is not write-success call error_handle_error(BNO, response)
+ *  * Configure the axis sign by calling bno055_write_remap_axis_sign with x and y as positive, and z as negative sign
+ *  * Wait for 20ms for a response:
+ *      * if the chip did not respond call error_handle_error(IMU, IMU_ERROR_INIT_TIMEOUT)
+ *      * if the response is not write-success call error_handle_error(BNO, response)
+ *  * Set the chip to 9 degrees of freedom - fast magnetic calibration off mode (NDOF-FMC-OFF) by calling
+ *      bno055_write_opr_mode
+ *  * Wait for 20ms for a response:
+ *      * if the chip did not respond call error_handle_error(IMU, IMU_ERROR_INIT_TIMEOUT)
+ *      * if the response is not write-success call error_handle_error(BNO, response)
  */
 void imu_init(void);
 
 /**
- * Start sampling of the sensor.
+ * @brief Start sampling of the sensor.
  *
  * This reads all data into an internal imu_data_t struct, if an error occurs sampling is aborted and no new data
  * is reported.
