@@ -37,7 +37,7 @@ TEST(TEST_NAME, pre_init_watchdog) {
     EXPECT_TRUE(interruptHandle.functionGotCalled<cli>());
     EXPECT_TRUE(wdtHandle.functionGotCalled<wdt_enable>(WDTO_250MS));
     EXPECT_TRUE(interruptHandle.functionGotCalled<sei>());
-    EXPECT_TRUE(errorHandlerHandle.functionGotCalled<error_handler_handle_warning>(SYSTEM, SYSTEM_ERROR_WATCHDOG));
+    EXPECT_TRUE(errorHandlerHandle.functionGotCalled<error_handler_handle_warning>(ERROR_HANDLER_GROUP_SYSTEM, SYSTEM_ERROR_WATCHDOG));
 }
 
 TEST(TEST_NAME, pre_init_brownout) {
@@ -51,7 +51,7 @@ TEST(TEST_NAME, pre_init_brownout) {
     EXPECT_TRUE(interruptHandle.functionGotCalled<cli>());
     EXPECT_TRUE(wdtHandle.functionGotCalled<wdt_enable>(WDTO_250MS));
     EXPECT_TRUE(interruptHandle.functionGotCalled<sei>());
-    EXPECT_TRUE(errorHandlerHandle.functionGotCalled<error_handler_handle_warning>(SYSTEM, SYSTEM_ERROR_BROWNOUT));
+    EXPECT_TRUE(errorHandlerHandle.functionGotCalled<error_handler_handle_warning>(ERROR_HANDLER_GROUP_SYSTEM, SYSTEM_ERROR_BROWNOUT));
 }
 
 TEST(TEST_NAME, post_init) {
@@ -119,7 +119,7 @@ TEST(TEST_NAME, timer_runtime_max) {
     internalCallback();
     EXPECT_TRUE(timer_got_called);
     EXPECT_TRUE(timerHandle.functionGotCalled<timer_8bit_get_count>());
-    EXPECT_TRUE(errorHandlerHandle.functionGotCalled<error_handler_handle_warning>(SYSTEM, SYSTEM_ERROR_TIMER_RUNTIME));
+    EXPECT_TRUE(errorHandlerHandle.functionGotCalled<error_handler_handle_warning>(ERROR_HANDLER_GROUP_SYSTEM, SYSTEM_ERROR_TIMER_RUNTIME));
 }
 
 TEST(TEST_NAME, timer_runtime_under_limit) {
@@ -173,7 +173,7 @@ TEST(TEST_NAME, timer_runtime_over_limit) {
     internalCallback();
     EXPECT_TRUE(timer_got_called);
     EXPECT_TRUE(timerHandle.functionGotCalled<timer_8bit_get_count>());
-    EXPECT_TRUE(errorHandlerHandle.functionGotCalled<error_handler_handle_warning>(SYSTEM, SYSTEM_ERROR_TIMER_RUNTIME));
+    EXPECT_TRUE(errorHandlerHandle.functionGotCalled<error_handler_handle_warning>(ERROR_HANDLER_GROUP_SYSTEM, SYSTEM_ERROR_TIMER_RUNTIME));
 }
 
 TEST(TEST_NAME, timer_reset_watchdog) {

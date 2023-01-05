@@ -14,13 +14,13 @@
  * ID of the component the triggered the error handler.
  */
 typedef enum {
-    APPLICATION = 1,
-    SYSTEM = 2,
-    IMU = 3,
-    FLIGHTCOMPUTER = 4,
-    REMOTE = 5,
-    MODE_HANDLER = 6,
-    BNO055 = 7
+    ERROR_HANDLER_GROUP_APPLICATION = 1,
+    ERROR_HANDLER_GROUP_SYSTEM = 2,
+    ERROR_HANDLER_GROUP_IMU = 3,
+    ERROR_HANDLER_GROUP_FLIGHT_COMPUTER = 4,
+    ERROR_HANDLER_GROUP_REMOTE = 5,
+    ERROR_HANDLER_GROUP_MODE_HANDLER = 6,
+    ERROR_HANDLER_GROUP_BNO055 = 7
 } error_group_t;
 
 /**

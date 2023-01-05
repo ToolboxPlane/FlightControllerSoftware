@@ -16,87 +16,101 @@
  * Possible values of the status register.
  */
 typedef enum {
-    system_idle = 0x0,
-    system_error = 0x1,
-    initializing_peripherals = 0x2,
-    system_initialization = 0x3,
-    executing_selftest = 0x4,
-    sensor_fusion_algorithm_running = 0x5,
-    system_running_without_fusion_algorithm = 0x6,
-    unknown_status,
+    BNO055_STATUS_SYSTEM_IDLE = 0x0,
+    BNO055_STATUS_SYSTEM_ERROR = 0x1,
+    BNO055_STATUS_INITIALIZING_PERIPHERALS = 0x2,
+    BNO055_STATUS_SYSTEM_INITIALIZATION = 0x3,
+    BNO055_STATUS_EXECUTING_SELFTEST = 0x4,
+    BNO055_STATUS_SENSOR_FUSION_ALGORITHM_RUNNING = 0x5,
+    BNO055_STATUS_SYSTEM_RUNNING_WITHOUT_FUSION_ALGORITHM = 0x6
 } bno055_status_t;
 
 /**
  * Possible values of the error register.
  */
 typedef enum {
-    no_error = 0x0,
-    peripheral_initialization_error = 0x1,
-    system_initialization_error = 0x2,
-    self_test_result_failed = 0x3,
-    register_map_value_out_of_range = 0x4,
-    register_map_address_out_of_range = 0x5,
-    register_map_write_error = 0x6,
-    bno_low_power_mode_not_available_for_selected_operation_mode = 0x7,
-    accelerometer_power_mode_not_available = 0x8,
-    fusion_algorithm_configuration_error = 0x9,
-    sensor_configuration_error = 0xa,
-    unknown_error
+    BNO055_ERROR_NO_ERROR = 0x0,
+    BNO055_ERROR_PERIPHERAL_INITIALIZATION_ERROR = 0x1,
+    BNO055_ERROR_SYSTEM_INITIALIZATION_ERROR = 0x2,
+    BNO055_ERROR_SELF_TEST_RESULT_FAILED = 0x3,
+    BNO055_ERROR_REGISTER_MAP_VALUE_OUT_OF_RANGE = 0x4,
+    BNO055_ERROR_REGISTER_MAP_ADDRESS_OUT_OF_RANGE = 0x5,
+    BNO055_ERROR_REGISTER_MAP_WRITE_ERROR = 0x6,
+    BNO055_ERROR_BNO_LOW_POWER_MODE_NOT_AVAILABLE_FOR_SELECTED_OPERATION_MODE = 0x7,
+    BNO055_ERROR_ACCELEROMETER_POWER_MODE_NOT_AVAILABLE = 0x8,
+    BNO055_ERROR_FUSION_ALGORITHM_CONFIGURATION_ERROR = 0x9,
+    BNO055_ERROR_SENSOR_CONFIGURATION_ERROR = 0xa
 } bno055_error_t;
 
 /**
  * Possible operation modes of the sensor.
  */
 typedef enum {
-    config_mode = 0b0000,
-    acc_only = 0b0001,
-    mag_only = 0b0010,
-    gyro_only = 0b0011,
-    acc_mag = 0b0100,
-    acc_gyro = 0b0101,
-    mag_gyro = 0b0110,
-    amg = 0b0111,
-    imu = 0b1000,
-    compass = 0b1001,
-    m4g = 0b1010,
-    ndof_fmc_off = 0b1011,
-    ndof = 0b1100
+    BNO055_OPR_MODE_CONFIG_MODE = 0b0000,
+    BNO055_OPR_MODE_ACC_ONLY = 0b0001,
+    BNO055_OPR_MODE_MAG_ONLY = 0b0010,
+    BNO055_OPR_MODE_GYRO_ONLY = 0b0011,
+    BNO055_OPR_MODE_ACC_MAG = 0b0100,
+    BNO055_OPR_MODE_ACC_GYRO = 0b0101,
+    BNO055_OPR_MODE_MAG_GYRO = 0b0110,
+    BNO055_OPR_MODE_AMG = 0b0111,
+    BNO055_OPR_MODE_IMU = 0b1000,
+    BNO055_OPR_MODE_COMPASS = 0b1001,
+    BNO055_OPR_MODE_M4G = 0b1010,
+    BNO055_OPR_MODE_NDOF_FMC_OFF = 0b1011,
+    BNO055_OPR_MODE_NDOF = 0b1100
 } bno055_opr_mode_t;
 
 /**
  * Possible axis names used for remapping.
  */
-typedef enum { x_axis = 0, y_axis = 1, z_axis = 2 } bno055_axis_remap_axis_t;
+typedef enum {
+    BNO055_AXIS_REMAP_X_AXIS = 0,
+    BNO055_AXIS_REMAP_Y_AXIS = 1,
+    BNO055_AXIS_REMAP_Z_AXIS = 2
+} bno055_axis_remap_axis_t;
 
 /**
  * Possible axis signs used for sign remapping.
  */
-typedef enum { positive = 0, neg = 1 } bno055_axis_remap_sign_t;
+typedef enum { BNO055_AXIS_REMAP_SIGN_POSITIVE = 0, BNO055_AXIS_REMAP_SIGN_NEGATIVE = 1 } bno055_axis_remap_sign_t;
 
 /**
  * Possible acceleration units for the unit selection.
  */
-typedef enum { mps2 = 0, mg = 1 } bno055_unit_sel_acc;
+typedef enum { BNO055_UNIT_SEL_ACC_MPS2 = 0, BNO055_UNIT_SEL_ACC_MG = 1 } bno055_unit_sel_acc;
 
 /**
  * Possible angular rate units for the unit selection.
  */
-typedef enum { dps = 0, rps = 1 } bno055_unit_sel_angular_rate;
+typedef enum {
+    BNO055_UNIT_SEL_ANGULAR_RATE_DPS = 0,
+    BNO055_UNIT_SEL_ANGULAR_RATE_RPS = 1
+} bno055_unit_sel_angular_rate;
 
 /**
  * Possible euler angle units for the unit selection.
  */
-typedef enum { degrees = 0, radians = 1 } bno055_unit_sel_euler_angles;
+typedef enum {
+    BNO055_UNIT_SEL_EULER_ANGLES_DEGREES = 0,
+    BNO055_UNIT_SEL_EULER_ANGLES_RADIANS = 1
+} bno055_unit_sel_euler_angles;
 
 /**
  * Possible temperature units for the unit selection.
  */
-typedef enum { celsius = 0, fahrenheit = 1 } bno055_unit_sel_temperature;
+typedef enum {
+    BNO055_UNIT_SEL_TEMPERATURE_CELSIUS = 0,
+    BNO055_UNIT_SEL_TEMPERATURE_FAHRENHEIT = 1
+} bno055_unit_sel_temperature;
 
 /**
  * Possible axis-frame options for the unit selection.
  */
-typedef enum { windows = 0, android = 1 } bno055_unit_sel_orientation_def;
+typedef enum {
+    BNO055_UNIT_SEL_ORIENTATION_DEF_WINDOWS = 0,
+    BNO055_UNIT_SEL_ORIENTATION_DEF_ANDROID = 1
+} bno055_unit_sel_orientation_def;
 
 /**
  * Information in the calibration status register.
@@ -119,46 +133,95 @@ typedef struct {
 } bno055_self_test_result_t;
 
 /**
- * Initialize the physical connection to the BNO, this will not initialize the sensor itself.
+ * @brief Initialize the physical connection to the BNO, this will not initialize the sensor itself.
+ *
+ * The initialization consists of the following tasks:
+ *  * call ::bno055_uart_init
  */
 void bno055_init(void);
 
 /**
- * Reset the sensor by writing a 1 to the respective bit in the system trigger register.
+ * @brief Reset the sensor by writing a 1 to the respective bit in the system trigger register.
+ *
+ * This function calls ::bno055_uart_write_register with the following arguments:
+ *  * reg: SYS_TRIGGER (0x3F)
+ *  * buf/len: one byte, containing one bit at the 5th position
+ *  * callback: the callback passed to this function
+ *
  * @param callback function to be called when the chip sends a response
  */
 void bno055_write_reset(bno055_callback_t callback);
 
 /**
- * Read the system status register of the sensor.
+ * @brief Read the system status register of the sensor.
+ *
+ * This function calls ::bno055_uart_read_register with the following arguments:
+ *  * reg: SYS_STATUS (0x39)
+ *  * len: one byte
+ *  * callback: the callback passed to this function
+ *  * out: the out pointer, as passed to this function
+ *
  * @param out out-parameter used for storing the result
  * @param callback callback that is called once the transaction is complete and "out" got set
  */
 void bno055_read_system_status(bno055_status_t *out, bno055_callback_t callback);
 
 /**
- * Read the system error register of the sensor.
+ * @brief Read the system error register of the sensor.
+ *
+ * This function calls ::bno055_uart_read_register with the following arguments:
+ *  * reg: SYS_ERROR (0x3A)
+ *  * len: one byte
+ *  * callback: the callback passed to this function
+ *  * out: the out pointer, as passed to this function
+ *
  * @param out out-parameter used for storing the result
  * @param callback callback that is called once the transaction is complete and "out" got set
  */
 void bno055_read_system_error(bno055_error_t *out, bno055_callback_t callback);
 
 /**
- * Read the calibration status register of the sensor.
+ * @brief Read the calibration status register of the sensor.
+ *
+ * This function calls ::bno055_uart_read_register with the following arguments:
+ *  * reg: CALIB_STAT (0x35)
+ *  * len: one byte
+ *  * callback: the callback passed to this function
+ *  * out: the out pointer, as passed to this function
+ *
  * @param out out-parameter used for storing the result
  * @param callback callback that is called once the transaction is complete and "out" got set
  */
 void bno055_read_calib_status(bno055_calib_status_t *out, bno055_callback_t callback);
 
 /**
- * Write to the operation mode register of the sensor.
+ * @brief Write to the operation mode register of the sensor.
+ *
+ * This function calls ::bno055_uart_write_register with the following arguments:
+ *  * reg: OPR_MODE (0x3D)
+ *  * buf/len: one byte, containing the numerical representation of the operation mode
+ *  * callback: the callback passed to this function
+ *
  * @param op_mode the operation mode to write
  * @param callback callback that is called once the transaction is complete
  */
 void bno055_write_opr_mode(bno055_opr_mode_t op_mode, bno055_callback_t callback);
 
 /**
- * Set the unit selection register of the sensor.
+ * @brief Set the unit selection register of the sensor.
+ *
+ * This function calls ::bno055_uart_write_register with the following arguments:
+ *  * reg: UNIT_SEL (0x3B)
+ *  * buf/len: one byte, with the following bits:
+ *      * 0: Acceleration unit (0: m/s^2, 1: mg)
+ *      * 1: Gyro unit (0: dps, 1: rps)
+ *      * 2: Euler-Angle unit (0: degrees, 1: radians)
+ *      * 3: Temperature unit (0: celsius, 1: fahrenheit)
+ *      * 7: Orientation mode (0: windows, 1: android)
+ *  * callback: the callback passed to this function
+ *
+ * @warning The Datasheet (Revision 1.8) is inconsistent with regards to the bit-index between different tables, these
+ * offsets have been tested manually.
  * @param acc_unit the unit used for acceleration measurements
  * @param angular_rate_unit the unit used for angular rates
  * @param euler_angles_unit the unit used for euler angles
@@ -172,17 +235,37 @@ void bno055_write_unit_selection(bno055_unit_sel_acc acc_unit, bno055_unit_sel_a
                                  bno055_unit_sel_orientation_def orientation_def, bno055_callback_t callback);
 
 /**
- * Set the axis remap register of the sensor.
- * @param new_x the axis that should be the new x-axis
- * @param new_y the axis that should be the new y-axis
- * @param new_z the axis that should be the new z-axis
+ * @brief Set the axis remap register of the sensor.
+ *
+ * This function calls ::bno055_uart_write_register with the following arguments:
+ *  * reg: AXIS_MAP_CONFIG (0x41)
+ *  * buf/len: one byte, with the following bits:
+ *      * 0,1: new x-axis
+ *      * 2,3: new y-axis
+ *      * 4,5: new z-axis
+ *  * callback: the callback passed to this function
+ *
+ * With the axis represented as: (0: x, 1: y, 2: z)
+ *
+ * @param new_x the current axis that should be the new x-axis
+ * @param new_y the current axis that should be the new y-axis
+ * @param new_z the current axis that should be the new z-axis
  * @param callback callback that is called once the transaction is complete
  */
 void bno055_write_remap_axis(bno055_axis_remap_axis_t new_x, bno055_axis_remap_axis_t new_y,
                              bno055_axis_remap_axis_t new_z, bno055_callback_t callback);
 
 /**
- * Set the axis remap sign register
+ * @brief Set the axis remap sign register.
+ *
+ * This function calls ::bno055_uart_write_register with the following arguments:
+ *  * reg: AXIS_MAP_SIGN (0x42)
+ *  * buf/len: one byte, with the following bits:
+ *      * 0: Z-Sign (0 positive, 1 negative)
+ *      * 1: Y-Sign (0 positive, 1 negative)
+ *      * 2: X-Sign (0 positive, 1 negative)
+ *  * callback: the callback passed to this function
+ *
  * @param new_x_sign the sign of the x-axis
  * @param new_y_sign the sign of the y-axis
  * @param new_z_sign the sign of the z-axis
@@ -192,28 +275,56 @@ void bno055_write_remap_axis_sign(bno055_axis_remap_sign_t new_x_sign, bno055_ax
                                   bno055_axis_remap_sign_t new_z_sign, bno055_callback_t callback);
 
 /**
- * Read the result of the self test
+ * @brief Read the result of the self test.
+ *
+ * This function calls ::bno055_uart_read_register with the following arguments:
+ *  * reg: ST_RESULT (0x36)
+ *  * len: one byte
+ *  * callback: the callback passed to this function
+ *  * out: the out pointer, as passed to this function
+ *
  * @param out out-parameter used for storing the result
  * @param callback callback that is called once the transaction is complete and "out" got set
  */
 void bno055_read_self_test(bno055_self_test_result_t *out, bno055_callback_t callback);
 
 /**
- * Read the acceleration for all three axis multiplied with 100.
+ * @brief Read the acceleration for all three axis multiplied with 100.
+ *
+ * This function calls ::bno055_uart_read_register with the following arguments:
+ *  * reg: LIA_DATA_X_LSB (0x28)
+ *  * len: 6 (three words of two bytes each)
+ *  * callback: the callback passed to this function
+ *  * out: the out pointer, as passed to this function
+ *
  * @param out out-parameter used for storing the result, needs to be sufficiently large to store all three values-
  * @param callback callback that is called once the transaction is complete and "out" got set
  */
 void bno055_read_acc_xyz_mul_100(int16_t *out, bno055_callback_t callback);
 
 /**
- * Read the gyroscopic angular rate for all three axis multiplied with 16.
+ * @brief Read the gyroscopic angular rate for all three axis multiplied with 16.
+ *
+ * This function calls ::bno055_uart_read_register with the following arguments:
+ *  * reg: GYR_DATA_X_LSB (0x14)
+ *  * len: 6 (three words of two bytes each)
+ *  * callback: the callback passed to this function
+ *  * out: the out pointer, as passed to this function
+ *
  * @param out out-parameter used for storing the result, needs to be sufficiently large to store all three values-
  * @param callback callback that is called once the transaction is complete and "out" got set
  */
 void bno055_read_gyr_xyz_mul_16(int16_t *out, bno055_callback_t callback);
 
 /**
- * Read the euler-angles for all three axis multiplied with 16.
+ * @brief Read the euler-angles for all three axis multiplied with 16.
+ *
+ * This function calls ::bno055_uart_read_register with the following arguments:
+ *  * reg: EUL_DATA_X_LSB (0x1A)
+ *  * len: 6 (three words of two bytes each)
+ *  * callback: the callback passed to this function
+ *  * out: the out pointer, as passed to this function
+ *
  * @param out out-parameter used for storing the result, needs to be sufficiently large to store all three values-
  * @param callback callback that is called once the transaction is complete and "out" got set
  */

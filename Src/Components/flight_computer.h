@@ -52,14 +52,18 @@ void flight_computer_send(const imu_data_t *imu_data, const remote_data_t *remot
 /**
  * @brief Checks whether the protobuf module decoded a new message.
  *
- * Return the result of protobuf_available
+ * Return the result of ::protobuf_available
  *
  * @return true if a new message exists, otherwise false
  */
 bool flight_computer_set_point_available(void);
 
 /**
- * Gets the latest message from the protobuf module and converts it to a flight_computer_set_point_t
+ * @brief Gets the latest message from the protobuf module and converts it to a flight_computer_set_point_t.
+ *
+ * Call ::protobuf_get to receive the latest valid protobuf message.
+ * Return a flight_computer_set_point_t with the fields set as their respective fields in the message.
+ *
  * @return the converted set point
  */
 flight_computer_set_point_t flight_computer_get_set_point(void);

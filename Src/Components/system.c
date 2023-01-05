@@ -21,7 +21,7 @@ static void internal_timer_callback(void) {
     callback();
     uint8_t time = timer_8bit_get_count();
     if (time > MAX_TIME_SLOT_USAGE) {
-        error_handler_handle_warning(SYSTEM, SYSTEM_ERROR_TIMER_RUNTIME);
+        error_handler_handle_warning(ERROR_HANDLER_GROUP_SYSTEM, SYSTEM_ERROR_TIMER_RUNTIME);
     }
 }
 
@@ -30,9 +30,9 @@ void system_pre_init(system_timer_16_384ms_callback timer_callback) {
 
     callback = timer_callback;
     if (MCUSR & (1U << WDRF)) {
-        error_handler_handle_warning(SYSTEM, SYSTEM_ERROR_WATCHDOG);
+        error_handler_handle_warning(ERROR_HANDLER_GROUP_SYSTEM, SYSTEM_ERROR_WATCHDOG);
     } else if (MCUSR & (1U << BORF)) {
-        error_handler_handle_warning(SYSTEM, SYSTEM_ERROR_BROWNOUT);
+        error_handler_handle_warning(ERROR_HANDLER_GROUP_SYSTEM, SYSTEM_ERROR_BROWNOUT);
     }
     MCUSR = 0;
 

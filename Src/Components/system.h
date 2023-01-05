@@ -41,7 +41,9 @@ void system_pre_init(system_timer_16_384ms_callback timer_callback);
 void system_post_init(void);
 
 /**
- * Reset the watchdog timer.
+ * @brief Reset the watchdog timer.
+ *
+ * This function calls wdt_reset.
  */
 void system_reset_watchdog(void);
 

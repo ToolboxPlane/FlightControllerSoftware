@@ -24,7 +24,7 @@ typedef struct {
 
     /**
      * True if the last remote packet was ok, this means:
-     *  * No failsave
+     *  * No failsafe
      *  * No frame-lost
      */
     bool remote_ok;

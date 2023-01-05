@@ -76,13 +76,13 @@ mode_handler_mode_t mode_handler_handle(imu_data_t *imu_data, remote_data_t *rem
      * Signal warning if not active
      */
     if (!flightcomputer_active) {
-        error_handler_handle_warning(MODE_HANDLER, MODE_HANDLER_ERROR_NO_FCP_DATA);
+        error_handler_handle_warning(ERROR_HANDLER_GROUP_MODE_HANDLER, MODE_HANDLER_ERROR_NO_FCP_DATA);
     }
     if (!remote_active) {
-        error_handler_handle_warning(MODE_HANDLER, MODE_HANDLER_ERROR_NO_REMOTE_DATA);
+        error_handler_handle_warning(ERROR_HANDLER_GROUP_MODE_HANDLER, MODE_HANDLER_ERROR_NO_REMOTE_DATA);
     }
     if (!imu_active) {
-        error_handler_handle_warning(MODE_HANDLER, MODE_HANDLER_ERROR_NO_IMU_DATA);
+        error_handler_handle_warning(ERROR_HANDLER_GROUP_MODE_HANDLER, MODE_HANDLER_ERROR_NO_IMU_DATA);
     }
 
 

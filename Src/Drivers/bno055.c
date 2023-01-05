@@ -121,20 +121,6 @@ void bno055_init(void) {
     bno055_uart_init();
 }
 
-void bno055_write_opr_mode(bno055_opr_mode_t op_mode, bno055_callback_t callback) {
-    uint8_t op_mode_cmd = (uint8_t) op_mode;
-    bno055_uart_write_register(BNO055_OPR_MODE_ADDR, &op_mode_cmd, 1, callback);
-}
-
-void bno055_write_unit_selection(bno055_unit_sel_acc acc_unit, bno055_unit_sel_angular_rate angular_rate_unit,
-                                 bno055_unit_sel_euler_angles euler_angles_unit,
-                                 bno055_unit_sel_temperature temperature_unit,
-                                 bno055_unit_sel_orientation_def orientation_def, bno055_callback_t callback) {
-    uint8_t unit_sel = acc_unit | (angular_rate_unit << 1U) | (euler_angles_unit << 2U) | (temperature_unit << 4U) |
-                       (orientation_def << 7);
-    bno055_uart_write_register(BNO055_UNIT_SEL_ADDR, &unit_sel, 1, callback);
-}
-
 void bno055_write_reset(bno055_callback_t callback) {
     uint8_t cmd = 1U << 5U;
     bno055_uart_write_register(BNO055_SYS_TRIGGER_ADDR, &cmd, 1, callback);
@@ -150,6 +136,20 @@ void bno055_read_system_error(bno055_error_t *out, bno055_callback_t callback) {
 
 void bno055_read_calib_status(bno055_calib_status_t *out, bno055_callback_t callback) {
     bno055_uart_read_register(BNO055_CALIB_STAT_ADDR, 1, callback, out);
+}
+
+void bno055_write_opr_mode(bno055_opr_mode_t op_mode, bno055_callback_t callback) {
+    uint8_t op_mode_cmd = (uint8_t) op_mode;
+    bno055_uart_write_register(BNO055_OPR_MODE_ADDR, &op_mode_cmd, 1, callback);
+}
+
+void bno055_write_unit_selection(bno055_unit_sel_acc acc_unit, bno055_unit_sel_angular_rate angular_rate_unit,
+                                 bno055_unit_sel_euler_angles euler_angles_unit,
+                                 bno055_unit_sel_temperature temperature_unit,
+                                 bno055_unit_sel_orientation_def orientation_def, bno055_callback_t callback) {
+    uint8_t unit_sel = acc_unit | (angular_rate_unit << 1U) | (euler_angles_unit << 2U) | (temperature_unit << 4U) |
+                       (orientation_def << 7);
+    bno055_uart_write_register(BNO055_UNIT_SEL_ADDR, &unit_sel, 1, callback);
 }
 
 void bno055_write_remap_axis(bno055_axis_remap_axis_t new_x, bno055_axis_remap_axis_t new_y,

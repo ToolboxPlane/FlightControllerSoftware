@@ -39,6 +39,7 @@
  *  * Pass the actuator commands to the actuators (::actuators_set)
  *  * Every FLIGHT_COMPUTER_SEND_PERIOD frame: pass the current data to ::flight-computer_send
  *  * Call ::imu_start_sampling
+ *
  */
 void application_init(void);
 

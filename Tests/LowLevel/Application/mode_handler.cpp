@@ -38,7 +38,7 @@ TEST(TEST_NAME, imu_initial_timeout) {
     flight_computer_set_point_t flightcomputerSetpoint;
 
     EXPECT_EQ(mode_handler_handle(&imuData, &remoteData, &flightcomputerSetpoint), MODE_REMOTE);
-    EXPECT_TRUE(errorHandlerHandle.functionGotCalled<error_handler_handle_warning>(MODE_HANDLER,
+    EXPECT_TRUE(errorHandlerHandle.functionGotCalled<error_handler_handle_warning>(ERROR_HANDLER_GROUP_MODE_HANDLER,
                                                                                    MODE_HANDLER_ERROR_NO_IMU_DATA));
 }
 
@@ -72,7 +72,7 @@ TEST(TEST_NAME, imu_initial_nok) {
     flight_computer_set_point_t flightcomputerSetpoint;
 
     EXPECT_EQ(mode_handler_handle(&imuData, &remoteData, &flightcomputerSetpoint), MODE_REMOTE);
-    EXPECT_TRUE(errorHandlerHandle.functionGotCalled<error_handler_handle_warning>(MODE_HANDLER,
+    EXPECT_TRUE(errorHandlerHandle.functionGotCalled<error_handler_handle_warning>(ERROR_HANDLER_GROUP_MODE_HANDLER,
                                                                                    MODE_HANDLER_ERROR_NO_IMU_DATA));
 }
 
@@ -111,42 +111,42 @@ TEST(TEST_NAME, imu_timeout) {
 
     // 1 - data available
     EXPECT_EQ(mode_handler_handle(&imuData, &remoteData, &flightcomputerSetpoint), MODE_FLIGHTCOMPUTER);
-    EXPECT_FALSE(errorHandlerHandle.functionGotCalled<error_handler_handle_warning>(MODE_HANDLER,
+    EXPECT_FALSE(errorHandlerHandle.functionGotCalled<error_handler_handle_warning>(ERROR_HANDLER_GROUP_MODE_HANDLER,
                                                                                     MODE_HANDLER_ERROR_NO_IMU_DATA));
 
     // 2 - no data available (1. frame)
     EXPECT_EQ(mode_handler_handle(&imuData, &remoteData, &flightcomputerSetpoint), MODE_FLIGHTCOMPUTER);
-    EXPECT_FALSE(errorHandlerHandle.functionGotCalled<error_handler_handle_warning>(MODE_HANDLER,
+    EXPECT_FALSE(errorHandlerHandle.functionGotCalled<error_handler_handle_warning>(ERROR_HANDLER_GROUP_MODE_HANDLER,
                                                                                     MODE_HANDLER_ERROR_NO_IMU_DATA));
 
     // 3 - no data available (2. frame)
     EXPECT_EQ(mode_handler_handle(&imuData, &remoteData, &flightcomputerSetpoint), MODE_FLIGHTCOMPUTER);
-    EXPECT_FALSE(errorHandlerHandle.functionGotCalled<error_handler_handle_warning>(MODE_HANDLER,
+    EXPECT_FALSE(errorHandlerHandle.functionGotCalled<error_handler_handle_warning>(ERROR_HANDLER_GROUP_MODE_HANDLER,
                                                                                     MODE_HANDLER_ERROR_NO_IMU_DATA));
 
     // 4 - no data available (3. frame)
     EXPECT_EQ(mode_handler_handle(&imuData, &remoteData, &flightcomputerSetpoint), MODE_FLIGHTCOMPUTER);
-    EXPECT_FALSE(errorHandlerHandle.functionGotCalled<error_handler_handle_warning>(MODE_HANDLER,
+    EXPECT_FALSE(errorHandlerHandle.functionGotCalled<error_handler_handle_warning>(ERROR_HANDLER_GROUP_MODE_HANDLER,
                                                                                     MODE_HANDLER_ERROR_NO_IMU_DATA));
 
     // 5 - no data available (4. frame)
     EXPECT_EQ(mode_handler_handle(&imuData, &remoteData, &flightcomputerSetpoint), MODE_FLIGHTCOMPUTER);
-    EXPECT_FALSE(errorHandlerHandle.functionGotCalled<error_handler_handle_warning>(MODE_HANDLER,
+    EXPECT_FALSE(errorHandlerHandle.functionGotCalled<error_handler_handle_warning>(ERROR_HANDLER_GROUP_MODE_HANDLER,
                                                                                     MODE_HANDLER_ERROR_NO_IMU_DATA));
 
     // 6 - no data available (5. frame)
     EXPECT_EQ(mode_handler_handle(&imuData, &remoteData, &flightcomputerSetpoint), MODE_FLIGHTCOMPUTER);
-    EXPECT_FALSE(errorHandlerHandle.functionGotCalled<error_handler_handle_warning>(MODE_HANDLER,
+    EXPECT_FALSE(errorHandlerHandle.functionGotCalled<error_handler_handle_warning>(ERROR_HANDLER_GROUP_MODE_HANDLER,
                                                                                     MODE_HANDLER_ERROR_NO_IMU_DATA));
 
     // 7 - no data available (6. frame) -> timeout
     EXPECT_EQ(mode_handler_handle(&imuData, &remoteData, &flightcomputerSetpoint), MODE_REMOTE);
-    EXPECT_TRUE(errorHandlerHandle.functionGotCalled<error_handler_handle_warning>(MODE_HANDLER,
+    EXPECT_TRUE(errorHandlerHandle.functionGotCalled<error_handler_handle_warning>(ERROR_HANDLER_GROUP_MODE_HANDLER,
                                                                                    MODE_HANDLER_ERROR_NO_IMU_DATA));
 
     // 8 - data available
     EXPECT_EQ(mode_handler_handle(&imuData, &remoteData, &flightcomputerSetpoint), MODE_FLIGHTCOMPUTER);
-    EXPECT_FALSE(errorHandlerHandle.functionGotCalled<error_handler_handle_warning>(MODE_HANDLER,
+    EXPECT_FALSE(errorHandlerHandle.functionGotCalled<error_handler_handle_warning>(ERROR_HANDLER_GROUP_MODE_HANDLER,
                                                                                     MODE_HANDLER_ERROR_NO_IMU_DATA));
 }
 
@@ -180,7 +180,7 @@ TEST(TEST_NAME, remote_initial_timeout) {
     flight_computer_set_point_t flightcomputerSetpoint;
 
     EXPECT_EQ(mode_handler_handle(&imuData, &remoteData, &flightcomputerSetpoint), MODE_STABILISED_FAILSAFE);
-    EXPECT_TRUE(errorHandlerHandle.functionGotCalled<error_handler_handle_warning>(MODE_HANDLER,
+    EXPECT_TRUE(errorHandlerHandle.functionGotCalled<error_handler_handle_warning>(ERROR_HANDLER_GROUP_MODE_HANDLER,
                                                                                    MODE_HANDLER_ERROR_NO_REMOTE_DATA));
 }
 
@@ -214,7 +214,7 @@ TEST(TEST_NAME, remote_initial_nok) {
     flight_computer_set_point_t flightcomputerSetpoint;
 
     EXPECT_EQ(mode_handler_handle(&imuData, &remoteData, &flightcomputerSetpoint), MODE_STABILISED_FAILSAFE);
-    EXPECT_TRUE(errorHandlerHandle.functionGotCalled<error_handler_handle_warning>(MODE_HANDLER,
+    EXPECT_TRUE(errorHandlerHandle.functionGotCalled<error_handler_handle_warning>(ERROR_HANDLER_GROUP_MODE_HANDLER,
                                                                                    MODE_HANDLER_ERROR_NO_REMOTE_DATA));
 }
 
@@ -253,42 +253,42 @@ TEST(TEST_NAME, remote_timeout) {
 
     // 1 - data available
     EXPECT_EQ(mode_handler_handle(&imuData, &remoteData, &flightcomputerSetpoint), MODE_FLIGHTCOMPUTER);
-    EXPECT_FALSE(errorHandlerHandle.functionGotCalled<error_handler_handle_warning>(MODE_HANDLER,
+    EXPECT_FALSE(errorHandlerHandle.functionGotCalled<error_handler_handle_warning>(ERROR_HANDLER_GROUP_MODE_HANDLER,
                                                                                     MODE_HANDLER_ERROR_NO_REMOTE_DATA));
 
     // 2 - no data available (1. frame)
     EXPECT_EQ(mode_handler_handle(&imuData, &remoteData, &flightcomputerSetpoint), MODE_FLIGHTCOMPUTER);
-    EXPECT_FALSE(errorHandlerHandle.functionGotCalled<error_handler_handle_warning>(MODE_HANDLER,
+    EXPECT_FALSE(errorHandlerHandle.functionGotCalled<error_handler_handle_warning>(ERROR_HANDLER_GROUP_MODE_HANDLER,
                                                                                     MODE_HANDLER_ERROR_NO_REMOTE_DATA));
 
     // 3 - no data available (2. frame)
     EXPECT_EQ(mode_handler_handle(&imuData, &remoteData, &flightcomputerSetpoint), MODE_FLIGHTCOMPUTER);
-    EXPECT_FALSE(errorHandlerHandle.functionGotCalled<error_handler_handle_warning>(MODE_HANDLER,
+    EXPECT_FALSE(errorHandlerHandle.functionGotCalled<error_handler_handle_warning>(ERROR_HANDLER_GROUP_MODE_HANDLER,
                                                                                     MODE_HANDLER_ERROR_NO_REMOTE_DATA));
 
     // 4 - no data available (3. frame)
     EXPECT_EQ(mode_handler_handle(&imuData, &remoteData, &flightcomputerSetpoint), MODE_FLIGHTCOMPUTER);
-    EXPECT_FALSE(errorHandlerHandle.functionGotCalled<error_handler_handle_warning>(MODE_HANDLER,
+    EXPECT_FALSE(errorHandlerHandle.functionGotCalled<error_handler_handle_warning>(ERROR_HANDLER_GROUP_MODE_HANDLER,
                                                                                     MODE_HANDLER_ERROR_NO_REMOTE_DATA));
 
     // 5 - no data available (4. frame)
     EXPECT_EQ(mode_handler_handle(&imuData, &remoteData, &flightcomputerSetpoint), MODE_FLIGHTCOMPUTER);
-    EXPECT_FALSE(errorHandlerHandle.functionGotCalled<error_handler_handle_warning>(MODE_HANDLER,
+    EXPECT_FALSE(errorHandlerHandle.functionGotCalled<error_handler_handle_warning>(ERROR_HANDLER_GROUP_MODE_HANDLER,
                                                                                     MODE_HANDLER_ERROR_NO_REMOTE_DATA));
 
     // 6 - no data available (5. frame)
     EXPECT_EQ(mode_handler_handle(&imuData, &remoteData, &flightcomputerSetpoint), MODE_FLIGHTCOMPUTER);
-    EXPECT_FALSE(errorHandlerHandle.functionGotCalled<error_handler_handle_warning>(MODE_HANDLER,
+    EXPECT_FALSE(errorHandlerHandle.functionGotCalled<error_handler_handle_warning>(ERROR_HANDLER_GROUP_MODE_HANDLER,
                                                                                     MODE_HANDLER_ERROR_NO_REMOTE_DATA));
 
     // 7 - no data available (6. frame) -> timeout
     EXPECT_EQ(mode_handler_handle(&imuData, &remoteData, &flightcomputerSetpoint), MODE_STABILISED_FAILSAFE);
-    EXPECT_TRUE(errorHandlerHandle.functionGotCalled<error_handler_handle_warning>(MODE_HANDLER,
+    EXPECT_TRUE(errorHandlerHandle.functionGotCalled<error_handler_handle_warning>(ERROR_HANDLER_GROUP_MODE_HANDLER,
                                                                                    MODE_HANDLER_ERROR_NO_REMOTE_DATA));
 
     // 8 - data available
     EXPECT_EQ(mode_handler_handle(&imuData, &remoteData, &flightcomputerSetpoint), MODE_FLIGHTCOMPUTER);
-    EXPECT_FALSE(errorHandlerHandle.functionGotCalled<error_handler_handle_warning>(MODE_HANDLER,
+    EXPECT_FALSE(errorHandlerHandle.functionGotCalled<error_handler_handle_warning>(ERROR_HANDLER_GROUP_MODE_HANDLER,
                                                                                     MODE_HANDLER_ERROR_NO_REMOTE_DATA));
 }
 
@@ -322,7 +322,7 @@ TEST(TEST_NAME, fcp_initial_timeout) {
     flight_computer_set_point_t flightcomputerSetpoint;
 
     EXPECT_EQ(mode_handler_handle(&imuData, &remoteData, &flightcomputerSetpoint), MODE_REMOTE);
-    EXPECT_TRUE(errorHandlerHandle.functionGotCalled<error_handler_handle_warning>(MODE_HANDLER,
+    EXPECT_TRUE(errorHandlerHandle.functionGotCalled<error_handler_handle_warning>(ERROR_HANDLER_GROUP_MODE_HANDLER,
                                                                                    MODE_HANDLER_ERROR_NO_FCP_DATA));
 }
 
@@ -361,72 +361,72 @@ TEST(TEST_NAME, fcp_timeout) {
 
     // 1 - data available
     EXPECT_EQ(mode_handler_handle(&imuData, &remoteData, &flightcomputerSetpoint), MODE_FLIGHTCOMPUTER);
-    EXPECT_FALSE(errorHandlerHandle.functionGotCalled<error_handler_handle_warning>(MODE_HANDLER,
+    EXPECT_FALSE(errorHandlerHandle.functionGotCalled<error_handler_handle_warning>(ERROR_HANDLER_GROUP_MODE_HANDLER,
                                                                                     MODE_HANDLER_ERROR_NO_FCP_DATA));
 
     // 2 - no data available (1. frame)
     EXPECT_EQ(mode_handler_handle(&imuData, &remoteData, &flightcomputerSetpoint), MODE_FLIGHTCOMPUTER);
-    EXPECT_FALSE(errorHandlerHandle.functionGotCalled<error_handler_handle_warning>(MODE_HANDLER,
+    EXPECT_FALSE(errorHandlerHandle.functionGotCalled<error_handler_handle_warning>(ERROR_HANDLER_GROUP_MODE_HANDLER,
                                                                                     MODE_HANDLER_ERROR_NO_FCP_DATA));
 
     // 3 - no data available (2. frame)
     EXPECT_EQ(mode_handler_handle(&imuData, &remoteData, &flightcomputerSetpoint), MODE_FLIGHTCOMPUTER);
-    EXPECT_FALSE(errorHandlerHandle.functionGotCalled<error_handler_handle_warning>(MODE_HANDLER,
+    EXPECT_FALSE(errorHandlerHandle.functionGotCalled<error_handler_handle_warning>(ERROR_HANDLER_GROUP_MODE_HANDLER,
                                                                                     MODE_HANDLER_ERROR_NO_FCP_DATA));
 
     // 4 - no data available (3. frame)
     EXPECT_EQ(mode_handler_handle(&imuData, &remoteData, &flightcomputerSetpoint), MODE_FLIGHTCOMPUTER);
-    EXPECT_FALSE(errorHandlerHandle.functionGotCalled<error_handler_handle_warning>(MODE_HANDLER,
+    EXPECT_FALSE(errorHandlerHandle.functionGotCalled<error_handler_handle_warning>(ERROR_HANDLER_GROUP_MODE_HANDLER,
                                                                                     MODE_HANDLER_ERROR_NO_FCP_DATA));
 
     // 5 - no data available (4. frame)
     EXPECT_EQ(mode_handler_handle(&imuData, &remoteData, &flightcomputerSetpoint), MODE_FLIGHTCOMPUTER);
-    EXPECT_FALSE(errorHandlerHandle.functionGotCalled<error_handler_handle_warning>(MODE_HANDLER,
+    EXPECT_FALSE(errorHandlerHandle.functionGotCalled<error_handler_handle_warning>(ERROR_HANDLER_GROUP_MODE_HANDLER,
                                                                                     MODE_HANDLER_ERROR_NO_FCP_DATA));
 
     // 6 - no data available (5. frame)
     EXPECT_EQ(mode_handler_handle(&imuData, &remoteData, &flightcomputerSetpoint), MODE_FLIGHTCOMPUTER);
-    EXPECT_FALSE(errorHandlerHandle.functionGotCalled<error_handler_handle_warning>(MODE_HANDLER,
+    EXPECT_FALSE(errorHandlerHandle.functionGotCalled<error_handler_handle_warning>(ERROR_HANDLER_GROUP_MODE_HANDLER,
                                                                                     MODE_HANDLER_ERROR_NO_FCP_DATA));
 
     // 7 - no data available (6. frame)
     EXPECT_EQ(mode_handler_handle(&imuData, &remoteData, &flightcomputerSetpoint), MODE_FLIGHTCOMPUTER);
-    EXPECT_FALSE(errorHandlerHandle.functionGotCalled<error_handler_handle_warning>(MODE_HANDLER,
+    EXPECT_FALSE(errorHandlerHandle.functionGotCalled<error_handler_handle_warning>(ERROR_HANDLER_GROUP_MODE_HANDLER,
                                                                                     MODE_HANDLER_ERROR_NO_FCP_DATA));
 
     // 8 - no data available (7. frame)
     EXPECT_EQ(mode_handler_handle(&imuData, &remoteData, &flightcomputerSetpoint), MODE_FLIGHTCOMPUTER);
-    EXPECT_FALSE(errorHandlerHandle.functionGotCalled<error_handler_handle_warning>(MODE_HANDLER,
+    EXPECT_FALSE(errorHandlerHandle.functionGotCalled<error_handler_handle_warning>(ERROR_HANDLER_GROUP_MODE_HANDLER,
                                                                                     MODE_HANDLER_ERROR_NO_FCP_DATA));
 
     // 9 - no data available (8. frame)
     EXPECT_EQ(mode_handler_handle(&imuData, &remoteData, &flightcomputerSetpoint), MODE_FLIGHTCOMPUTER);
-    EXPECT_FALSE(errorHandlerHandle.functionGotCalled<error_handler_handle_warning>(MODE_HANDLER,
+    EXPECT_FALSE(errorHandlerHandle.functionGotCalled<error_handler_handle_warning>(ERROR_HANDLER_GROUP_MODE_HANDLER,
                                                                                     MODE_HANDLER_ERROR_NO_FCP_DATA));
 
     // 10 - no data available (9. frame)
     EXPECT_EQ(mode_handler_handle(&imuData, &remoteData, &flightcomputerSetpoint), MODE_FLIGHTCOMPUTER);
-    EXPECT_FALSE(errorHandlerHandle.functionGotCalled<error_handler_handle_warning>(MODE_HANDLER,
+    EXPECT_FALSE(errorHandlerHandle.functionGotCalled<error_handler_handle_warning>(ERROR_HANDLER_GROUP_MODE_HANDLER,
                                                                                     MODE_HANDLER_ERROR_NO_FCP_DATA));
 
     // 11 - no data available (10. frame)
     EXPECT_EQ(mode_handler_handle(&imuData, &remoteData, &flightcomputerSetpoint), MODE_FLIGHTCOMPUTER);
-    EXPECT_FALSE(errorHandlerHandle.functionGotCalled<error_handler_handle_warning>(MODE_HANDLER,
+    EXPECT_FALSE(errorHandlerHandle.functionGotCalled<error_handler_handle_warning>(ERROR_HANDLER_GROUP_MODE_HANDLER,
                                                                                     MODE_HANDLER_ERROR_NO_FCP_DATA));
 
     // 12 - no data available (11. frame)
     EXPECT_EQ(mode_handler_handle(&imuData, &remoteData, &flightcomputerSetpoint), MODE_FLIGHTCOMPUTER);
-    EXPECT_FALSE(errorHandlerHandle.functionGotCalled<error_handler_handle_warning>(MODE_HANDLER,
+    EXPECT_FALSE(errorHandlerHandle.functionGotCalled<error_handler_handle_warning>(ERROR_HANDLER_GROUP_MODE_HANDLER,
                                                                                     MODE_HANDLER_ERROR_NO_FCP_DATA));
 
     // 13 - no data available (12. frame) -> timeout
     EXPECT_EQ(mode_handler_handle(&imuData, &remoteData, &flightcomputerSetpoint), MODE_REMOTE);
-    EXPECT_TRUE(errorHandlerHandle.functionGotCalled<error_handler_handle_warning>(MODE_HANDLER,
+    EXPECT_TRUE(errorHandlerHandle.functionGotCalled<error_handler_handle_warning>(ERROR_HANDLER_GROUP_MODE_HANDLER,
                                                                                    MODE_HANDLER_ERROR_NO_FCP_DATA));
 
     // 14 - data available
     EXPECT_EQ(mode_handler_handle(&imuData, &remoteData, &flightcomputerSetpoint), MODE_FLIGHTCOMPUTER);
-    EXPECT_FALSE(errorHandlerHandle.functionGotCalled<error_handler_handle_warning>(MODE_HANDLER,
+    EXPECT_FALSE(errorHandlerHandle.functionGotCalled<error_handler_handle_warning>(ERROR_HANDLER_GROUP_MODE_HANDLER,
                                                                                     MODE_HANDLER_ERROR_NO_FCP_DATA));
 }
 
@@ -508,15 +508,15 @@ TEST(TEST_NAME, modeselection) {
         EXPECT_EQ(mode_handler_handle(&imuData, &remoteData, &flightcomputerSetpoint), expected_mode);
         if (!availability_value.remote) {
             EXPECT_TRUE(errorHandlerHandle.functionGotCalled<error_handler_handle_warning>(
-                    MODE_HANDLER, MODE_HANDLER_ERROR_NO_REMOTE_DATA));
+                    ERROR_HANDLER_GROUP_MODE_HANDLER, MODE_HANDLER_ERROR_NO_REMOTE_DATA));
         }
         if (!availability_value.imu) {
             EXPECT_TRUE(errorHandlerHandle.functionGotCalled<error_handler_handle_warning>(
-                    MODE_HANDLER, MODE_HANDLER_ERROR_NO_IMU_DATA));
+                    ERROR_HANDLER_GROUP_MODE_HANDLER, MODE_HANDLER_ERROR_NO_IMU_DATA));
         }
         if (!availability_value.fcp) {
             EXPECT_TRUE(errorHandlerHandle.functionGotCalled<error_handler_handle_warning>(
-                    MODE_HANDLER, MODE_HANDLER_ERROR_NO_FCP_DATA));
+                    ERROR_HANDLER_GROUP_MODE_HANDLER, MODE_HANDLER_ERROR_NO_FCP_DATA));
         }
     }
 }

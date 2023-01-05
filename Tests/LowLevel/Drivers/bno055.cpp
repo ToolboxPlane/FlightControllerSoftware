@@ -101,7 +101,9 @@ TEST(TEST_NAME, write_unit_selection) {
             });
 
 
-    bno055_write_unit_selection(mg, rps, radians, fahrenheit, android, callbackFunc);
+    bno055_write_unit_selection(BNO055_UNIT_SEL_ACC_MG, BNO055_UNIT_SEL_ANGULAR_RATE_RPS,
+                                BNO055_UNIT_SEL_EULER_ANGLES_RADIANS, BNO055_UNIT_SEL_TEMPERATURE_FAHRENHEIT,
+                                BNO055_UNIT_SEL_ORIENTATION_DEF_ANDROID, callbackFunc);
     EXPECT_TRUE(bnoUartHandle.functionGotCalled<bno055_uart_write_register>());
 }
 
@@ -118,7 +120,7 @@ TEST(TEST_NAME, write_remap_axis) {
                 EXPECT_EQ(callback, callbackFunc);
             });
 
-    bno055_write_remap_axis(y_axis, z_axis, x_axis, callbackFunc);
+    bno055_write_remap_axis(BNO055_AXIS_REMAP_Y_AXIS, BNO055_AXIS_REMAP_Z_AXIS, BNO055_AXIS_REMAP_X_AXIS, callbackFunc);
 
     EXPECT_TRUE(bnoUartHandle.functionGotCalled<bno055_uart_write_register>());
 }
@@ -136,7 +138,8 @@ TEST(TEST_NAME, write_remap_axis_sign) {
                 EXPECT_EQ(callback, callbackFunc);
             });
 
-    bno055_write_remap_axis_sign(positive, neg, neg, callbackFunc);
+    bno055_write_remap_axis_sign(BNO055_AXIS_REMAP_SIGN_POSITIVE, BNO055_AXIS_REMAP_SIGN_NEGATIVE,
+                                 BNO055_AXIS_REMAP_SIGN_NEGATIVE, callbackFunc);
 
     EXPECT_TRUE(bnoUartHandle.functionGotCalled<bno055_uart_write_register>());
 }
