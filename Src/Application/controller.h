@@ -37,10 +37,10 @@ typedef struct {
  * A positive elevon command shall result in the elevon deflecting upwards.
  *
  * @param imu_data the current state of the plane
- * @param roll_setpoint the desired roll angle in degree
- * @param pitch_setpoint the desired pitch angle in degree
+ * @param roll_set_point the desired roll angle in degree
+ * @param pitch_set_point the desired pitch angle in degree
  * @return the resulting elevon positions.
  */
-controller_result_t controller_update(const imu_data_t *imu_data, int16_t roll_setpoint, int16_t pitch_setpoint);
+controller_result_t controller_update(const imu_data_t *imu_data, int16_t roll_set_point, int16_t pitch_set_point);
 
 #endif // FLIGHTCONTROLLER_CONTROLLER_H

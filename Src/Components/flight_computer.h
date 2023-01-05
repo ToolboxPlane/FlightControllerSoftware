@@ -28,22 +28,32 @@ typedef struct {
  * @brief Initialize the flight-computer module.
  *
  * The initialization consists of the following tasks:
- *  * call protobuf_init
+ *  * call ::protobuf_init
  */
 void flight_computer_init(void);
 
 /**
- * Send a message to the flight-computer by converting the structs to a single protobuf message
- * and sending the message using the protobuf module.
+ * @brief Send a message to the flight-computer
+ *
+ * Create a ToolboxPlane::FlightController message with the fields set as:
+ *  * remote: the fields of remote_data
+ *  * imu: the fields of imu_data
+ *  * elevon_left, elevon_right, motor: the fields of actuator_cmd
+ *
+ * Call ::protobuf_send with the created message as argument.
+ *
  * @param imu_data the IMU data to send
  * @param remote_data the remote control data to send
  * @param actuator_cmd the actuator command to send to the FCP
  */
 void flight_computer_send(const imu_data_t *imu_data, const remote_data_t *remote_data,
-                         const actuator_cmd_t *actuator_cmd);
+                          const actuator_cmd_t *actuator_cmd);
 
 /**
- * Checks whether the protobuf module decoded a new message.
+ * @brief Checks whether the protobuf module decoded a new message.
+ *
+ * Return the result of protobuf_available
+ *
  * @return true if a new message exists, otherwise false
  */
 bool flight_computer_set_point_available(void);

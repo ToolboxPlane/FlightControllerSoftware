@@ -49,17 +49,17 @@ typedef enum {
  * @brief Initialize the IMU component.
  *
  * The initialization consists of the following task:
- *  * Call bno055_init to initialize the connection to the sensor
- *  * Set the chip to config mode by calling bno055_write_opr_mode
+ *  * Call ::bno055_init to initialize the connection to the sensor
+ *  * Set the chip to config (::bno055_write_opr_mode)
  *  * Wait for 20ms for a response:
  *      * if the chip did not respond call error_handle_error(IMU, IMU_ERROR_INIT_TIMEOUT)
  *      * if the response is not write-success call error_handle_error(BNO, response)
- *  * Run the self tests by calling bno055_read_self_test
+ *  * Run the self tests (::bno055_read_self_test)
  *  * Wait for 20ms for a response:
  *      * if the chip did not respond call error_handle_error(IMU, IMU_ERROR_INIT_TIMEOUT)
  *      * if the response is not read-success call error_handle_error(BNO, response)
  *  * check that [acc, gyr, mag, mcu]_passed are all set, if not call error_handle_error(IMU, IMU_ERROR_INIT_SELF_TEST)
- *  * Configure the units (by calling bno055_write_unit_selection) to the following units:
+ *  * Configure the units (::bno055_write_unit_selection) to the following units:
  *      * Acceleration to m/s^2
  *      * Angular velocity to deg/s
  *      * Angles to deg
@@ -68,17 +68,15 @@ typedef enum {
  *  * Wait for 20ms for a response:
  *      * if the chip did not respond call error_handle_error(IMU, IMU_ERROR_INIT_TIMEOUT)
  *      * if the response is not write-success call error_handle_error(BNO, response)
- *  * Configure the axis by calling bno055_write_remap_axis with y as the new x-axis, x as the new y-axis and z as the
- *      z-axis.
+ *  * Configure the axis (::bno055_write_remap_axis) with y as the new x-axis, x as the new y-axis and z as the  z-axis.
  *  * Wait for 20ms for a response:
  *      * if the chip did not respond call error_handle_error(IMU, IMU_ERROR_INIT_TIMEOUT)
  *      * if the response is not write-success call error_handle_error(BNO, response)
- *  * Configure the axis sign by calling bno055_write_remap_axis_sign with x and y as positive, and z as negative sign
+ *  * Configure the axis sign (::bno055_write_remap_axis_sign) with x and y as positive, and z as negative sign
  *  * Wait for 20ms for a response:
  *      * if the chip did not respond call error_handle_error(IMU, IMU_ERROR_INIT_TIMEOUT)
  *      * if the response is not write-success call error_handle_error(BNO, response)
- *  * Set the chip to 9 degrees of freedom - fast magnetic calibration off mode (NDOF-FMC-OFF) by calling
- *      bno055_write_opr_mode
+ *  * Set the chip to 9 degrees of freedom - fast magnetic calibration off mode (NDOF-FMC-OFF) (::bno055_write_opr_mode)
  *  * Wait for 20ms for a response:
  *      * if the chip did not respond call error_handle_error(IMU, IMU_ERROR_INIT_TIMEOUT)
  *      * if the response is not write-success call error_handle_error(BNO, response)

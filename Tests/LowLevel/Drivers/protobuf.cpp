@@ -112,7 +112,7 @@ TEST(TEST_NAME, available_read_buffer) {
                                                           uint8_t /*data*/, const pb_msgdesc_t * /*fields*/,
                                                           void * /*message*/) -> bool { return false; });
 
-    protobuf_setpoint_available();
+    protobuf_available();
     EXPECT_TRUE(decodeHandle.functionGotCalled<message_decoding_decode>(
             std::ignore, 1, &ToolboxPlaneMessages_FlightControllerSetpoint_msg, std::ignore));
     EXPECT_TRUE(decodeHandle.functionGotCalled<message_decoding_decode>(
@@ -144,7 +144,7 @@ TEST(TEST_NAME, receive_pb_no_decode) {
                                                           uint8_t /*data*/, const pb_msgdesc_t * /*fields*/,
                                                           void * /*message*/) -> bool { return false; });
 
-    EXPECT_FALSE(protobuf_setpoint_available());
+    EXPECT_FALSE(protobuf_available());
 }
 
 TEST(TEST_NAME, receive_pb_yes_decode) {
@@ -168,7 +168,7 @@ TEST(TEST_NAME, receive_pb_yes_decode) {
                                                           uint8_t /*data*/, const pb_msgdesc_t * /*fields*/,
                                                           void * /*message*/) -> bool { return true; });
 
-    EXPECT_TRUE(protobuf_setpoint_available());
+    EXPECT_TRUE(protobuf_available());
 }
 
 TEST(TEST_NAME, receive_pb_decode_data) {
@@ -198,8 +198,8 @@ TEST(TEST_NAME, receive_pb_decode_data) {
         return true;
     });
 
-    EXPECT_TRUE(protobuf_setpoint_available());
-    EXPECT_EQ(protobuf_get_setpoint().motor, 1337);
-    EXPECT_EQ(protobuf_get_setpoint().pitch, 17);
-    EXPECT_EQ(protobuf_get_setpoint().roll, 34);
+    EXPECT_TRUE(protobuf_available());
+    EXPECT_EQ(protobuf_get().motor, 1337);
+    EXPECT_EQ(protobuf_get().pitch, 17);
+    EXPECT_EQ(protobuf_get().roll, 34);
 }

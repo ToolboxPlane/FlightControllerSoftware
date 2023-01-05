@@ -44,11 +44,11 @@ void flight_computer_send(const imu_data_t *imu_data, const remote_data_t *remot
 }
 
 bool flight_computer_set_point_available(void) {
-    return protobuf_setpoint_available();
+    return protobuf_available();
 }
 
 flight_computer_set_point_t flight_computer_get_set_point(void) {
-    setpoint_message_t message = protobuf_get_setpoint();
+    setpoint_message_t message = protobuf_get();
     flight_computer_set_point_t setpoint = {.motor = message.motor,
                                           .pitch = (int16_t) message.pitch,
                                           .roll = (int16_t) message.roll};

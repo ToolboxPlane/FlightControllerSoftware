@@ -38,7 +38,7 @@ void error_handler_init(void);
  * This function performs the following tasks:
  *  * Set LED 1-4 to the binary encoded group ID
  *  * Set LED 5-8 to the binary encoded error ID
- *  * Call system_reset_watchdog in an infinite loop
+ *  * Call ::system_reset_watchdog in an infinite loop
  *
  * @param group the component that triggered the error_handler
  * @param error_id the id of the error of the component

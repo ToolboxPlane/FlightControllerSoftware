@@ -34,7 +34,7 @@ typedef struct {
  * @brief Initialize the remote module.
  *
  * The initialization consists of the following task:
- *  * call sbus_init
+ *  * call ::sbus_init
  */
 void remote_init(void);
 

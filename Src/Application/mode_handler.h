@@ -43,8 +43,7 @@ void mode_handler_init(void);
  *      in the last [device]_TIMEOUT calls.
  *  * Check the integrity of the data, a device is set to be active if it has no timeout and
  *      [device]_get_data().[device]_ok is true
- *  * If the device is non-active call error_handle_warning(MODE_HANDLER, MODE_HANDLER_ERROR_NO_[device]_DATA) is
- *      called.
+ *  * If the device is non-active call error_handle_warning(MODE_HANDLER, MODE_HANDLER_ERROR_NO_[device]_DATA)
  *
  * Depending on the active-status of all devices and the remote.override_active and remote.armed flag the mode is
  * determined according to the following decision table:

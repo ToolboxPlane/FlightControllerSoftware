@@ -23,12 +23,18 @@ typedef struct {
  * @brief Initialize the actuators module.
  *
  * The initialization consists of the following tasks:
- *  * Call ppm_init
+ *  * Call ::ppm_init
  */
 void actuators_init(void);
 
 /**
- * Set the actuators.
+ * @brief Set the actuators.
+ *
+ * This function sets the actuators, using ::ppm_set, according to the following mapping:
+ *  * elevon-left mapped from [-500, 500] to [0, 1000] to channel 1
+ *  * throttle to channel 2
+ *  * elevon-right mapped from [-500, 500] to [0, 1000] to channel 3
+ *
  * @param actuator_cmd the command to set.
  */
 void actuators_set(const actuator_cmd_t *actuator_cmd);

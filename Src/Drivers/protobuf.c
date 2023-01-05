@@ -39,7 +39,7 @@ void protobuf_send(const fc_message_t *message) {
     uart_send_buf(UART_ID, buf, len);
 }
 
-bool protobuf_setpoint_available(void) {
+bool protobuf_available(void) {
     bool res = false;
     uint8_t data = 0;
     while (ring_buffer_get(&ring_buffer_data, &data)) {
@@ -51,6 +51,6 @@ bool protobuf_setpoint_available(void) {
     return res;
 }
 
-setpoint_message_t protobuf_get_setpoint(void) {
+setpoint_message_t protobuf_get(void) {
     return setpoint_message;
 }

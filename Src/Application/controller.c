@@ -37,14 +37,14 @@ static int16_t wrap_to_pm180_mul_8(int16_t angle) {
     return angle;
 }
 
-controller_result_t controller_update(const imu_data_t *imu_data, int16_t roll_setpoint, int16_t pitch_setpoint) {
+controller_result_t controller_update(const imu_data_t *imu_data, int16_t roll_set_point, int16_t pitch_set_point) {
     /*
      * Calculate the error:
      *  * a positive roll error should result in the plane banking right
      *  * a positive pitch error should result in the plane pitching down
      */
-    int16_t delta_roll_mul_8 = wrap_to_pm180_mul_8(roll_setpoint * 8 - imu_data->roll_mul_16 / 2);
-    int16_t delta_pitch_mul_8 = wrap_to_pm180_mul_8(pitch_setpoint * 8 - imu_data->pitch_mul_16 / 2);
+    int16_t delta_roll_mul_8 = wrap_to_pm180_mul_8(roll_set_point * 8 - imu_data->roll_mul_16 / 2);
+    int16_t delta_pitch_mul_8 = wrap_to_pm180_mul_8(pitch_set_point * 8 - imu_data->pitch_mul_16 / 2);
 
     _Static_assert((MAX_ANGLE * 8L * ROLL_KP) < MAX_INT16, "Potential overflow in roll controller");
     _Static_assert((MAX_ANGLE * 8L * PITCH_KP) < MAX_INT16, "Potential overflow in pitch controller");

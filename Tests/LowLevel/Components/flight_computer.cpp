@@ -73,7 +73,7 @@ TEST(TEST_NAME, data_available_true) {
     flight_computer_init();
     EXPECT_TRUE(handle.functionGotCalled<protobuf_init>());
 
-    handle.overrideFunc<protobuf_setpoint_available>([]() { return true; });
+    handle.overrideFunc<protobuf_available>([]() { return true; });
 
     EXPECT_TRUE(flight_computer_set_point_available());
 }
@@ -84,7 +84,7 @@ TEST(TEST_NAME, data_available_false) {
     flight_computer_init();
     EXPECT_TRUE(handle.functionGotCalled<protobuf_init>());
 
-    handle.overrideFunc<protobuf_setpoint_available>([]() { return false; });
+    handle.overrideFunc<protobuf_available>([]() { return false; });
 
     EXPECT_FALSE(flight_computer_set_point_available());
 }
@@ -95,7 +95,7 @@ TEST(TEST_NAME, get_setpoint) {
     flight_computer_init();
     EXPECT_TRUE(handle.functionGotCalled<protobuf_init>());
 
-    handle.overrideFunc<protobuf_get_setpoint>([]() {
+    handle.overrideFunc<protobuf_get>([]() {
         return ToolboxPlaneMessages_FlightControllerSetpoint{
                 .motor = 37,
                 .pitch = 39,
