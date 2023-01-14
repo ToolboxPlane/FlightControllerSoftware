@@ -12,14 +12,14 @@
 #include "FlightControllerSetpoint.pb.h"
 
 /**
- * Type of the messages sent to the flightcomputer.
+ * Type of the messages sent to the flight-computer.
  */
 typedef ToolboxPlaneMessages_FlightController fc_message_t;
 
 /**
- * Type of the messages received from the flightcomputer.
+ * Type of the messages received from the flight-computer.
  */
-typedef ToolboxPlaneMessages_FlightControllerSetpoint setpoint_message_t;
+typedef ToolboxPlaneMessages_FlightControllerSetpoint set_point_message_t;
 
 /**
  * Initialize the protobuf connection.
@@ -27,7 +27,7 @@ typedef ToolboxPlaneMessages_FlightControllerSetpoint setpoint_message_t;
 void protobuf_init(void);
 
 /**
- * Send a message to the flightcomputer.
+ * Send a message to the flight-computer.
  * @param message the message to send.
  */
 void protobuf_send(const fc_message_t *message);
@@ -42,6 +42,6 @@ bool protobuf_available(void);
  * Get the last message that was received.
  * @return a copy of the last message.
  */
-setpoint_message_t protobuf_get(void);
+set_point_message_t protobuf_get(void);
 
 #endif // FLIGHTCONTROLLER_PROTOBUF_H

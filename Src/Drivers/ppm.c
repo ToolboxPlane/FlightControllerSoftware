@@ -29,8 +29,8 @@ void ppm_init(void) {
     pwm_init(4, prescaler_8, PPM_MAX_VAL);
 }
 
-void ppm_channel_set(ppm_channel_id channel_id, uint16_t setpoint) {
-    uint16_t compare_value = (setpoint + PPM_ZERO_VAL) * 2U;
+void ppm_channel_set(ppm_channel_id channel_id, uint16_t command) {
+    uint16_t compare_value = (command + PPM_ZERO_VAL) * 2U;
     switch (channel_id) {
         case CHANNEL_1:
             pwm_set_out_a(3, compare_value);

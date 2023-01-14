@@ -19,7 +19,7 @@ enum { UART_BAUD = 115200U };
 
 static ring_buffer_data_t ring_buffer_data;
 static message_decoding_data_t message_decoding_data;
-static setpoint_message_t setpoint_message;
+static set_point_message_t setpoint_message;
 
 static void uart_callback(uint8_t data) {
     if (!ring_buffer_put(&ring_buffer_data, data)) {
@@ -51,6 +51,6 @@ bool protobuf_available(void) {
     return res;
 }
 
-setpoint_message_t protobuf_get(void) {
+set_point_message_t protobuf_get(void) {
     return setpoint_message;
 }

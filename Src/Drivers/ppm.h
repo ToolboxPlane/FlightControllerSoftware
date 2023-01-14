@@ -33,8 +33,8 @@ void ppm_init(void);
 /**
  * Set the value of a PPM channel by converting the setpoint to a PWM comparison value and setting the value.
  * @param channel_id the ID of the channel, as numbered on the PCB.
- * @param setpoint the setpoint (in microseconds) for the actuator, needs to be in [0, 1000]
+ * @param command the set point (in microseconds) for the actuator, needs to be in [0, 1000]
  */
-void ppm_channel_set(ppm_channel_id channel_id, uint16_t setpoint);
+void ppm_channel_set(ppm_channel_id channel_id, uint16_t command);
 
 #endif // FLIGHTCONTROLLER_PPM_H
