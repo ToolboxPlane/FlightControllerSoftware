@@ -43,6 +43,7 @@ typedef enum {
     IMU_ERROR_INIT_TIMEOUT = 1,
     IMU_ERROR_INIT_SELF_TEST = 2,
     IMU_ERROR_STATUS = 3,
+    IMU_ERROR_READ_TIMEOUT = 4
 } imu_error_t;
 
 /**

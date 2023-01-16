@@ -10,9 +10,9 @@
 #include "error_handler.h"
 
 enum {
-    IMU_TIMEOUT = (uint16_t) (100 / 16.384),
-    FLIGHTCOMPUTER_TIMEOUT = (uint16_t) ((2 * 100) / 16.384),
-    REMOTE_TIMEOUT = (uint16_t) (100 / 16.384),
+    IMU_TIMEOUT = (int) ((10 * 100) / (5 * 4.096)),
+    FLIGHTCOMPUTER_TIMEOUT = (int) ((2 * 100) / (5 * 4.096)),
+    REMOTE_TIMEOUT = (int) (100 / (5 * 4.096)),
 };
 
 static uint8_t imu_timeout_counter;
@@ -20,7 +20,7 @@ static uint8_t flightcomputer_timeout_counter;
 static uint8_t remote_timeout_counter;
 
 void mode_handler_init(void) {
-    imu_timeout_counter = IMU_TIMEOUT;
+    imu_timeout_counter = 0; // IMU_TIMEOUT;
     flightcomputer_timeout_counter = FLIGHTCOMPUTER_TIMEOUT;
     remote_timeout_counter = REMOTE_TIMEOUT;
 }

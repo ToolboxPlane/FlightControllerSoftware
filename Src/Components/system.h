@@ -16,7 +16,7 @@ typedef enum { SYSTEM_ERROR_TIMER_RUNTIME = 1, SYSTEM_ERROR_WATCHDOG = 2, SYSTEM
 /**
  * The type of function to be called by the system component.
  */
-typedef void (*system_timer_16_384ms_callback)(void);
+typedef void (*system_timer_4_096ms_callback_t)(void);
 
 /**
  * @brief Run initial system setup.
@@ -29,13 +29,13 @@ typedef void (*system_timer_16_384ms_callback)(void);
  *
  * @param timer_callback the function to be called by the timer.
  */
-void system_pre_init(system_timer_16_384ms_callback timer_callback);
+void system_pre_init(system_timer_4_096ms_callback_t timer_callback);
 
 /**
  * @brief Run system setup after component initialization.
  *
  * The post-initialization consists of the following task:
- *  * Start the timer with a period of 16.384ms
+ *  * Start the timer with a period of 4.096ms
  *  * Set the watchdog to 30ms
  */
 void system_post_init(void);

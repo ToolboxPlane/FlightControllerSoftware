@@ -46,9 +46,9 @@ TEST(TEST_NAME, timer_mode_fcp) {
     auto systemHandle = mock::system.getHandle();
     auto controllerHandle = mock::controller.getHandle();
 
-    system_timer_16_384ms_callback timer_callback = nullptr;
+    system_timer_4_096ms_callback_t timer_callback = nullptr;
     systemHandle.overrideFunc<system_pre_init>(
-            [&timer_callback](system_timer_16_384ms_callback callback) { timer_callback = callback; });
+            [&timer_callback](system_timer_4_096ms_callback_t callback) { timer_callback = callback; });
     systemHandle.overrideFunc<system_reset_watchdog>(
             []() { throw std::runtime_error{"EXCEPTION TO BREAK LOOP FOR TESTS"}; });
 
@@ -127,9 +127,9 @@ TEST(TEST_NAME, timer_mode_remote) {
     auto systemHandle = mock::system.getHandle();
     auto controllerHandle = mock::controller.getHandle();
 
-    system_timer_16_384ms_callback timer_callback = nullptr;
+    system_timer_4_096ms_callback_t timer_callback = nullptr;
     systemHandle.overrideFunc<system_pre_init>(
-            [&timer_callback](system_timer_16_384ms_callback callback) { timer_callback = callback; });
+            [&timer_callback](system_timer_4_096ms_callback_t callback) { timer_callback = callback; });
     systemHandle.overrideFunc<system_reset_watchdog>(
             []() { throw std::runtime_error{"EXCEPTION TO BREAK LOOP FOR TESTS"}; });
 
@@ -190,9 +190,9 @@ TEST(TEST_NAME, timer_mode_stabilised_failsafe) {
     auto systemHandle = mock::system.getHandle();
     auto controllerHandle = mock::controller.getHandle();
 
-    system_timer_16_384ms_callback timer_callback = nullptr;
+    system_timer_4_096ms_callback_t timer_callback = nullptr;
     systemHandle.overrideFunc<system_pre_init>(
-            [&timer_callback](system_timer_16_384ms_callback callback) { timer_callback = callback; });
+            [&timer_callback](system_timer_4_096ms_callback_t callback) { timer_callback = callback; });
     systemHandle.overrideFunc<system_reset_watchdog>(
             []() { throw std::runtime_error{"EXCEPTION TO BREAK LOOP FOR TESTS"}; });
 
@@ -271,9 +271,9 @@ TEST(TEST_NAME, timer_mode_failsafe) {
     auto systemHandle = mock::system.getHandle();
     auto controllerHandle = mock::controller.getHandle();
 
-    system_timer_16_384ms_callback timer_callback = nullptr;
+    system_timer_4_096ms_callback_t timer_callback = nullptr;
     systemHandle.overrideFunc<system_pre_init>(
-            [&timer_callback](system_timer_16_384ms_callback callback) { timer_callback = callback; });
+            [&timer_callback](system_timer_4_096ms_callback_t callback) { timer_callback = callback; });
     systemHandle.overrideFunc<system_reset_watchdog>(
             []() { throw std::runtime_error{"EXCEPTION TO BREAK LOOP FOR TESTS"}; });
 
@@ -335,9 +335,9 @@ TEST(TEST_NAME, timer_send_period) {
     auto systemHandle = mock::system.getHandle();
     auto controllerHandle = mock::controller.getHandle();
 
-    system_timer_16_384ms_callback timer_callback = nullptr;
+    system_timer_4_096ms_callback_t timer_callback = nullptr;
     systemHandle.overrideFunc<system_pre_init>(
-            [&timer_callback](system_timer_16_384ms_callback callback) { timer_callback = callback; });
+            [&timer_callback](system_timer_4_096ms_callback_t callback) { timer_callback = callback; });
     systemHandle.overrideFunc<system_reset_watchdog>(
             []() { throw std::runtime_error{"EXCEPTION TO BREAK LOOP FOR TESTS"}; });
 
