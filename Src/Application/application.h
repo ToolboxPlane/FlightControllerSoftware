@@ -25,9 +25,9 @@
  * This function never returns but calls wdt_reset in an infinite loop, if this idle does not run for 30ms
  * (i.e. the system is continuously blocked by interrupts) a reset is performed.
  *
- * The timer runs a state machine which cycles through the following tasks:
- *  1. Call the mode handler (::mode_handler_handle) to determine the current mode
- *  2. Calculate the actuator commands depending on the mode:
+ * The timer performs the following tasks:
+ *  * Call the mode handler (::mode_handler_handle) to determine the current mode
+ *  * Calculate the actuator commands depending on the mode:
  *      * In flight-computer mode: call the controller (::controller_update) with the flight-computer set point and the
  *          imu data and use the result as elevon commands, the motor command is taken directly from the flight-computer
  *          set point
@@ -36,11 +36,8 @@
  *      * In stabilised failsafe mode: call the controller with roll: 0, pitch: 0 as set point and the imu data
  *           and use the result as elevon commands, the motor command is always 0
  *      * In failsafe mode: set all three commands to 0
- *  3. Pass the actuator commands to the actuators (::actuators_set)
- *  4. Every FLIGHT_COMPUTER_SEND_PERIOD time this state is reached: pass the current data to ::flight-computer_send
- *  5. Empty task
- *
- * Every call to the timer the following tasks are performed:
+ *  * Pass the actuator commands to the actuators (::actuators_set)
+ *  * Every FLIGHT_COMPUTER_SEND_PERIOD frame: pass the current data to ::flight-computer_send
  *  * Call ::imu_start_sampling
  *
  */

@@ -85,24 +85,37 @@ typedef enum {
 void imu_init(void);
 
 /**
- * @brief Start sampling of the sensor.
+ * @brief Parse result and start next sampling process
  *
- * This reads all data into an internal imu_data_t struct, if an error occurs sampling is aborted and no new data
- * is reported.
+ * If the last sampling process is not completed the function shall call
+ * error_handler_handle_warning(ERROR_HANDLER_GROUP_IMU, IMU_ERROR_READ_TIMEOUT).
  *
- * @warning Currently only one datum is read per call to this function, i.e. multiple calls are necessary to read
- * all data, see #41.
+ * Otherwise the following steps shall be performed:
+ *  * If the last response was read-success:
+ *      * If the last datum was Status set imu_ok to false if the mode is not "Sensor Fusion Algorithm Running"
+ *      * If the last datum was Calib-Status:
+ *          * set imu_ok to false if any of the fields is less than the respective threshold
+ *          * make the result available (such that ::imu_get_latest_data returns the data and ::imu_data_available
+ *            returns true)
+ *      * Read the next datum, the (cyclic-) order is:
+ *           1. Euler angles
+ *           2. Gyroscopic angular rate
+ *           3. Acceleration
+ *  * Otherwise:
+ *      * Call error_handler_handle_warning(ERROR_HANDLER_GROUP_BNO055, response + 1)
+ *      * Re-read the current datum
  */
 void imu_start_sampling(void);
 
 /**
- * Get the last, fully received, set of measurements.
+ * @brief Get the last, fully received, set of measurements.
+ *
  * @return a struct containing all measurement data.
  */
 imu_data_t imu_get_latest_data(void);
 
 /**
- * Checks whether a new set of measurements was collected since the last call to get_latest_data().
+ * @brief Checks whether a new set of measurements was collected since the last call to get_latest_data().
  * @return true if new data is available.
  */
 bool imu_data_available(void);

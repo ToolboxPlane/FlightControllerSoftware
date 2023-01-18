@@ -26,81 +26,61 @@ enum { FLIGHT_COMPUTER_SEND_PERIOD = (uint16_t) (100 / 16.383) };
  */
 enum { SERVO_REMOTE_OFFSET = 1000U / 2 };
 
-typedef enum {
-    TIMER_STATE_MODE_HANDLER,
-    TIMER_STATE_CONTROLLER,
-    TIMER_STATE_ACTUATORS,
-    TIMER_STATE_SEND_FCP,
-    TIMER_STATE_EMPTY
-} timer_state_t;
-
-static volatile uint8_t fcps_send_mux;
-static volatile timer_state_t timer_state;
+static volatile uint8_t fcps_send_mux = 0;
 
 static void timer_tick(void) {
-    static imu_data_t imu_data;
-    static remote_data_t remote_data;
-    static flight_computer_set_point_t flightcomputer_setpoint;
-    static mode_handler_mode_t mode;
-    static actuator_cmd_t actuator_cmd;
+    imu_data_t imu_data;
+    remote_data_t remote_data;
+    flight_computer_set_point_t flightcomputer_setpoint;
+    mode_handler_mode_t mode = mode_handler_handle(&imu_data, &remote_data, &flightcomputer_setpoint);
 
-    switch (timer_state) {
-        case TIMER_STATE_MODE_HANDLER:
-            mode = MODE_FAILSAFE; // mode_handler_handle(&imu_data, &remote_data, &flightcomputer_setpoint);
-            imu_data = imu_get_latest_data();
-            timer_state = TIMER_STATE_CONTROLLER;
+    /*
+     * Calculate outputs
+     */
+    actuator_cmd_t actuator_cmd;
+    switch (mode) {
+        case MODE_FLIGHTCOMPUTER: {
+            controller_result_t controller_result =
+                    controller_update(&imu_data, flightcomputer_setpoint.roll, flightcomputer_setpoint.pitch);
+            actuator_cmd.elevon_left = controller_result.elevon_left;
+            actuator_cmd.elevon_right = controller_result.elevon_right;
+            actuator_cmd.motor = flightcomputer_setpoint.motor;
             break;
-        case TIMER_STATE_CONTROLLER:
-            switch (mode) {
-                case MODE_FLIGHTCOMPUTER: {
-                    controller_result_t controller_result =
-                            controller_update(&imu_data, flightcomputer_setpoint.roll, flightcomputer_setpoint.pitch);
-                    actuator_cmd.elevon_left = controller_result.elevon_left;
-                    actuator_cmd.elevon_right = controller_result.elevon_right;
-                    actuator_cmd.motor = flightcomputer_setpoint.motor;
-                    break;
-                }
-                case MODE_REMOTE:
-                    actuator_cmd.motor = remote_data.throttle_mixed;
-                    actuator_cmd.elevon_left = remote_data.elevon_left_mixed - SERVO_REMOTE_OFFSET;
-                    actuator_cmd.elevon_right = remote_data.elevon_right_mixed - SERVO_REMOTE_OFFSET;
-                    break;
-                case MODE_STABILISED_FAILSAFE: {
-                    controller_result_t controller_result = controller_update(&imu_data, 0, 0);
-                    actuator_cmd.elevon_left = controller_result.elevon_left;
-                    actuator_cmd.elevon_right = controller_result.elevon_right;
-                    actuator_cmd.motor = 0;
-                    break;
-                }
-                case MODE_FAILSAFE:
-                    actuator_cmd.motor = 0;
-                    actuator_cmd.elevon_left = 0;
-                    actuator_cmd.elevon_right = 0;
-                    break;
-            }
-            timer_state = TIMER_STATE_ACTUATORS;
+        }
+        case MODE_REMOTE:
+            actuator_cmd.motor = remote_data.throttle_mixed;
+            actuator_cmd.elevon_left = remote_data.elevon_left_mixed - SERVO_REMOTE_OFFSET;
+            actuator_cmd.elevon_right = remote_data.elevon_right_mixed - SERVO_REMOTE_OFFSET;
             break;
-        case TIMER_STATE_ACTUATORS:
-            actuators_set(&actuator_cmd);
-            timer_state = TIMER_STATE_SEND_FCP;
+        case MODE_STABILISED_FAILSAFE: {
+            controller_result_t controller_result = controller_update(&imu_data, 0, 0);
+            actuator_cmd.elevon_left = controller_result.elevon_left;
+            actuator_cmd.elevon_right = controller_result.elevon_right;
+            actuator_cmd.motor = 0;
             break;
-        case TIMER_STATE_SEND_FCP:
-            fcps_send_mux += 1;
-            if (fcps_send_mux >= FLIGHT_COMPUTER_SEND_PERIOD) {
-                flight_computer_send(&imu_data, &remote_data, &actuator_cmd);
-                fcps_send_mux = 0;
-            }
-            timer_state = TIMER_STATE_EMPTY;
+        }
+        case MODE_FAILSAFE:
+            actuator_cmd.motor = 0;
+            actuator_cmd.elevon_left = 0;
+            actuator_cmd.elevon_right = 0;
             break;
-        case TIMER_STATE_EMPTY:
-            timer_state = TIMER_STATE_MODE_HANDLER;
-            break;
+    }
+
+    actuators_set(&actuator_cmd);
+
+    /*
+     * Send information to FCPS
+     */
+    fcps_send_mux += 1;
+    if (fcps_send_mux >= FLIGHT_COMPUTER_SEND_PERIOD) {
+        flight_computer_send(&imu_data, &remote_data, &actuator_cmd);
+        fcps_send_mux = 0;
     }
 
     /*
      * Read the next IMU data
      */
-    imu_start_sampling();
+    //imu_start_sampling();
 }
 
 void application_init(void) {
@@ -116,9 +96,9 @@ void application_init(void) {
     system_post_init();
 
     fcps_send_mux = 0;
-    timer_state = TIMER_STATE_MODE_HANDLER;
 
     while (true) {
         system_reset_watchdog();
+        imu_start_sampling();
     }
 }

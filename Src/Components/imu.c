@@ -161,7 +161,7 @@ void imu_init(void) {
 
 void imu_start_sampling(void) {
     if (!callback_ready) {
-        //error_handler_handle_warning(ERROR_HANDLER_GROUP_IMU, IMU_ERROR_READ_TIMEOUT);
+        error_handler_handle_warning(ERROR_HANDLER_GROUP_IMU, IMU_ERROR_READ_TIMEOUT);
         return;
     }
 
