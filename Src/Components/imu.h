@@ -98,9 +98,11 @@ void imu_init(void);
  *          * make the result available (such that ::imu_get_latest_data returns the data and ::imu_data_available
  *            returns true)
  *      * Read the next datum, the (cyclic-) order is:
- *           1. Euler angles
- *           2. Gyroscopic angular rate
- *           3. Acceleration
+ *           1. Euler angles (::bno055_read_eul_xyz_2_mul_16)
+ *           2. Gyroscopic angular rate (::bno055_read_gyr_xyz_mul_16)
+ *           3. Acceleration (::bno055_read_acc_xyz_mul_100)
+ *           4. System State (::bno055_read_system_status)
+ *           5. Calibration status (::bno055_read_calib_status)
  *  * Otherwise:
  *      * Call error_handler_handle_warning(ERROR_HANDLER_GROUP_BNO055, response + 1)
  *      * Re-read the current datum

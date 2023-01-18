@@ -502,146 +502,395 @@ TEST(TEST_NAME, init__success) {
     EXPECT_TRUE(delayHandle.functionGotCalled<_delay_ms>(20));
 }
 
-
-TEST(TEST_NAME, read__full_read) {
-    GTEST_SKIP_("Non requirement compliant workaround for non datasheet compliant sensor!");
+TEST(TEST_NAME, start_sampling__no_response) {
+    /*
+     * Init
+     */
     auto bnoHandle = mock::bno055.getHandle();
-    bool alreadyCalled = false;
+    auto delayHandle = mock::delay.getHandle();
 
-    bnoHandle.overrideFunc<bno055_read_eul_xyz_2_mul_16>([&alreadyCalled](int16_t *out, bno055_callback_t callback) {
-        if (not alreadyCalled) {
-            out[0] = 101;
-            out[1] = 102;
-            out[2] = 103;
-            alreadyCalled = true;
-            callback(read_success);
-        }
-        // Break the sampling process
+    bnoHandle.overrideFunc<bno055_write_opr_mode>(
+            [](auto /*op_mode*/, bno055_callback_t callback) { callback(write_success); });
+    bnoHandle.overrideFunc<bno055_read_self_test>([](bno055_self_test_result_t *out, bno055_callback_t callback) {
+      out->mcu_passed = true;
+      out->acc_passed = true;
+      out->gyr_passed = true;
+      out->mag_passed = true;
+      callback(read_success);
     });
+    bnoHandle.overrideFunc<bno055_write_unit_selection>(
+            [](bno055_unit_sel_acc /*acc_unit*/, bno055_unit_sel_angular_rate /*angular_rate_unit*/,
+               bno055_unit_sel_euler_angles /*euler_angles_unit*/, bno055_unit_sel_temperature /*temperature_unit*/,
+               bno055_unit_sel_orientation_def /*orientation_def*/,
+               bno055_callback_t callback) { callback(write_success); });
+    bnoHandle.overrideFunc<bno055_write_remap_axis>(
+            [](bno055_axis_remap_axis_t /*new_x*/, bno055_axis_remap_axis_t /*new_y*/,
+               bno055_axis_remap_axis_t /*new_z*/, bno055_callback_t callback) { callback(write_success); });
+    bnoHandle.overrideFunc<bno055_write_remap_axis_sign>(
+            [](bno055_axis_remap_sign_t /*new_x_sign*/, bno055_axis_remap_sign_t /*new_y_sign*/,
+               bno055_axis_remap_sign_t /*new_z_sign*/, bno055_callback_t callback) { callback(write_success); });
 
-    bnoHandle.overrideFunc<bno055_read_gyr_xyz_mul_16>([](int16_t *out, bno055_callback_t callback) {
-        out[0] = 104;
-        out[1] = 105;
-        out[2] = 106;
-        callback(read_success);
-    });
+    imu_init();
+    EXPECT_TRUE(bnoHandle.functionGotCalled<bno055_init>());
+    EXPECT_TRUE(delayHandle.functionGotCalled<_delay_ms>(20));
+    EXPECT_TRUE(delayHandle.functionGotCalled<_delay_ms>(20));
+    EXPECT_TRUE(delayHandle.functionGotCalled<_delay_ms>(20));
+    EXPECT_TRUE(delayHandle.functionGotCalled<_delay_ms>(20));
+    EXPECT_TRUE(delayHandle.functionGotCalled<_delay_ms>(20));
+    EXPECT_TRUE(delayHandle.functionGotCalled<_delay_ms>(20));
 
-    bnoHandle.overrideFunc<bno055_read_acc_xyz_mul_100>([](int16_t *out, bno055_callback_t callback) {
-        out[0] = 107;
-        out[1] = 108;
-        out[2] = 109;
-        callback(read_success);
-    });
+    /*
+     * Test:
+     *  * Call start sampling, expect call to euler-angles
+     *  * Call start sampling without calling callback, expect warning
+     */
 
-    bnoHandle.overrideFunc<bno055_read_system_status>([](bno055_status_t *out, bno055_callback_t callback) {
-        *out = bno055_status_t::BNO055_STATUS_SENSOR_FUSION_ALGORITHM_RUNNING;
-        callback(read_success);
-    });
-
-    bnoHandle.overrideFunc<bno055_read_calib_status>([](bno055_calib_status_t *out, bno055_callback_t callback) {
-        out->acc_status = 0;
-        out->gyr_status = 0;
-        out->mag_status = 0;
-        out->sys_status = 0;
-        callback(read_success);
-    });
-
-
-    EXPECT_FALSE(imu_data_available());
-    EXPECT_NO_THROW(imu_start_sampling());
-    EXPECT_TRUE(imu_data_available());
-
-    auto data = imu_get_latest_data();
-
-    EXPECT_FALSE(imu_data_available());
-
-    EXPECT_EQ(data.roll_mul_16, 103);
-    EXPECT_EQ(data.pitch_mul_16, 102);
-    EXPECT_EQ(data.heading_mul_16, 101);
-    EXPECT_EQ(data.d_roll_mul_16, 106);
-    EXPECT_EQ(data.d_pitch_mul_16, 105);
-    EXPECT_EQ(data.d_heading_mul_16, 104);
-    EXPECT_EQ(data.acc_x_mul_100, 107);
-    EXPECT_EQ(data.acc_y_mul_100, 108);
-    EXPECT_EQ(data.acc_z_mul_100, 109);
-    EXPECT_EQ(data.imu_ok, true);
+    EXPECT_TRUE(false);
 }
 
-TEST(TEST_NAME, read__status_error) {
-    GTEST_SKIP_("Non requirement compliant workaround for non datasheet compliant sensor!");
+TEST(TEST_NAME, start_sampling__read_error) {
+    /*
+     * Init
+     */
     auto bnoHandle = mock::bno055.getHandle();
-    auto errorHandlerHandle = mock::error_handler.getHandle();
-    bool alreadyCalled = false;
+    auto delayHandle = mock::delay.getHandle();
 
-    bnoHandle.overrideFunc<bno055_read_eul_xyz_2_mul_16>(
-            [&alreadyCalled](int16_t * /*out*/, bno055_callback_t callback) {
-                if (not alreadyCalled) {
-                    alreadyCalled = true;
-                    callback(read_success);
-                }
-                // Break the sampling process
-            });
-
-    bnoHandle.overrideFunc<bno055_read_gyr_xyz_mul_16>(
-            [](int16_t * /*out*/, bno055_callback_t callback) { callback(read_success); });
-
-    bnoHandle.overrideFunc<bno055_read_acc_xyz_mul_100>(
-            [](int16_t * /*out*/, bno055_callback_t callback) { callback(read_success); });
-
-    bnoHandle.overrideFunc<bno055_read_system_status>([](bno055_status_t *out, bno055_callback_t callback) {
-        *out = bno055_status_t::BNO055_STATUS_SYSTEM_IDLE;
-        callback(read_success);
+    bnoHandle.overrideFunc<bno055_write_opr_mode>(
+            [](auto /*op_mode*/, bno055_callback_t callback) { callback(write_success); });
+    bnoHandle.overrideFunc<bno055_read_self_test>([](bno055_self_test_result_t *out, bno055_callback_t callback) {
+      out->mcu_passed = true;
+      out->acc_passed = true;
+      out->gyr_passed = true;
+      out->mag_passed = true;
+      callback(read_success);
     });
+    bnoHandle.overrideFunc<bno055_write_unit_selection>(
+            [](bno055_unit_sel_acc /*acc_unit*/, bno055_unit_sel_angular_rate /*angular_rate_unit*/,
+               bno055_unit_sel_euler_angles /*euler_angles_unit*/, bno055_unit_sel_temperature /*temperature_unit*/,
+               bno055_unit_sel_orientation_def /*orientation_def*/,
+               bno055_callback_t callback) { callback(write_success); });
+    bnoHandle.overrideFunc<bno055_write_remap_axis>(
+            [](bno055_axis_remap_axis_t /*new_x*/, bno055_axis_remap_axis_t /*new_y*/,
+               bno055_axis_remap_axis_t /*new_z*/, bno055_callback_t callback) { callback(write_success); });
+    bnoHandle.overrideFunc<bno055_write_remap_axis_sign>(
+            [](bno055_axis_remap_sign_t /*new_x_sign*/, bno055_axis_remap_sign_t /*new_y_sign*/,
+               bno055_axis_remap_sign_t /*new_z_sign*/, bno055_callback_t callback) { callback(write_success); });
 
-    bnoHandle.overrideFunc<bno055_read_calib_status>(
-            [](bno055_calib_status_t * /*out*/, bno055_callback_t callback) { callback(read_success); });
+    imu_init();
+    EXPECT_TRUE(bnoHandle.functionGotCalled<bno055_init>());
+    EXPECT_TRUE(delayHandle.functionGotCalled<_delay_ms>(20));
+    EXPECT_TRUE(delayHandle.functionGotCalled<_delay_ms>(20));
+    EXPECT_TRUE(delayHandle.functionGotCalled<_delay_ms>(20));
+    EXPECT_TRUE(delayHandle.functionGotCalled<_delay_ms>(20));
+    EXPECT_TRUE(delayHandle.functionGotCalled<_delay_ms>(20));
+    EXPECT_TRUE(delayHandle.functionGotCalled<_delay_ms>(20));
 
-    EXPECT_FALSE(imu_data_available());
-    EXPECT_NO_THROW(imu_start_sampling());
-    EXPECT_FALSE(imu_data_available());
+    /*
+     * Test:
+     *  * Call start sampling, expect call to euler-angles
+     *  * Call the provided callback with read-error as argument
+     *  * Call start sampling, expect warning and call to euler-angles
+     */
 
-    auto data = imu_get_latest_data();
-
-    EXPECT_EQ(data.imu_ok, false);
-    EXPECT_TRUE(errorHandlerHandle.functionGotCalled<error_handler_handle_warning>(ERROR_HANDLER_GROUP_IMU, IMU_ERROR_STATUS));
+    EXPECT_TRUE(false);
 }
 
-TEST(TEST_NAME, read__error_call_error_handler) {
-    GTEST_SKIP_("Non requirement compliant workaround for non datasheet compliant sensor!");
+TEST(TEST_NAME, start_sampling__full_cycle) {
+    /*
+     * Init
+     */
     auto bnoHandle = mock::bno055.getHandle();
-    auto errorHandlerHandle = mock::error_handler.getHandle();
+    auto delayHandle = mock::delay.getHandle();
 
-    bnoHandle.overrideFunc<bno055_read_eul_xyz_2_mul_16>(
-            [](int16_t * /*out*/, bno055_callback_t callback) { callback(read_fail); });
+    bnoHandle.overrideFunc<bno055_write_opr_mode>(
+            [](auto /*op_mode*/, bno055_callback_t callback) { callback(write_success); });
+    bnoHandle.overrideFunc<bno055_read_self_test>([](bno055_self_test_result_t *out, bno055_callback_t callback) {
+      out->mcu_passed = true;
+      out->acc_passed = true;
+      out->gyr_passed = true;
+      out->mag_passed = true;
+      callback(read_success);
+    });
+    bnoHandle.overrideFunc<bno055_write_unit_selection>(
+            [](bno055_unit_sel_acc /*acc_unit*/, bno055_unit_sel_angular_rate /*angular_rate_unit*/,
+               bno055_unit_sel_euler_angles /*euler_angles_unit*/, bno055_unit_sel_temperature /*temperature_unit*/,
+               bno055_unit_sel_orientation_def /*orientation_def*/,
+               bno055_callback_t callback) { callback(write_success); });
+    bnoHandle.overrideFunc<bno055_write_remap_axis>(
+            [](bno055_axis_remap_axis_t /*new_x*/, bno055_axis_remap_axis_t /*new_y*/,
+               bno055_axis_remap_axis_t /*new_z*/, bno055_callback_t callback) { callback(write_success); });
+    bnoHandle.overrideFunc<bno055_write_remap_axis_sign>(
+            [](bno055_axis_remap_sign_t /*new_x_sign*/, bno055_axis_remap_sign_t /*new_y_sign*/,
+               bno055_axis_remap_sign_t /*new_z_sign*/, bno055_callback_t callback) { callback(write_success); });
 
-    EXPECT_FALSE(imu_data_available());
-    EXPECT_NO_THROW(imu_start_sampling());
-    EXPECT_FALSE(imu_data_available());
+    imu_init();
+    EXPECT_TRUE(bnoHandle.functionGotCalled<bno055_init>());
+    EXPECT_TRUE(delayHandle.functionGotCalled<_delay_ms>(20));
+    EXPECT_TRUE(delayHandle.functionGotCalled<_delay_ms>(20));
+    EXPECT_TRUE(delayHandle.functionGotCalled<_delay_ms>(20));
+    EXPECT_TRUE(delayHandle.functionGotCalled<_delay_ms>(20));
+    EXPECT_TRUE(delayHandle.functionGotCalled<_delay_ms>(20));
+    EXPECT_TRUE(delayHandle.functionGotCalled<_delay_ms>(20));
 
-    auto data = imu_get_latest_data();
+    /*
+     * Test:
+     *  * Call start sampling, expect call to read euler-angles
+     *  * Write euler-angles to (17, 18, 19)
+     *  * Call the provided callback with read-success as argument
+     *  * expect no data available
+     *  * Call start sampling, expect call to read gyro-rates
+     *  * Write gyro-rates to (20, 21, 22)
+     *  * Call the provided callback with read-success as argument
+     *  * expect no data available
+     *  * Call start sampling, expect call to read acceleration
+     *  * Write acceleration to (23, 24, 25)
+     *  * Call the provided callback with read-success as argument
+     *  * expect no data available
+     *  * Call start sampling, expect call to read system state
+     *  * Write system state to "Sensor Fusion Algorithm Running"
+     *  * Call the provided callback with read-success as argument
+     *  * expect no data available
+     *  * Call start sampling, expect call to read calibration status
+     *  * Write calibration status to all fully calibration
+     *  * Call the provided callback with read-success as argument
+     *  * expect data available
+     *  * check data
+     */
 
-    EXPECT_EQ(data.imu_ok, false);
-    EXPECT_TRUE(errorHandlerHandle.functionGotCalled<error_handler_handle_warning>(ERROR_HANDLER_GROUP_BNO055, read_fail + 1));
+    EXPECT_TRUE(false);
 }
 
-TEST(TEST_NAME, read__error_restart) {
-    GTEST_SKIP_("Non requirement compliant workaround for non datasheet compliant sensor!");
+TEST(TEST_NAME, start_sampling__status_read_error) {
+    /*
+     * Init
+     */
     auto bnoHandle = mock::bno055.getHandle();
-    auto errorHandlerHandle = mock::error_handler.getHandle();
-    int16_t *dataPtr = nullptr;
+    auto delayHandle = mock::delay.getHandle();
 
-    bnoHandle.overrideFunc<bno055_read_eul_xyz_2_mul_16>(
-            [](int16_t * /*out*/, bno055_callback_t callback) { callback(read_success); });
-
-    bnoHandle.overrideFunc<bno055_read_gyr_xyz_mul_16>([&dataPtr](int16_t *out, bno055_callback_t callback) {
-        EXPECT_NE(dataPtr, out);
-        dataPtr = out;
-        callback(read_fail);
+    bnoHandle.overrideFunc<bno055_write_opr_mode>(
+            [](auto /*op_mode*/, bno055_callback_t callback) { callback(write_success); });
+    bnoHandle.overrideFunc<bno055_read_self_test>([](bno055_self_test_result_t *out, bno055_callback_t callback) {
+      out->mcu_passed = true;
+      out->acc_passed = true;
+      out->gyr_passed = true;
+      out->mag_passed = true;
+      callback(read_success);
     });
+    bnoHandle.overrideFunc<bno055_write_unit_selection>(
+            [](bno055_unit_sel_acc /*acc_unit*/, bno055_unit_sel_angular_rate /*angular_rate_unit*/,
+               bno055_unit_sel_euler_angles /*euler_angles_unit*/, bno055_unit_sel_temperature /*temperature_unit*/,
+               bno055_unit_sel_orientation_def /*orientation_def*/,
+               bno055_callback_t callback) { callback(write_success); });
+    bnoHandle.overrideFunc<bno055_write_remap_axis>(
+            [](bno055_axis_remap_axis_t /*new_x*/, bno055_axis_remap_axis_t /*new_y*/,
+               bno055_axis_remap_axis_t /*new_z*/, bno055_callback_t callback) { callback(write_success); });
+    bnoHandle.overrideFunc<bno055_write_remap_axis_sign>(
+            [](bno055_axis_remap_sign_t /*new_x_sign*/, bno055_axis_remap_sign_t /*new_y_sign*/,
+               bno055_axis_remap_sign_t /*new_z_sign*/, bno055_callback_t callback) { callback(write_success); });
 
-    EXPECT_FALSE(imu_data_available());
-    EXPECT_NO_THROW(imu_start_sampling());
-    EXPECT_TRUE(errorHandlerHandle.functionGotCalled<error_handler_handle_warning>(ERROR_HANDLER_GROUP_BNO055, read_fail + 1));
-    EXPECT_NO_THROW(imu_start_sampling());
-    EXPECT_TRUE(errorHandlerHandle.functionGotCalled<error_handler_handle_warning>(ERROR_HANDLER_GROUP_BNO055, read_fail + 1));
+    imu_init();
+    EXPECT_TRUE(bnoHandle.functionGotCalled<bno055_init>());
+    EXPECT_TRUE(delayHandle.functionGotCalled<_delay_ms>(20));
+    EXPECT_TRUE(delayHandle.functionGotCalled<_delay_ms>(20));
+    EXPECT_TRUE(delayHandle.functionGotCalled<_delay_ms>(20));
+    EXPECT_TRUE(delayHandle.functionGotCalled<_delay_ms>(20));
+    EXPECT_TRUE(delayHandle.functionGotCalled<_delay_ms>(20));
+    EXPECT_TRUE(delayHandle.functionGotCalled<_delay_ms>(20));
+
+    /*
+     * Test:
+     *  * Call start sampling, expect call to euler-angles
+     *  * Call the provided callback with read-error as argument
+     *  * Call start sampling, expect warning and call to euler-angles
+     */
+
+    EXPECT_TRUE(false);
+}
+
+TEST(TEST_NAME, start_sampling__acc_not_calib) {
+    /*
+     * Init
+     */
+    auto bnoHandle = mock::bno055.getHandle();
+    auto delayHandle = mock::delay.getHandle();
+
+    bnoHandle.overrideFunc<bno055_write_opr_mode>(
+            [](auto /*op_mode*/, bno055_callback_t callback) { callback(write_success); });
+    bnoHandle.overrideFunc<bno055_read_self_test>([](bno055_self_test_result_t *out, bno055_callback_t callback) {
+      out->mcu_passed = true;
+      out->acc_passed = true;
+      out->gyr_passed = true;
+      out->mag_passed = true;
+      callback(read_success);
+    });
+    bnoHandle.overrideFunc<bno055_write_unit_selection>(
+            [](bno055_unit_sel_acc /*acc_unit*/, bno055_unit_sel_angular_rate /*angular_rate_unit*/,
+               bno055_unit_sel_euler_angles /*euler_angles_unit*/, bno055_unit_sel_temperature /*temperature_unit*/,
+               bno055_unit_sel_orientation_def /*orientation_def*/,
+               bno055_callback_t callback) { callback(write_success); });
+    bnoHandle.overrideFunc<bno055_write_remap_axis>(
+            [](bno055_axis_remap_axis_t /*new_x*/, bno055_axis_remap_axis_t /*new_y*/,
+               bno055_axis_remap_axis_t /*new_z*/, bno055_callback_t callback) { callback(write_success); });
+    bnoHandle.overrideFunc<bno055_write_remap_axis_sign>(
+            [](bno055_axis_remap_sign_t /*new_x_sign*/, bno055_axis_remap_sign_t /*new_y_sign*/,
+               bno055_axis_remap_sign_t /*new_z_sign*/, bno055_callback_t callback) { callback(write_success); });
+
+    imu_init();
+    EXPECT_TRUE(bnoHandle.functionGotCalled<bno055_init>());
+    EXPECT_TRUE(delayHandle.functionGotCalled<_delay_ms>(20));
+    EXPECT_TRUE(delayHandle.functionGotCalled<_delay_ms>(20));
+    EXPECT_TRUE(delayHandle.functionGotCalled<_delay_ms>(20));
+    EXPECT_TRUE(delayHandle.functionGotCalled<_delay_ms>(20));
+    EXPECT_TRUE(delayHandle.functionGotCalled<_delay_ms>(20));
+    EXPECT_TRUE(delayHandle.functionGotCalled<_delay_ms>(20));
+
+    /*
+     * Test:
+     *  * Call start sampling, expect call to euler-angles
+     *  * Call the provided callback with read-error as argument
+     *  * Call start sampling, expect warning and call to euler-angles
+     */
+
+    EXPECT_TRUE(false);
+}
+
+TEST(TEST_NAME, start_sampling__mag_not_calib) {
+    /*
+     * Init
+     */
+    auto bnoHandle = mock::bno055.getHandle();
+    auto delayHandle = mock::delay.getHandle();
+
+    bnoHandle.overrideFunc<bno055_write_opr_mode>(
+            [](auto /*op_mode*/, bno055_callback_t callback) { callback(write_success); });
+    bnoHandle.overrideFunc<bno055_read_self_test>([](bno055_self_test_result_t *out, bno055_callback_t callback) {
+      out->mcu_passed = true;
+      out->acc_passed = true;
+      out->gyr_passed = true;
+      out->mag_passed = true;
+      callback(read_success);
+    });
+    bnoHandle.overrideFunc<bno055_write_unit_selection>(
+            [](bno055_unit_sel_acc /*acc_unit*/, bno055_unit_sel_angular_rate /*angular_rate_unit*/,
+               bno055_unit_sel_euler_angles /*euler_angles_unit*/, bno055_unit_sel_temperature /*temperature_unit*/,
+               bno055_unit_sel_orientation_def /*orientation_def*/,
+               bno055_callback_t callback) { callback(write_success); });
+    bnoHandle.overrideFunc<bno055_write_remap_axis>(
+            [](bno055_axis_remap_axis_t /*new_x*/, bno055_axis_remap_axis_t /*new_y*/,
+               bno055_axis_remap_axis_t /*new_z*/, bno055_callback_t callback) { callback(write_success); });
+    bnoHandle.overrideFunc<bno055_write_remap_axis_sign>(
+            [](bno055_axis_remap_sign_t /*new_x_sign*/, bno055_axis_remap_sign_t /*new_y_sign*/,
+               bno055_axis_remap_sign_t /*new_z_sign*/, bno055_callback_t callback) { callback(write_success); });
+
+    imu_init();
+    EXPECT_TRUE(bnoHandle.functionGotCalled<bno055_init>());
+    EXPECT_TRUE(delayHandle.functionGotCalled<_delay_ms>(20));
+    EXPECT_TRUE(delayHandle.functionGotCalled<_delay_ms>(20));
+    EXPECT_TRUE(delayHandle.functionGotCalled<_delay_ms>(20));
+    EXPECT_TRUE(delayHandle.functionGotCalled<_delay_ms>(20));
+    EXPECT_TRUE(delayHandle.functionGotCalled<_delay_ms>(20));
+    EXPECT_TRUE(delayHandle.functionGotCalled<_delay_ms>(20));
+
+    /*
+     * Test:
+     *  * Call start sampling, expect call to euler-angles
+     *  * Call the provided callback with read-error as argument
+     *  * Call start sampling, expect warning and call to euler-angles
+     */
+
+    EXPECT_TRUE(false);
+}
+
+TEST(TEST_NAME, start_sampling__gyr_not_calib) {
+    /*
+     * Init
+     */
+    auto bnoHandle = mock::bno055.getHandle();
+    auto delayHandle = mock::delay.getHandle();
+
+    bnoHandle.overrideFunc<bno055_write_opr_mode>(
+            [](auto /*op_mode*/, bno055_callback_t callback) { callback(write_success); });
+    bnoHandle.overrideFunc<bno055_read_self_test>([](bno055_self_test_result_t *out, bno055_callback_t callback) {
+      out->mcu_passed = true;
+      out->acc_passed = true;
+      out->gyr_passed = true;
+      out->mag_passed = true;
+      callback(read_success);
+    });
+    bnoHandle.overrideFunc<bno055_write_unit_selection>(
+            [](bno055_unit_sel_acc /*acc_unit*/, bno055_unit_sel_angular_rate /*angular_rate_unit*/,
+               bno055_unit_sel_euler_angles /*euler_angles_unit*/, bno055_unit_sel_temperature /*temperature_unit*/,
+               bno055_unit_sel_orientation_def /*orientation_def*/,
+               bno055_callback_t callback) { callback(write_success); });
+    bnoHandle.overrideFunc<bno055_write_remap_axis>(
+            [](bno055_axis_remap_axis_t /*new_x*/, bno055_axis_remap_axis_t /*new_y*/,
+               bno055_axis_remap_axis_t /*new_z*/, bno055_callback_t callback) { callback(write_success); });
+    bnoHandle.overrideFunc<bno055_write_remap_axis_sign>(
+            [](bno055_axis_remap_sign_t /*new_x_sign*/, bno055_axis_remap_sign_t /*new_y_sign*/,
+               bno055_axis_remap_sign_t /*new_z_sign*/, bno055_callback_t callback) { callback(write_success); });
+
+    imu_init();
+    EXPECT_TRUE(bnoHandle.functionGotCalled<bno055_init>());
+    EXPECT_TRUE(delayHandle.functionGotCalled<_delay_ms>(20));
+    EXPECT_TRUE(delayHandle.functionGotCalled<_delay_ms>(20));
+    EXPECT_TRUE(delayHandle.functionGotCalled<_delay_ms>(20));
+    EXPECT_TRUE(delayHandle.functionGotCalled<_delay_ms>(20));
+    EXPECT_TRUE(delayHandle.functionGotCalled<_delay_ms>(20));
+    EXPECT_TRUE(delayHandle.functionGotCalled<_delay_ms>(20));
+
+    /*
+     * Test:
+     *  * Call start sampling, expect call to euler-angles
+     *  * Call the provided callback with read-error as argument
+     *  * Call start sampling, expect warning and call to euler-angles
+     */
+
+    EXPECT_TRUE(false);
+}
+
+TEST(TEST_NAME, start_sampling__sys_not_calib) {
+    /*
+     * Init
+     */
+    auto bnoHandle = mock::bno055.getHandle();
+    auto delayHandle = mock::delay.getHandle();
+
+    bnoHandle.overrideFunc<bno055_write_opr_mode>(
+            [](auto /*op_mode*/, bno055_callback_t callback) { callback(write_success); });
+    bnoHandle.overrideFunc<bno055_read_self_test>([](bno055_self_test_result_t *out, bno055_callback_t callback) {
+      out->mcu_passed = true;
+      out->acc_passed = true;
+      out->gyr_passed = true;
+      out->mag_passed = true;
+      callback(read_success);
+    });
+    bnoHandle.overrideFunc<bno055_write_unit_selection>(
+            [](bno055_unit_sel_acc /*acc_unit*/, bno055_unit_sel_angular_rate /*angular_rate_unit*/,
+               bno055_unit_sel_euler_angles /*euler_angles_unit*/, bno055_unit_sel_temperature /*temperature_unit*/,
+               bno055_unit_sel_orientation_def /*orientation_def*/,
+               bno055_callback_t callback) { callback(write_success); });
+    bnoHandle.overrideFunc<bno055_write_remap_axis>(
+            [](bno055_axis_remap_axis_t /*new_x*/, bno055_axis_remap_axis_t /*new_y*/,
+               bno055_axis_remap_axis_t /*new_z*/, bno055_callback_t callback) { callback(write_success); });
+    bnoHandle.overrideFunc<bno055_write_remap_axis_sign>(
+            [](bno055_axis_remap_sign_t /*new_x_sign*/, bno055_axis_remap_sign_t /*new_y_sign*/,
+               bno055_axis_remap_sign_t /*new_z_sign*/, bno055_callback_t callback) { callback(write_success); });
+
+    imu_init();
+    EXPECT_TRUE(bnoHandle.functionGotCalled<bno055_init>());
+    EXPECT_TRUE(delayHandle.functionGotCalled<_delay_ms>(20));
+    EXPECT_TRUE(delayHandle.functionGotCalled<_delay_ms>(20));
+    EXPECT_TRUE(delayHandle.functionGotCalled<_delay_ms>(20));
+    EXPECT_TRUE(delayHandle.functionGotCalled<_delay_ms>(20));
+    EXPECT_TRUE(delayHandle.functionGotCalled<_delay_ms>(20));
+    EXPECT_TRUE(delayHandle.functionGotCalled<_delay_ms>(20));
+
+    /*
+     * Test:
+     *  * Call start sampling, expect call to euler-angles
+     *  * Call the provided callback with read-error as argument
+     *  * Call start sampling, expect warning and call to euler-angles
+     */
+
+    EXPECT_TRUE(false);
 }
