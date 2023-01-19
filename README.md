@@ -54,9 +54,10 @@ The error IDs are:
 | Component      | Exception                | LED configuration |
 |----------------|--------------------------|-------------------|
 | Application    | -                        | xxxx ◯◯◯🔴        |
-| System         | Timer Runtime            | ◯◯◯🔴 ◯◯🔴◯       |
-|                | Watchdog                 | ◯◯🔴◯ ◯◯🔴◯       |
-|                | Brownout                 | ◯◯🔴🔴 ◯◯🔴◯      |
+| System         | Watchdog                 | ◯◯◯🔴 ◯◯🔴◯       |
+|                | Brownout                 | ◯◯🔴◯ ◯◯🔴◯       |
+|                | Low-Prio Timer Runtime   | ◯◯🔴🔴 ◯◯🔴◯      |
+|                | High-Prio Timer Runtime  | ◯🔴◯◯ ◯◯🔴◯       |
 | IMU            | Init timeout error       | ◯◯◯🔴 ◯◯🔴🔴      |
 |                | Init self test error     | ◯◯🔴◯ ◯◯🔴🔴      |
 |                | Status error             | ◯◯🔴🔴 ◯◯🔴🔴     |

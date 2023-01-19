@@ -10,18 +10,18 @@
 #include "error_handler.h"
 
 enum {
-    IMU_TIMEOUT = (uint16_t) (100 / 16.384),
-    FLIGHTCOMPUTER_TIMEOUT = (uint16_t) ((2 * 100) / 16.384),
-    REMOTE_TIMEOUT = (uint16_t) (100 / 16.384),
+    IMU_TIMEOUT = (int) (1000 / 16.384),
+    FLIGHT_COMPUTER_TIMEOUT = (int) ((2 * 100) / 16.384),
+    REMOTE_TIMEOUT = (int) (100 / 16.384),
 };
 
 static uint8_t imu_timeout_counter;
-static uint8_t flightcomputer_timeout_counter;
+static uint8_t flight_computer_timeout_counter;
 static uint8_t remote_timeout_counter;
 
 void mode_handler_init(void) {
     imu_timeout_counter = IMU_TIMEOUT;
-    flightcomputer_timeout_counter = FLIGHTCOMPUTER_TIMEOUT;
+    flight_computer_timeout_counter = FLIGHT_COMPUTER_TIMEOUT;
     remote_timeout_counter = REMOTE_TIMEOUT;
 }
 
@@ -55,13 +55,13 @@ mode_handler_mode_t mode_handler_handle(imu_data_t *imu_data, remote_data_t *rem
     *remote_data = remote_get_data();
 
     if (!flight_computer_set_point_available()) {
-        flightcomputer_timeout_counter += 1;
+        flight_computer_timeout_counter += 1;
     } else {
-        flightcomputer_timeout_counter = 0;
+        flight_computer_timeout_counter = 0;
     }
     bool flightcomputer_active = true;
-    if (flightcomputer_timeout_counter >= FLIGHTCOMPUTER_TIMEOUT) {
-        flightcomputer_timeout_counter = FLIGHTCOMPUTER_TIMEOUT;
+    if (flight_computer_timeout_counter >= FLIGHT_COMPUTER_TIMEOUT) {
+        flight_computer_timeout_counter = FLIGHT_COMPUTER_TIMEOUT;
         flightcomputer_active = false;
     }
     *flightcomputer_setpoint = flight_computer_get_set_point();

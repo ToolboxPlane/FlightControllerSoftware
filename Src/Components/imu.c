@@ -160,76 +160,75 @@ void imu_init(void) {
 }
 
 void imu_start_sampling(void) {
-    if (!callback_ready) {
-        error_handler_handle_warning(ERROR_HANDLER_GROUP_IMU, IMU_ERROR_READ_TIMEOUT);
-        return;
-    }
+    if (callback_ready) {
+        imu_data_t *imu_data = (imu_data_t *) (&imu_datas[current_sample_state_id]);
+        callback_ready = false;
 
-    imu_data_t *imu_data = (imu_data_t *) (&imu_datas[current_sample_state_id]);
-    callback_ready = false;
+        if (response != read_success) {
+            if (response != bus_over_run_error) {
+                error_handler_handle_warning(ERROR_HANDLER_GROUP_BNO055, response + 1);
+            }
 
-    if (response != read_success) {
-        if (response != bus_over_run_error) {
-            error_handler_handle_warning(ERROR_HANDLER_GROUP_BNO055, response + 1);
-        }
+            switch (current_sample_state) {
+                case EUL:
+                    bno055_read_eul_xyz_2_mul_16(&imu_data->heading_mul_16, bno_callback);
+                    break;
+                case GYR:
+                    bno055_read_gyr_xyz_mul_16(&imu_data->d_heading_mul_16, bno_callback);
+                    break;
+                case ACC:
+                    bno055_read_acc_xyz_mul_100(&imu_data->acc_x_mul_100, bno_callback);
+                    break;
+                case STATUS:
+                    bno055_read_system_status(&bno_status, bno_callback);
+                    break;
+                case CALIB_STAT:
+                    bno055_read_calib_status(&calib_status, bno_callback);
+                    break;
+            }
+        } else {
+            switch (current_sample_state) {
+                case EUL:
+                    current_sample_state = GYR;
+                    bno055_read_gyr_xyz_mul_16(&imu_data->d_heading_mul_16, bno_callback);
+                    break;
+                case GYR:
+                    current_sample_state = ACC;
+                    bno055_read_acc_xyz_mul_100(&imu_data->acc_x_mul_100, bno_callback);
+                    break;
+                case ACC:
+                    current_sample_state = STATUS;
+                    bno055_read_system_status(&bno_status, bno_callback);
+                    break;
+                case STATUS:
+                    // Status post-processing
+                    if (bno_status != BNO055_STATUS_SENSOR_FUSION_ALGORITHM_RUNNING) {
+                        error_handler_handle_warning(ERROR_HANDLER_GROUP_IMU, IMU_ERROR_STATUS);
+                        imu_data->imu_ok = false;
+                    } else {
+                        imu_data->imu_ok = true;
+                    }
 
-        switch (current_sample_state) {
-            case EUL:
-                bno055_read_eul_xyz_2_mul_16(&imu_data->heading_mul_16, bno_callback);
-                break;
-            case GYR:
-                bno055_read_gyr_xyz_mul_16(&imu_data->d_heading_mul_16, bno_callback);
-                break;
-            case ACC:
-                bno055_read_acc_xyz_mul_100(&imu_data->acc_x_mul_100, bno_callback);
-                break;
-            case STATUS:
-                bno055_read_system_status(&bno_status, bno_callback);
-                break;
-            case CALIB_STAT:
-                bno055_read_calib_status(&calib_status, bno_callback);
-                break;
+                    current_sample_state = CALIB_STAT;
+                    bno055_read_calib_status(&calib_status, bno_callback);
+                    break;
+                case CALIB_STAT:
+                    // Calib-stat post-processing
+                    if (calib_status.sys_status < SYS_CALIB_TRESH || calib_status.gyr_status < GYR_CALIB_TRESH ||
+                        calib_status.acc_status < ACC_CALIB_TRESH || calib_status.mag_status < MAG_CALIB_TRESH) {
+                        imu_data->imu_ok = false;
+                    }
+                    current_sample_state_id = 1 - current_sample_state_id;
+                    sampling_complete = true;
+                    imu_data = (imu_data_t *) (&imu_datas[current_sample_state_id]);
+
+                    current_sample_state = EUL;
+                    bno055_read_eul_xyz_2_mul_16(&imu_data->heading_mul_16, bno_callback);
+                    break;
+            }
         }
     } else {
-        switch (current_sample_state) {
-            case EUL:
-                current_sample_state = GYR;
-                bno055_read_gyr_xyz_mul_16(&imu_data->d_heading_mul_16, bno_callback);
-                break;
-            case GYR:
-                current_sample_state = ACC;
-                bno055_read_acc_xyz_mul_100(&imu_data->acc_x_mul_100, bno_callback);
-                break;
-            case ACC:
-                current_sample_state = STATUS;
-                bno055_read_system_status(&bno_status, bno_callback);
-                break;
-            case STATUS:
-                // Status post-processing
-                if (bno_status != BNO055_STATUS_SENSOR_FUSION_ALGORITHM_RUNNING) {
-                    error_handler_handle_warning(ERROR_HANDLER_GROUP_IMU, IMU_ERROR_STATUS);
-                    imu_data->imu_ok = false;
-                } else {
-                    imu_data->imu_ok = true;
-                }
-
-                current_sample_state = CALIB_STAT;
-                bno055_read_calib_status(&calib_status, bno_callback);
-                break;
-            case CALIB_STAT:
-                // Calib-stat post-processing
-                if (calib_status.sys_status < SYS_CALIB_TRESH || calib_status.gyr_status < GYR_CALIB_TRESH ||
-                    calib_status.acc_status < ACC_CALIB_TRESH || calib_status.mag_status < MAG_CALIB_TRESH) {
-                    imu_data->imu_ok = false;
-                }
-                current_sample_state_id = 1 - current_sample_state_id;
-                sampling_complete = true;
-                imu_data = (imu_data_t *) (&imu_datas[current_sample_state_id]);
-
-                current_sample_state = EUL;
-                bno055_read_eul_xyz_2_mul_16(&imu_data->heading_mul_16, bno_callback);
-                break;
-        }
+        //error_handler_handle_warning(ERROR_HANDLER_GROUP_IMU, IMU_ERROR_READ_TIMEOUT);
     }
 }
 

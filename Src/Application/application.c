@@ -19,7 +19,7 @@
 /**
  * Frequency divider between the timer interrupt and sending new messages.
  */
-enum { FLIGHT_COMPUTER_SEND_PERIOD = (uint16_t) (100 / 16.383) };
+enum { FLIGHT_COMPUTER_SEND_PERIOD = (int) (100 / 16.383) };
 
 /**
  * Offset from the remote data (in [0, 1000]) to the servo_motor_cmd data (in [-500, 500])
@@ -76,15 +76,10 @@ static void timer_tick(void) {
         flight_computer_send(&imu_data, &remote_data, &actuator_cmd);
         fcps_send_mux = 0;
     }
-
-    /*
-     * Read the next IMU data
-     */
-    //imu_start_sampling();
 }
 
 void application_init(void) {
-    system_pre_init(timer_tick);
+    system_pre_init(timer_tick, imu_start_sampling);
     error_handler_init();
 
     imu_init();
@@ -99,6 +94,5 @@ void application_init(void) {
 
     while (true) {
         system_reset_watchdog();
-        imu_start_sampling();
     }
 }
