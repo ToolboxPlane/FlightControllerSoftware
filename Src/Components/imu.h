@@ -92,8 +92,8 @@ void imu_init(void);
  *
  * Otherwise the following steps shall be performed:
  *  * If the last response was read-success:
- *      * If the last datum was Status set imu_ok to false if the mode is not "Sensor Fusion Algorithm Running"
- *      * If the last datum was Calib-Status:
+ *      * If the last datum was "System Status" set imu_ok to false if the mode is not "Sensor Fusion Algorithm Running"
+ *      * If the last datum was "Calib-Status":
  *          * set imu_ok to false if any of the fields is less than the respective threshold
  *          * make the result available (such that ::imu_get_latest_data returns the data and ::imu_data_available
  *            returns true)
@@ -110,7 +110,11 @@ void imu_init(void);
 void imu_start_sampling(void);
 
 /**
- * @brief Get the last, fully received, set of measurements.
+ * @brief Get the last measurement
+ *
+ * Returns the last fully receive set of measurements, if sampling is complete but an error was reported by the sensor
+ * it imu_ok is false.
+ * In addition ::imu_data_available will return false after this call.
  *
  * @return a struct containing all measurement data.
  */
@@ -118,6 +122,10 @@ imu_data_t imu_get_latest_data(void);
 
 /**
  * @brief Checks whether a new set of measurements was collected since the last call to get_latest_data().
+ *
+ * Returns whether a new, complete set of measurements was received, returns true until the data is read via
+ * ::imu_get_latest_data
+ *
  * @return true if new data is available.
  */
 bool imu_data_available(void);

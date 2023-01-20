@@ -12,7 +12,8 @@
  * @brief Main application that performs initialization and starts the timer.
  *
  * The initialization consists of the following tasks:
- *  * System Pre-Initialization (::system_pre_init)
+ *  * System Pre-Initialization (::system_pre_init) with the internal timer callback for the low priority callback and
+ *    ::imu_start_sampling for the high priority callback
  *  * Error Handler initialization (::error_handler_init)
  *  * IMU initialization (::imu_init)
  *  * Remote initialization (::remote_init)

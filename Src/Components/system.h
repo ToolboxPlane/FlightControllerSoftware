@@ -48,8 +48,19 @@ void system_pre_init(system_timer_16_384ms_callback low_prio_callback,
  *
  * The post-initialization consists of the following task:
  *  * Start the timer 0 with a period of 16.384ms
- *  * Start the timer 2 with a period of 16.384ms
+ *  * Start the timer 2 with a period of 4.096ms
  *  * Set the watchdog to 30ms
+ *
+ * This function will start both timers, inside the timer callbacks the following tasks are performed:
+ *  * For the low priority timer:
+ *      * Enable nested interrupts by setting the I bit in the SREG register
+ *      * Call the low-priority callback
+ *      * Check the runtime, if it exceeds 12ms call
+ *        error_handler_handle_warning(ERROR_HANDLER_GROUP_SYSTEM, SYSTEM_ERROR_RUNTIME_LOW_PRIO)
+ *  * For the low priority timer:
+ *      * Call the high-priority callback
+ *      * Check the runtime, if it exceeds 1ms call
+ *        error_handler_handle_warning(ERROR_HANDLER_GROUP_SYSTEM, SYSTEM_ERROR_RUNTIME_HIGH_PRIO)
  */
 void system_post_init(void);
 
