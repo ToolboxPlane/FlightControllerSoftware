@@ -12,7 +12,6 @@
 #include <avr/interrupt.h>
 #include <avr/io.h>
 #include <avr/wdt.h>
-#include <stdbool.h>
 
 enum { MAX_TIME_SLOT_USAGE_LOW_PRIO = (uint8_t) (12 / 16.384 * 255) };
 enum { MAX_TIME_SLOT_USAGE_HIGH_PRIO = (uint8_t) (1 / 4.096 * 255) };
