@@ -18,7 +18,8 @@ TEST(TEST_NAME, init__config_mode_error) {
     imu_init();
     EXPECT_TRUE(bnoHandle.functionGotCalled<bno055_init>());
     EXPECT_TRUE(delayHandle.functionGotCalled<_delay_ms>(20));
-    EXPECT_TRUE(errorHandlerHandle.functionGotCalled<error_handler_handle_error>(ERROR_HANDLER_GROUP_BNO055, write_fail + 1));
+    EXPECT_TRUE(errorHandlerHandle.functionGotCalled<error_handler_handle_error>(ERROR_HANDLER_GROUP_BNO055,
+                                                                                 write_fail + 1));
     EXPECT_FALSE(imu_get_latest_data().imu_ok);
     EXPECT_FALSE(imu_data_available());
 }
@@ -32,7 +33,8 @@ TEST(TEST_NAME, init__config_mode_timeout) {
     EXPECT_TRUE(bnoHandle.functionGotCalled<bno055_init>());
     EXPECT_TRUE(bnoHandle.functionGotCalled<bno055_write_opr_mode>(BNO055_OPR_MODE_CONFIG_MODE, std::ignore));
     EXPECT_TRUE(delayHandle.functionGotCalled<_delay_ms>(20));
-    EXPECT_TRUE(errorHandlerHandle.functionGotCalled<error_handler_handle_error>(ERROR_HANDLER_GROUP_IMU, IMU_ERROR_INIT_TIMEOUT));
+    EXPECT_TRUE(errorHandlerHandle.functionGotCalled<error_handler_handle_error>(ERROR_HANDLER_GROUP_IMU,
+                                                                                 IMU_ERROR_INIT_TIMEOUT));
     EXPECT_FALSE(imu_get_latest_data().imu_ok);
     EXPECT_FALSE(imu_data_available());
 }
@@ -56,7 +58,8 @@ TEST(TEST_NAME, init__self_test_error) {
     EXPECT_TRUE(bnoHandle.functionGotCalled<bno055_init>());
     EXPECT_TRUE(delayHandle.functionGotCalled<_delay_ms>(20));
     EXPECT_TRUE(delayHandle.functionGotCalled<_delay_ms>(20));
-    EXPECT_TRUE(errorHandlerHandle.functionGotCalled<error_handler_handle_error>(ERROR_HANDLER_GROUP_BNO055, read_fail + 1));
+    EXPECT_TRUE(errorHandlerHandle.functionGotCalled<error_handler_handle_error>(ERROR_HANDLER_GROUP_BNO055,
+                                                                                 read_fail + 1));
     EXPECT_FALSE(imu_get_latest_data().imu_ok);
     EXPECT_FALSE(imu_data_available());
 }
@@ -80,7 +83,8 @@ TEST(TEST_NAME, init__self_test_mcu_fail) {
     EXPECT_TRUE(bnoHandle.functionGotCalled<bno055_init>());
     EXPECT_TRUE(delayHandle.functionGotCalled<_delay_ms>(20));
     EXPECT_TRUE(delayHandle.functionGotCalled<_delay_ms>(20));
-    EXPECT_TRUE(errorHandlerHandle.functionGotCalled<error_handler_handle_error>(ERROR_HANDLER_GROUP_IMU, IMU_ERROR_INIT_SELF_TEST));
+    EXPECT_TRUE(errorHandlerHandle.functionGotCalled<error_handler_handle_error>(ERROR_HANDLER_GROUP_IMU,
+                                                                                 IMU_ERROR_INIT_SELF_TEST));
     EXPECT_FALSE(imu_get_latest_data().imu_ok);
     EXPECT_FALSE(imu_data_available());
 }
@@ -104,7 +108,8 @@ TEST(TEST_NAME, init__self_test_acc_fail) {
     EXPECT_TRUE(bnoHandle.functionGotCalled<bno055_init>());
     EXPECT_TRUE(delayHandle.functionGotCalled<_delay_ms>(20));
     EXPECT_TRUE(delayHandle.functionGotCalled<_delay_ms>(20));
-    EXPECT_TRUE(errorHandlerHandle.functionGotCalled<error_handler_handle_error>(ERROR_HANDLER_GROUP_IMU, IMU_ERROR_INIT_SELF_TEST));
+    EXPECT_TRUE(errorHandlerHandle.functionGotCalled<error_handler_handle_error>(ERROR_HANDLER_GROUP_IMU,
+                                                                                 IMU_ERROR_INIT_SELF_TEST));
     EXPECT_FALSE(imu_get_latest_data().imu_ok);
     EXPECT_FALSE(imu_data_available());
 }
@@ -128,7 +133,8 @@ TEST(TEST_NAME, init__self_test_gyr_fail) {
     EXPECT_TRUE(bnoHandle.functionGotCalled<bno055_init>());
     EXPECT_TRUE(delayHandle.functionGotCalled<_delay_ms>(20));
     EXPECT_TRUE(delayHandle.functionGotCalled<_delay_ms>(20));
-    EXPECT_TRUE(errorHandlerHandle.functionGotCalled<error_handler_handle_error>(ERROR_HANDLER_GROUP_IMU, IMU_ERROR_INIT_SELF_TEST));
+    EXPECT_TRUE(errorHandlerHandle.functionGotCalled<error_handler_handle_error>(ERROR_HANDLER_GROUP_IMU,
+                                                                                 IMU_ERROR_INIT_SELF_TEST));
     EXPECT_FALSE(imu_get_latest_data().imu_ok);
     EXPECT_FALSE(imu_data_available());
 }
@@ -152,7 +158,8 @@ TEST(TEST_NAME, init__self_test_mag_fail) {
     EXPECT_TRUE(bnoHandle.functionGotCalled<bno055_init>());
     EXPECT_TRUE(delayHandle.functionGotCalled<_delay_ms>(20));
     EXPECT_TRUE(delayHandle.functionGotCalled<_delay_ms>(20));
-    EXPECT_TRUE(errorHandlerHandle.functionGotCalled<error_handler_handle_error>(ERROR_HANDLER_GROUP_IMU, IMU_ERROR_INIT_SELF_TEST));
+    EXPECT_TRUE(errorHandlerHandle.functionGotCalled<error_handler_handle_error>(ERROR_HANDLER_GROUP_IMU,
+                                                                                 IMU_ERROR_INIT_SELF_TEST));
     EXPECT_FALSE(imu_get_latest_data().imu_ok);
     EXPECT_FALSE(imu_data_available());
 }
@@ -170,7 +177,8 @@ TEST(TEST_NAME, init__self_test_timeout) {
     EXPECT_TRUE(delayHandle.functionGotCalled<_delay_ms>(20));
     EXPECT_TRUE(bnoHandle.functionGotCalled<bno055_read_self_test>());
     EXPECT_TRUE(delayHandle.functionGotCalled<_delay_ms>(20));
-    EXPECT_TRUE(errorHandlerHandle.functionGotCalled<error_handler_handle_error>(ERROR_HANDLER_GROUP_IMU, IMU_ERROR_INIT_TIMEOUT));
+    EXPECT_TRUE(errorHandlerHandle.functionGotCalled<error_handler_handle_error>(ERROR_HANDLER_GROUP_IMU,
+                                                                                 IMU_ERROR_INIT_TIMEOUT));
     EXPECT_FALSE(imu_get_latest_data().imu_ok);
     EXPECT_FALSE(imu_data_available());
 }
@@ -200,7 +208,8 @@ TEST(TEST_NAME, init__unit_sel_error) {
     EXPECT_TRUE(delayHandle.functionGotCalled<_delay_ms>(20));
     EXPECT_TRUE(delayHandle.functionGotCalled<_delay_ms>(20));
     EXPECT_TRUE(delayHandle.functionGotCalled<_delay_ms>(20));
-    EXPECT_TRUE(errorHandlerHandle.functionGotCalled<error_handler_handle_error>(ERROR_HANDLER_GROUP_BNO055, write_fail + 1));
+    EXPECT_TRUE(errorHandlerHandle.functionGotCalled<error_handler_handle_error>(ERROR_HANDLER_GROUP_BNO055,
+                                                                                 write_fail + 1));
     EXPECT_FALSE(imu_get_latest_data().imu_ok);
     EXPECT_FALSE(imu_data_available());
 }
@@ -226,7 +235,8 @@ TEST(TEST_NAME, init__unit_sel_timeout) {
     EXPECT_TRUE(delayHandle.functionGotCalled<_delay_ms>(20));
     EXPECT_TRUE(bnoHandle.functionGotCalled<bno055_write_unit_selection>());
     EXPECT_TRUE(delayHandle.functionGotCalled<_delay_ms>(20));
-    EXPECT_TRUE(errorHandlerHandle.functionGotCalled<error_handler_handle_error>(ERROR_HANDLER_GROUP_IMU, IMU_ERROR_INIT_TIMEOUT));
+    EXPECT_TRUE(errorHandlerHandle.functionGotCalled<error_handler_handle_error>(ERROR_HANDLER_GROUP_IMU,
+                                                                                 IMU_ERROR_INIT_TIMEOUT));
     EXPECT_FALSE(imu_get_latest_data().imu_ok);
     EXPECT_FALSE(imu_data_available());
 }
@@ -260,7 +270,8 @@ TEST(TEST_NAME, init__remap_error) {
     EXPECT_TRUE(delayHandle.functionGotCalled<_delay_ms>(20));
     EXPECT_TRUE(delayHandle.functionGotCalled<_delay_ms>(20));
     EXPECT_TRUE(delayHandle.functionGotCalled<_delay_ms>(20));
-    EXPECT_TRUE(errorHandlerHandle.functionGotCalled<error_handler_handle_error>(ERROR_HANDLER_GROUP_BNO055, write_fail + 1));
+    EXPECT_TRUE(errorHandlerHandle.functionGotCalled<error_handler_handle_error>(ERROR_HANDLER_GROUP_BNO055,
+                                                                                 write_fail + 1));
     EXPECT_FALSE(imu_get_latest_data().imu_ok);
     EXPECT_FALSE(imu_data_available());
 }
@@ -292,7 +303,8 @@ TEST(TEST_NAME, init__remap_timeout) {
     EXPECT_TRUE(delayHandle.functionGotCalled<_delay_ms>(20));
     EXPECT_TRUE(delayHandle.functionGotCalled<_delay_ms>(20));
     EXPECT_TRUE(bnoHandle.functionGotCalled<bno055_write_remap_axis>());
-    EXPECT_TRUE(errorHandlerHandle.functionGotCalled<error_handler_handle_error>(ERROR_HANDLER_GROUP_IMU, IMU_ERROR_INIT_TIMEOUT));
+    EXPECT_TRUE(errorHandlerHandle.functionGotCalled<error_handler_handle_error>(ERROR_HANDLER_GROUP_IMU,
+                                                                                 IMU_ERROR_INIT_TIMEOUT));
     EXPECT_FALSE(imu_get_latest_data().imu_ok);
     EXPECT_FALSE(imu_data_available());
 }
@@ -330,7 +342,8 @@ TEST(TEST_NAME, init__remap_sign_error) {
     EXPECT_TRUE(delayHandle.functionGotCalled<_delay_ms>(20));
     EXPECT_TRUE(delayHandle.functionGotCalled<_delay_ms>(20));
     EXPECT_TRUE(delayHandle.functionGotCalled<_delay_ms>(20));
-    EXPECT_TRUE(errorHandlerHandle.functionGotCalled<error_handler_handle_error>(ERROR_HANDLER_GROUP_BNO055, write_fail + 1));
+    EXPECT_TRUE(errorHandlerHandle.functionGotCalled<error_handler_handle_error>(ERROR_HANDLER_GROUP_BNO055,
+                                                                                 write_fail + 1));
     EXPECT_FALSE(imu_get_latest_data().imu_ok);
 }
 
@@ -365,7 +378,8 @@ TEST(TEST_NAME, init__remap_sign_timeout) {
     EXPECT_TRUE(delayHandle.functionGotCalled<_delay_ms>(20));
     EXPECT_TRUE(delayHandle.functionGotCalled<_delay_ms>(20));
     EXPECT_TRUE(bnoHandle.functionGotCalled<bno055_write_remap_axis_sign>());
-    EXPECT_TRUE(errorHandlerHandle.functionGotCalled<error_handler_handle_error>(ERROR_HANDLER_GROUP_IMU, IMU_ERROR_INIT_TIMEOUT));
+    EXPECT_TRUE(errorHandlerHandle.functionGotCalled<error_handler_handle_error>(ERROR_HANDLER_GROUP_IMU,
+                                                                                 IMU_ERROR_INIT_TIMEOUT));
     EXPECT_FALSE(imu_get_latest_data().imu_ok);
 }
 
@@ -408,7 +422,8 @@ TEST(TEST_NAME, init__ndof_error) {
     EXPECT_TRUE(delayHandle.functionGotCalled<_delay_ms>(20));
     EXPECT_TRUE(delayHandle.functionGotCalled<_delay_ms>(20));
     EXPECT_TRUE(delayHandle.functionGotCalled<_delay_ms>(20));
-    EXPECT_TRUE(errorHandlerHandle.functionGotCalled<error_handler_handle_error>(ERROR_HANDLER_GROUP_BNO055, write_fail + 1));
+    EXPECT_TRUE(errorHandlerHandle.functionGotCalled<error_handler_handle_error>(ERROR_HANDLER_GROUP_BNO055,
+                                                                                 write_fail + 1));
     EXPECT_FALSE(imu_get_latest_data().imu_ok);
     EXPECT_FALSE(imu_data_available());
 }
@@ -450,7 +465,8 @@ TEST(TEST_NAME, init__ndof_timeout) {
     EXPECT_TRUE(delayHandle.functionGotCalled<_delay_ms>(20));
     EXPECT_TRUE(delayHandle.functionGotCalled<_delay_ms>(20));
     EXPECT_TRUE(delayHandle.functionGotCalled<_delay_ms>(20));
-    EXPECT_TRUE(errorHandlerHandle.functionGotCalled<error_handler_handle_error>(ERROR_HANDLER_GROUP_IMU, IMU_ERROR_INIT_TIMEOUT));
+    EXPECT_TRUE(errorHandlerHandle.functionGotCalled<error_handler_handle_error>(ERROR_HANDLER_GROUP_IMU,
+                                                                                 IMU_ERROR_INIT_TIMEOUT));
     EXPECT_FALSE(imu_get_latest_data().imu_ok);
     EXPECT_FALSE(imu_data_available());
 }
@@ -488,15 +504,16 @@ TEST(TEST_NAME, init__success) {
     EXPECT_TRUE(delayHandle.functionGotCalled<_delay_ms>(20));
     EXPECT_TRUE(bnoHandle.functionGotCalled<bno055_read_self_test>(std::ignore, std::ignore));
     EXPECT_TRUE(delayHandle.functionGotCalled<_delay_ms>(20));
-    EXPECT_TRUE(bnoHandle.functionGotCalled<bno055_write_unit_selection>(BNO055_UNIT_SEL_ACC_MPS2, BNO055_UNIT_SEL_ANGULAR_RATE_DPS, BNO055_UNIT_SEL_EULER_ANGLES_DEGREES,
-            BNO055_UNIT_SEL_TEMPERATURE_CELSIUS, BNO055_UNIT_SEL_ORIENTATION_DEF_WINDOWS,
-                                                                         std::ignore));
+    EXPECT_TRUE(bnoHandle.functionGotCalled<bno055_write_unit_selection>(
+            BNO055_UNIT_SEL_ACC_MPS2, BNO055_UNIT_SEL_ANGULAR_RATE_DPS, BNO055_UNIT_SEL_EULER_ANGLES_DEGREES,
+            BNO055_UNIT_SEL_TEMPERATURE_CELSIUS, BNO055_UNIT_SEL_ORIENTATION_DEF_WINDOWS, std::ignore));
     EXPECT_TRUE(delayHandle.functionGotCalled<_delay_ms>(20));
     EXPECT_TRUE(bnoHandle.functionGotCalled<bno055_write_remap_axis>(BNO055_AXIS_REMAP_Y_AXIS, BNO055_AXIS_REMAP_X_AXIS,
                                                                      BNO055_AXIS_REMAP_Z_AXIS, std::ignore));
     EXPECT_TRUE(delayHandle.functionGotCalled<_delay_ms>(20));
     EXPECT_TRUE(bnoHandle.functionGotCalled<bno055_write_remap_axis_sign>(
-            BNO055_AXIS_REMAP_SIGN_POSITIVE, BNO055_AXIS_REMAP_SIGN_POSITIVE, BNO055_AXIS_REMAP_SIGN_NEGATIVE, std::ignore));
+            BNO055_AXIS_REMAP_SIGN_POSITIVE, BNO055_AXIS_REMAP_SIGN_POSITIVE, BNO055_AXIS_REMAP_SIGN_NEGATIVE,
+            std::ignore));
     EXPECT_TRUE(delayHandle.functionGotCalled<_delay_ms>(20));
     EXPECT_TRUE(bnoHandle.functionGotCalled<bno055_write_opr_mode>(BNO055_OPR_MODE_NDOF_FMC_OFF, std::ignore));
     EXPECT_TRUE(delayHandle.functionGotCalled<_delay_ms>(20));
@@ -512,11 +529,11 @@ TEST(TEST_NAME, start_sampling__no_response) {
     bnoHandle.overrideFunc<bno055_write_opr_mode>(
             [](auto /*op_mode*/, bno055_callback_t callback) { callback(write_success); });
     bnoHandle.overrideFunc<bno055_read_self_test>([](bno055_self_test_result_t *out, bno055_callback_t callback) {
-      out->mcu_passed = true;
-      out->acc_passed = true;
-      out->gyr_passed = true;
-      out->mag_passed = true;
-      callback(read_success);
+        out->mcu_passed = true;
+        out->acc_passed = true;
+        out->gyr_passed = true;
+        out->mag_passed = true;
+        callback(read_success);
     });
     bnoHandle.overrideFunc<bno055_write_unit_selection>(
             [](bno055_unit_sel_acc /*acc_unit*/, bno055_unit_sel_angular_rate /*angular_rate_unit*/,
@@ -558,11 +575,11 @@ TEST(TEST_NAME, start_sampling__read_error) {
     bnoHandle.overrideFunc<bno055_write_opr_mode>(
             [](auto /*op_mode*/, bno055_callback_t callback) { callback(write_success); });
     bnoHandle.overrideFunc<bno055_read_self_test>([](bno055_self_test_result_t *out, bno055_callback_t callback) {
-      out->mcu_passed = true;
-      out->acc_passed = true;
-      out->gyr_passed = true;
-      out->mag_passed = true;
-      callback(read_success);
+        out->mcu_passed = true;
+        out->acc_passed = true;
+        out->gyr_passed = true;
+        out->mag_passed = true;
+        callback(read_success);
     });
     bnoHandle.overrideFunc<bno055_write_unit_selection>(
             [](bno055_unit_sel_acc /*acc_unit*/, bno055_unit_sel_angular_rate /*angular_rate_unit*/,
@@ -605,11 +622,11 @@ TEST(TEST_NAME, start_sampling__full_cycle) {
     bnoHandle.overrideFunc<bno055_write_opr_mode>(
             [](auto /*op_mode*/, bno055_callback_t callback) { callback(write_success); });
     bnoHandle.overrideFunc<bno055_read_self_test>([](bno055_self_test_result_t *out, bno055_callback_t callback) {
-      out->mcu_passed = true;
-      out->acc_passed = true;
-      out->gyr_passed = true;
-      out->mag_passed = true;
-      callback(read_success);
+        out->mcu_passed = true;
+        out->acc_passed = true;
+        out->gyr_passed = true;
+        out->mag_passed = true;
+        callback(read_success);
     });
     bnoHandle.overrideFunc<bno055_write_unit_selection>(
             [](bno055_unit_sel_acc /*acc_unit*/, bno055_unit_sel_angular_rate /*angular_rate_unit*/,
@@ -670,11 +687,11 @@ TEST(TEST_NAME, start_sampling__status_read_error) {
     bnoHandle.overrideFunc<bno055_write_opr_mode>(
             [](auto /*op_mode*/, bno055_callback_t callback) { callback(write_success); });
     bnoHandle.overrideFunc<bno055_read_self_test>([](bno055_self_test_result_t *out, bno055_callback_t callback) {
-      out->mcu_passed = true;
-      out->acc_passed = true;
-      out->gyr_passed = true;
-      out->mag_passed = true;
-      callback(read_success);
+        out->mcu_passed = true;
+        out->acc_passed = true;
+        out->gyr_passed = true;
+        out->mag_passed = true;
+        callback(read_success);
     });
     bnoHandle.overrideFunc<bno055_write_unit_selection>(
             [](bno055_unit_sel_acc /*acc_unit*/, bno055_unit_sel_angular_rate /*angular_rate_unit*/,
@@ -717,11 +734,11 @@ TEST(TEST_NAME, start_sampling__acc_not_calib) {
     bnoHandle.overrideFunc<bno055_write_opr_mode>(
             [](auto /*op_mode*/, bno055_callback_t callback) { callback(write_success); });
     bnoHandle.overrideFunc<bno055_read_self_test>([](bno055_self_test_result_t *out, bno055_callback_t callback) {
-      out->mcu_passed = true;
-      out->acc_passed = true;
-      out->gyr_passed = true;
-      out->mag_passed = true;
-      callback(read_success);
+        out->mcu_passed = true;
+        out->acc_passed = true;
+        out->gyr_passed = true;
+        out->mag_passed = true;
+        callback(read_success);
     });
     bnoHandle.overrideFunc<bno055_write_unit_selection>(
             [](bno055_unit_sel_acc /*acc_unit*/, bno055_unit_sel_angular_rate /*angular_rate_unit*/,
@@ -764,11 +781,11 @@ TEST(TEST_NAME, start_sampling__mag_not_calib) {
     bnoHandle.overrideFunc<bno055_write_opr_mode>(
             [](auto /*op_mode*/, bno055_callback_t callback) { callback(write_success); });
     bnoHandle.overrideFunc<bno055_read_self_test>([](bno055_self_test_result_t *out, bno055_callback_t callback) {
-      out->mcu_passed = true;
-      out->acc_passed = true;
-      out->gyr_passed = true;
-      out->mag_passed = true;
-      callback(read_success);
+        out->mcu_passed = true;
+        out->acc_passed = true;
+        out->gyr_passed = true;
+        out->mag_passed = true;
+        callback(read_success);
     });
     bnoHandle.overrideFunc<bno055_write_unit_selection>(
             [](bno055_unit_sel_acc /*acc_unit*/, bno055_unit_sel_angular_rate /*angular_rate_unit*/,
@@ -811,11 +828,11 @@ TEST(TEST_NAME, start_sampling__gyr_not_calib) {
     bnoHandle.overrideFunc<bno055_write_opr_mode>(
             [](auto /*op_mode*/, bno055_callback_t callback) { callback(write_success); });
     bnoHandle.overrideFunc<bno055_read_self_test>([](bno055_self_test_result_t *out, bno055_callback_t callback) {
-      out->mcu_passed = true;
-      out->acc_passed = true;
-      out->gyr_passed = true;
-      out->mag_passed = true;
-      callback(read_success);
+        out->mcu_passed = true;
+        out->acc_passed = true;
+        out->gyr_passed = true;
+        out->mag_passed = true;
+        callback(read_success);
     });
     bnoHandle.overrideFunc<bno055_write_unit_selection>(
             [](bno055_unit_sel_acc /*acc_unit*/, bno055_unit_sel_angular_rate /*angular_rate_unit*/,
@@ -858,11 +875,11 @@ TEST(TEST_NAME, start_sampling__sys_not_calib) {
     bnoHandle.overrideFunc<bno055_write_opr_mode>(
             [](auto /*op_mode*/, bno055_callback_t callback) { callback(write_success); });
     bnoHandle.overrideFunc<bno055_read_self_test>([](bno055_self_test_result_t *out, bno055_callback_t callback) {
-      out->mcu_passed = true;
-      out->acc_passed = true;
-      out->gyr_passed = true;
-      out->mag_passed = true;
-      callback(read_success);
+        out->mcu_passed = true;
+        out->acc_passed = true;
+        out->gyr_passed = true;
+        out->mag_passed = true;
+        callback(read_success);
     });
     bnoHandle.overrideFunc<bno055_write_unit_selection>(
             [](bno055_unit_sel_acc /*acc_unit*/, bno055_unit_sel_angular_rate /*angular_rate_unit*/,

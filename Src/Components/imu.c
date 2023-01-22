@@ -156,7 +156,6 @@ void imu_init(void) {
     response = read_success;
     current_sample_state_id = 1;
     current_sample_state = CALIB_STAT;
-
 }
 
 void imu_start_sampling(void) {
@@ -228,7 +227,7 @@ void imu_start_sampling(void) {
             }
         }
     } else {
-        //error_handler_handle_warning(ERROR_HANDLER_GROUP_IMU, IMU_ERROR_READ_TIMEOUT);
+        // error_handler_handle_warning(ERROR_HANDLER_GROUP_IMU, IMU_ERROR_READ_TIMEOUT);
     }
 }
 

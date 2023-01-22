@@ -5,16 +5,16 @@
  * @brief Implementation of the Flight-Computer interface component.
  * @ingroup Components
  */
-#include <Drivers/protobuf.h>
-
 #include "flight_computer.h"
+
+#include <Drivers/protobuf.h>
 
 void flight_computer_init(void) {
     protobuf_init();
 }
 
 void flight_computer_send(const imu_data_t *imu_data, const remote_data_t *remote_data,
-                         const actuator_cmd_t *actuator_cmd) {
+                          const actuator_cmd_t *actuator_cmd) {
     fc_message_t message = {.has_imu = true,
                             .imu =
                                     {
@@ -50,8 +50,8 @@ bool flight_computer_set_point_available(void) {
 flight_computer_set_point_t flight_computer_get_set_point(void) {
     set_point_message_t message = protobuf_get();
     flight_computer_set_point_t setpoint = {.motor = message.motor,
-                                          .pitch = (int16_t) message.pitch,
-                                          .roll = (int16_t) message.roll};
+                                            .pitch = (int16_t) message.pitch,
+                                            .roll = (int16_t) message.roll};
 
     return setpoint;
 }
