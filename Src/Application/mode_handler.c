@@ -10,7 +10,7 @@
 #include "error_handler.h"
 
 enum {
-    IMU_TIMEOUT = (int) (1000 / 16.384),
+    IMU_TIMEOUT = (int) (100 / 16.384),
     FLIGHT_COMPUTER_TIMEOUT = (int) ((2 * 100) / 16.384),
     REMOTE_TIMEOUT = (int) (100 / 16.384),
 };
