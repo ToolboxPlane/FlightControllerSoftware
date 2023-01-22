@@ -92,17 +92,18 @@ void imu_init(void);
  *
  * Otherwise the following steps shall be performed:
  *  * If the last response was read-success:
- *      * If the last datum was "System Status" set imu_ok to false if the mode is not "Sensor Fusion Algorithm Running"
- *      * If the last datum was "Calib-Status":
- *          * set imu_ok to false if any of the fields is less than the respective threshold
- *          * make the result available (such that ::imu_get_latest_data returns the data and ::imu_data_available
- *            returns true)
  *      * Read the next datum, the (cyclic-) order is:
  *           1. Euler angles (::bno055_read_eul_xyz_2_mul_16)
  *           2. Gyroscopic angular rate (::bno055_read_gyr_xyz_mul_16)
  *           3. Acceleration (::bno055_read_acc_xyz_mul_100)
  *           4. System State (::bno055_read_system_status)
  *           5. Calibration status (::bno055_read_calib_status)
+ *      * If a full set of measurements have been received:
+ *          * If the system status was not "Sensor Fusion Algorithm Running" set imu_ok to false
+ *          * If any of the calibration status values is below the respective threshold set imu_ok to false
+ *          * In all other cases set imu_ok to true
+ *          * make the result available (such that ::imu_get_latest_data returns the data and ::imu_data_available
+ *            returns true)
  *  * Otherwise:
  *      * Call error_handler_handle_warning(ERROR_HANDLER_GROUP_BNO055, response + 1)
  *      * Re-read the current datum

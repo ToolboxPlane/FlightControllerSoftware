@@ -35,8 +35,6 @@ static volatile bno055_response_t response = write_fail;
 static volatile bool callback_ready = false;
 
 static volatile imu_data_t imu_datas[2];
-static volatile bno055_calib_status_t calib_status;
-static volatile bno055_status_t bno_status;
 
 static volatile bool sampling_complete = false;
 
@@ -159,6 +157,9 @@ void imu_init(void) {
 }
 
 void imu_start_sampling(void) {
+    static bno055_calib_status_t calib_status;
+    static bno055_status_t bno_status;
+
     if (callback_ready) {
         imu_data_t *imu_data = (imu_data_t *) (&imu_datas[current_sample_state_id]);
         callback_ready = false;
@@ -200,23 +201,22 @@ void imu_start_sampling(void) {
                     bno055_read_system_status(&bno_status, bno_callback);
                     break;
                 case STATUS:
-                    // Status post-processing
+                    current_sample_state = CALIB_STAT;
+                    bno055_read_calib_status(&calib_status, bno_callback);
+                    break;
+                case CALIB_STAT:
+                    // Reduction of flags to imu_ok
                     if (bno_status != BNO055_STATUS_SENSOR_FUSION_ALGORITHM_RUNNING) {
                         error_handler_handle_warning(ERROR_HANDLER_GROUP_IMU, IMU_ERROR_STATUS);
+                        imu_data->imu_ok = false;
+                    } else if (calib_status.sys_status < SYS_CALIB_TRESH || calib_status.gyr_status < GYR_CALIB_TRESH ||
+                        calib_status.acc_status < ACC_CALIB_TRESH || calib_status.mag_status < MAG_CALIB_TRESH) {
                         imu_data->imu_ok = false;
                     } else {
                         imu_data->imu_ok = true;
                     }
 
-                    current_sample_state = CALIB_STAT;
-                    bno055_read_calib_status(&calib_status, bno_callback);
-                    break;
-                case CALIB_STAT:
-                    // Calib-stat post-processing
-                    if (calib_status.sys_status < SYS_CALIB_TRESH || calib_status.gyr_status < GYR_CALIB_TRESH ||
-                        calib_status.acc_status < ACC_CALIB_TRESH || calib_status.mag_status < MAG_CALIB_TRESH) {
-                        imu_data->imu_ok = false;
-                    }
+                    // Signal completed sampling
                     current_sample_state_id = 1 - current_sample_state_id;
                     sampling_complete = true;
                     imu_data = (imu_data_t *) (&imu_datas[current_sample_state_id]);
