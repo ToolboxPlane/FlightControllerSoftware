@@ -22,6 +22,7 @@ enum { SYS_CALIB_TRESH = 3 };
  * State of the internal sampling state machine.
  */
 typedef enum {
+    INIT,
     EUL,
     GYR,
     ACC,
@@ -40,6 +41,7 @@ static volatile bool sampling_complete = false;
 
 static volatile bno_sampling_state_t current_sample_state;
 static volatile uint8_t current_sample_state_id;
+
 
 static void bno_callback(bno055_response_t response_) {
     response = response_;
@@ -148,22 +150,21 @@ void imu_init(void) {
     // Preparation for sampling
     imu_datas[0].imu_ok = false;
     imu_datas[1].imu_ok = false;
+    sampling_complete = false;
 
-    // Set the state as if at the end of successful measurement loop
-    callback_ready = true;
+    current_sample_state = INIT;
     response = read_success;
-    current_sample_state_id = 1;
-    current_sample_state = CALIB_STAT;
+    callback_ready = true;
 }
 
 void imu_start_sampling(void) {
     static bno055_calib_status_t calib_status;
     static bno055_status_t bno_status;
 
-    if (callback_ready) {
-        imu_data_t *imu_data = (imu_data_t *) (&imu_datas[current_sample_state_id]);
-        callback_ready = false;
+    imu_data_t *imu_data = (imu_data_t *) (&imu_datas[current_sample_state_id]);
 
+    if (callback_ready) {
+        callback_ready = false;
         if (response != read_success) {
             if (response != bus_over_run_error) {
                 error_handler_handle_warning(ERROR_HANDLER_GROUP_BNO055, response + 1);
@@ -185,9 +186,16 @@ void imu_start_sampling(void) {
                 case CALIB_STAT:
                     bno055_read_calib_status(&calib_status, bno_callback);
                     break;
+                case INIT:
+                    // Shouldn't be here...
+                    break;
             }
         } else {
             switch (current_sample_state) {
+                case INIT:
+                    current_sample_state = EUL;
+                    bno055_read_eul_xyz_2_mul_16(&imu_data->heading_mul_16, bno_callback);
+                    break;
                 case EUL:
                     current_sample_state = GYR;
                     bno055_read_gyr_xyz_mul_16(&imu_data->d_heading_mul_16, bno_callback);
@@ -207,10 +215,10 @@ void imu_start_sampling(void) {
                 case CALIB_STAT:
                     // Reduction of flags to imu_ok
                     if (bno_status != BNO055_STATUS_SENSOR_FUSION_ALGORITHM_RUNNING) {
-                        error_handler_handle_warning(ERROR_HANDLER_GROUP_IMU, IMU_ERROR_STATUS);
+                        //error_handler_handle_warning(ERROR_HANDLER_GROUP_IMU, IMU_ERROR_STATUS);
                         imu_data->imu_ok = false;
                     } else if (calib_status.sys_status < SYS_CALIB_TRESH || calib_status.gyr_status < GYR_CALIB_TRESH ||
-                        calib_status.acc_status < ACC_CALIB_TRESH || calib_status.mag_status < MAG_CALIB_TRESH) {
+                               calib_status.acc_status < ACC_CALIB_TRESH || calib_status.mag_status < MAG_CALIB_TRESH) {
                         imu_data->imu_ok = false;
                     } else {
                         imu_data->imu_ok = true;
@@ -227,7 +235,7 @@ void imu_start_sampling(void) {
             }
         }
     } else {
-        // error_handler_handle_warning(ERROR_HANDLER_GROUP_IMU, IMU_ERROR_READ_TIMEOUT);
+        error_handler_handle_warning(ERROR_HANDLER_GROUP_IMU, IMU_ERROR_READ_TIMEOUT);
     }
 }
 
