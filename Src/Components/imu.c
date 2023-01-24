@@ -40,7 +40,7 @@ static volatile imu_data_t imu_datas[2];
 static volatile bool sampling_complete = false;
 
 static volatile bno_sampling_state_t current_sample_state;
-static volatile uint8_t current_sample_state_id;
+static volatile uint8_t current_sample_idx;
 
 
 static void bno_callback(bno055_response_t response_) {
@@ -49,6 +49,11 @@ static void bno_callback(bno055_response_t response_) {
 }
 
 void imu_init(void) {
+    // Signal everything as invalid
+    imu_datas[0].imu_ok = false;
+    imu_datas[1].imu_ok = false;
+    sampling_complete = false;
+
     // Initialize physical connection
     bno055_init();
 
@@ -148,10 +153,7 @@ void imu_init(void) {
     }
 
     // Preparation for sampling
-    imu_datas[0].imu_ok = false;
-    imu_datas[1].imu_ok = false;
-    sampling_complete = false;
-
+    current_sample_idx = 0;
     current_sample_state = INIT;
     response = read_success;
     callback_ready = true;
@@ -161,7 +163,7 @@ void imu_start_sampling(void) {
     static bno055_calib_status_t calib_status;
     static bno055_status_t bno_status;
 
-    imu_data_t *imu_data = (imu_data_t *) (&imu_datas[current_sample_state_id]);
+    imu_data_t *imu_data = (imu_data_t *) (&imu_datas[current_sample_idx]);
 
     if (callback_ready) {
         callback_ready = false;
@@ -225,9 +227,9 @@ void imu_start_sampling(void) {
                     }
 
                     // Signal completed sampling
-                    current_sample_state_id = 1 - current_sample_state_id;
+                    current_sample_idx = 1 - current_sample_idx;
                     sampling_complete = true;
-                    imu_data = (imu_data_t *) (&imu_datas[current_sample_state_id]);
+                    imu_data = (imu_data_t *) (&imu_datas[current_sample_idx]);
 
                     current_sample_state = EUL;
                     bno055_read_eul_xyz_2_mul_16(&imu_data->heading_mul_16, bno_callback);
@@ -241,7 +243,7 @@ void imu_start_sampling(void) {
 
 imu_data_t imu_get_latest_data(void) {
     sampling_complete = false;
-    return imu_datas[1 - current_sample_state_id];
+    return imu_datas[1 - current_sample_idx];
 }
 
 bool imu_data_available(void) {
