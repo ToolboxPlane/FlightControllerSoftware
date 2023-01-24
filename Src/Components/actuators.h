@@ -30,7 +30,7 @@ void actuators_init(void);
 /**
  * @brief Set the actuators.
  *
- * This function sets the actuators, using ::ppm_set, according to the following mapping:
+ * This function sets the actuators, using ::ppm_channel_set, according to the following mapping:
  *  * elevon-left mapped from [-500, 500] to [0, 1000] to channel 1
  *  * throttle to channel 2
  *  * elevon-right mapped from [-500, 500] to [0, 1000] to channel 3
