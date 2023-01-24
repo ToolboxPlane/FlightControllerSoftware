@@ -167,7 +167,7 @@ void imu_start_sampling(void) {
         callback_ready = false;
         if (response != read_success) {
             if (response != bus_over_run_error) {
-                error_handler_handle_warning(ERROR_HANDLER_GROUP_BNO055, response + 1);
+                //error_handler_handle_warning(ERROR_HANDLER_GROUP_BNO055, response + 1);
             }
 
             switch (current_sample_state) {
