@@ -1859,11 +1859,11 @@ TEST(TEST_NAME, get_data__clear_on_read) {
     bnoHandle.overrideFunc<bno055_write_opr_mode>(
             [](auto /*op_mode*/, bno055_callback_t callback) { callback(write_success); });
     bnoHandle.overrideFunc<bno055_read_self_test>([](bno055_self_test_result_t *out, bno055_callback_t callback) {
-      out->mcu_passed = true;
-      out->acc_passed = true;
-      out->gyr_passed = true;
-      out->mag_passed = true;
-      callback(read_success);
+        out->mcu_passed = true;
+        out->acc_passed = true;
+        out->gyr_passed = true;
+        out->mag_passed = true;
+        callback(read_success);
     });
     bnoHandle.overrideFunc<bno055_write_unit_selection>(
             [](bno055_unit_sel_acc /*acc_unit*/, bno055_unit_sel_angular_rate /*angular_rate_unit*/,
@@ -1911,34 +1911,34 @@ TEST(TEST_NAME, get_data__clear_on_read) {
 
     bno055_callback_t callback = nullptr;
     bnoHandle.overrideFunc<bno055_read_eul_xyz_2_mul_16>([&callback](int16_t *out, bno055_callback_t callback_) {
-      out[0] = 17;
-      out[1] = 18;
-      out[2] = 19;
-      callback = callback_;
+        out[0] = 17;
+        out[1] = 18;
+        out[2] = 19;
+        callback = callback_;
     });
     bnoHandle.overrideFunc<bno055_read_gyr_xyz_mul_16>([&callback](int16_t *out, bno055_callback_t callback_) {
-      out[0] = 20;
-      out[1] = 21;
-      out[2] = 22;
-      callback = callback_;
+        out[0] = 20;
+        out[1] = 21;
+        out[2] = 22;
+        callback = callback_;
     });
     bnoHandle.overrideFunc<bno055_read_acc_xyz_mul_100>([&callback](int16_t *out, bno055_callback_t callback_) {
-      out[0] = 23;
-      out[1] = 24;
-      out[2] = 25;
-      callback = callback_;
+        out[0] = 23;
+        out[1] = 24;
+        out[2] = 25;
+        callback = callback_;
     });
     bnoHandle.overrideFunc<bno055_read_system_status>([&callback](bno055_status_t *out, bno055_callback_t callback_) {
-      *out = BNO055_STATUS_SENSOR_FUSION_ALGORITHM_RUNNING;
-      callback = callback_;
+        *out = BNO055_STATUS_SENSOR_FUSION_ALGORITHM_RUNNING;
+        callback = callback_;
     });
     bnoHandle.overrideFunc<bno055_read_calib_status>(
             [&callback](bno055_calib_status_t *out, bno055_callback_t callback_) {
-              out->sys_status = 3;
-              out->gyr_status = 3;
-              out->acc_status = 3;
-              out->mag_status = 3;
-              callback = callback_;
+                out->sys_status = 3;
+                out->gyr_status = 3;
+                out->acc_status = 3;
+                out->mag_status = 3;
+                callback = callback_;
             });
 
     imu_start_sampling();

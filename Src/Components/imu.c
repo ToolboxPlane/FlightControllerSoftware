@@ -167,7 +167,7 @@ void imu_start_sampling(void) {
         callback_ready = false;
         if (response != read_success) {
             if (response != bus_over_run_error) {
-                //error_handler_handle_warning(ERROR_HANDLER_GROUP_BNO055, response + 1);
+                // error_handler_handle_warning(ERROR_HANDLER_GROUP_BNO055, response + 1);
             }
 
             switch (current_sample_state) {
@@ -215,7 +215,7 @@ void imu_start_sampling(void) {
                 case CALIB_STAT:
                     // Reduction of flags to imu_ok
                     if (bno_status != BNO055_STATUS_SENSOR_FUSION_ALGORITHM_RUNNING) {
-                        //error_handler_handle_warning(ERROR_HANDLER_GROUP_IMU, IMU_ERROR_STATUS);
+                        // error_handler_handle_warning(ERROR_HANDLER_GROUP_IMU, IMU_ERROR_STATUS);
                         imu_data->imu_ok = false;
                     } else if (calib_status.sys_status < SYS_CALIB_TRESH || calib_status.gyr_status < GYR_CALIB_TRESH ||
                                calib_status.acc_status < ACC_CALIB_TRESH || calib_status.mag_status < MAG_CALIB_TRESH) {
