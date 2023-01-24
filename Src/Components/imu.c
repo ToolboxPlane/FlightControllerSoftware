@@ -188,9 +188,6 @@ void imu_start_sampling(void) {
                 case CALIB_STAT:
                     bno055_read_calib_status(&calib_status, bno_callback);
                     break;
-                case INIT:
-                    // Shouldn't be here...
-                    break;
             }
         } else {
             switch (current_sample_state) {

@@ -1298,22 +1298,6 @@ TEST(TEST_NAME, start_sampling__reread_euler) {
     bno055_callback_t callback = nullptr;
     bnoHandle.overrideFunc<bno055_read_eul_xyz_2_mul_16>(
             [&callback](int16_t * /*out*/, bno055_callback_t callback_) { callback = callback_; });
-    bnoHandle.overrideFunc<bno055_read_gyr_xyz_mul_16>(
-            [&callback](int16_t * /*out*/, bno055_callback_t callback_) { callback = callback_; });
-    bnoHandle.overrideFunc<bno055_read_acc_xyz_mul_100>(
-            [&callback](int16_t * /*out*/, bno055_callback_t callback_) { callback = callback_; });
-    bnoHandle.overrideFunc<bno055_read_system_status>([&callback](bno055_status_t *out, bno055_callback_t callback_) {
-        *out = BNO055_STATUS_SENSOR_FUSION_ALGORITHM_RUNNING;
-        callback = callback_;
-    });
-    bnoHandle.overrideFunc<bno055_read_calib_status>(
-            [&callback](bno055_calib_status_t *out, bno055_callback_t callback_) {
-                out->sys_status = 3;
-                out->gyr_status = 3;
-                out->acc_status = 3;
-                out->mag_status = 3;
-                callback = callback_;
-            });
 
     imu_start_sampling();
     EXPECT_TRUE(bnoHandle.functionGotCalled<bno055_read_eul_xyz_2_mul_16>());
@@ -1379,20 +1363,6 @@ TEST(TEST_NAME, start_sampling__reread_gyro) {
             [&callback](int16_t * /*out*/, bno055_callback_t callback_) { callback = callback_; });
     bnoHandle.overrideFunc<bno055_read_gyr_xyz_mul_16>(
             [&callback](int16_t * /*out*/, bno055_callback_t callback_) { callback = callback_; });
-    bnoHandle.overrideFunc<bno055_read_acc_xyz_mul_100>(
-            [&callback](int16_t * /*out*/, bno055_callback_t callback_) { callback = callback_; });
-    bnoHandle.overrideFunc<bno055_read_system_status>([&callback](bno055_status_t *out, bno055_callback_t callback_) {
-        *out = BNO055_STATUS_SENSOR_FUSION_ALGORITHM_RUNNING;
-        callback = callback_;
-    });
-    bnoHandle.overrideFunc<bno055_read_calib_status>(
-            [&callback](bno055_calib_status_t *out, bno055_callback_t callback_) {
-                out->sys_status = 3;
-                out->gyr_status = 3;
-                out->acc_status = 3;
-                out->mag_status = 3;
-                callback = callback_;
-            });
 
     imu_start_sampling();
     EXPECT_TRUE(bnoHandle.functionGotCalled<bno055_read_eul_xyz_2_mul_16>());
@@ -1467,18 +1437,6 @@ TEST(TEST_NAME, start_sampling__reread_acc) {
             [&callback](int16_t * /*out*/, bno055_callback_t callback_) { callback = callback_; });
     bnoHandle.overrideFunc<bno055_read_acc_xyz_mul_100>(
             [&callback](int16_t * /*out*/, bno055_callback_t callback_) { callback = callback_; });
-    bnoHandle.overrideFunc<bno055_read_system_status>([&callback](bno055_status_t *out, bno055_callback_t callback_) {
-        *out = BNO055_STATUS_SENSOR_FUSION_ALGORITHM_RUNNING;
-        callback = callback_;
-    });
-    bnoHandle.overrideFunc<bno055_read_calib_status>(
-            [&callback](bno055_calib_status_t *out, bno055_callback_t callback_) {
-                out->sys_status = 3;
-                out->gyr_status = 3;
-                out->acc_status = 3;
-                out->mag_status = 3;
-                callback = callback_;
-            });
 
     imu_start_sampling();
     EXPECT_TRUE(bnoHandle.functionGotCalled<bno055_read_eul_xyz_2_mul_16>());
@@ -1565,14 +1523,6 @@ TEST(TEST_NAME, start_sampling__reread_system_state) {
         *out = BNO055_STATUS_SENSOR_FUSION_ALGORITHM_RUNNING;
         callback = callback_;
     });
-    bnoHandle.overrideFunc<bno055_read_calib_status>(
-            [&callback](bno055_calib_status_t *out, bno055_callback_t callback_) {
-                out->sys_status = 3;
-                out->gyr_status = 3;
-                out->acc_status = 3;
-                out->mag_status = 3;
-                callback = callback_;
-            });
 
     imu_start_sampling();
     EXPECT_TRUE(bnoHandle.functionGotCalled<bno055_read_eul_xyz_2_mul_16>());
