@@ -43,6 +43,7 @@ typedef enum {
     IMU_ERROR_INIT_TIMEOUT = 1,
     IMU_ERROR_INIT_SELF_TEST = 2,
     IMU_ERROR_STATUS = 3,
+    IMU_ERROR_READ_TIMEOUT = 4
 } imu_error_t;
 
 /**
@@ -84,24 +85,48 @@ typedef enum {
 void imu_init(void);
 
 /**
- * @brief Start sampling of the sensor.
+ * @brief Parse result and start next sampling process
  *
- * This reads all data into an internal imu_data_t struct, if an error occurs sampling is aborted and no new data
- * is reported.
+ * If the last sampling process is not completed the function shall call
+ * error_handler_handle_warning(ERROR_HANDLER_GROUP_IMU, IMU_ERROR_READ_TIMEOUT).
  *
- * @warning Currently only one datum is read per call to this function, i.e. multiple calls are necessary to read
- * all data, see #41.
+ * Otherwise the following steps shall be performed:
+ *  * If the last response was read-success:
+ *      * Read the next datum, the (cyclic-) order is:
+ *           1. Euler angles (::bno055_read_eul_xyz_2_mul_16)
+ *           2. Gyroscopic angular rate (::bno055_read_gyr_xyz_mul_16)
+ *           3. Acceleration (::bno055_read_acc_xyz_mul_100)
+ *           4. System State (::bno055_read_system_status)
+ *           5. Calibration status (::bno055_read_calib_status)
+ *      * If a full set of measurements have been received:
+ *          * If the system status was not "Sensor Fusion Algorithm Running" set imu_ok to false
+ *          * If any of the calibration status values is below the respective threshold set imu_ok to false
+ *          * In all other cases set imu_ok to true
+ *          * make the result available (such that ::imu_get_latest_data returns the data and ::imu_data_available
+ *            returns true)
+ *  * Otherwise:
+ *      * Call error_handler_handle_warning(ERROR_HANDLER_GROUP_BNO055, response + 1)
+ *      * Re-read the current datum
  */
 void imu_start_sampling(void);
 
 /**
- * Get the last, fully received, set of measurements.
+ * @brief Get the last measurement
+ *
+ * Returns the last fully receive set of measurements, if sampling is complete but an error was reported by the sensor
+ * it imu_ok is false.
+ * In addition ::imu_data_available will return false after this call.
+ *
  * @return a struct containing all measurement data.
  */
 imu_data_t imu_get_latest_data(void);
 
 /**
- * Checks whether a new set of measurements was collected since the last call to get_latest_data().
+ * @brief Checks whether a new set of measurements was collected since the last call to get_latest_data().
+ *
+ * Returns whether a new, complete set of measurements was received, returns true until the data is read via
+ * ::imu_get_latest_data
+ *
  * @return true if new data is available.
  */
 bool imu_data_available(void);

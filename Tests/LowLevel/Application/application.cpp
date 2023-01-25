@@ -26,7 +26,7 @@ TEST(TEST_NAME, init) {
 
     EXPECT_THROW(application_init(), std::runtime_error);
 
-    EXPECT_TRUE(systemHandle.functionGotCalled<system_pre_init>(std::ignore));
+    EXPECT_TRUE(systemHandle.functionGotCalled<system_pre_init>(std::ignore, imu_start_sampling));
     EXPECT_TRUE(errorHandlerHandle.functionGotCalled<error_handler_init>());
     EXPECT_TRUE(imuHandle.functionGotCalled<imu_init>());
     EXPECT_TRUE(remoteHandlerHandle.functionGotCalled<remote_init>());
@@ -48,13 +48,14 @@ TEST(TEST_NAME, timer_mode_fcp) {
 
     system_timer_16_384ms_callback timer_callback = nullptr;
     systemHandle.overrideFunc<system_pre_init>(
-            [&timer_callback](system_timer_16_384ms_callback callback) { timer_callback = callback; });
+            [&timer_callback](system_timer_16_384ms_callback callback, system_timer_4_096ms_callback /*callback*/) {
+                timer_callback = callback;
+            });
     systemHandle.overrideFunc<system_reset_watchdog>(
             []() { throw std::runtime_error{"EXCEPTION TO BREAK LOOP FOR TESTS"}; });
 
     EXPECT_THROW(application_init(), std::runtime_error);
 
-    EXPECT_TRUE(systemHandle.functionGotCalled<system_pre_init>(std::ignore));
     EXPECT_TRUE(errorHandlerHandle.functionGotCalled<error_handler_init>());
     EXPECT_TRUE(imuHandle.functionGotCalled<imu_init>());
     EXPECT_TRUE(remoteHandlerHandle.functionGotCalled<remote_init>());
@@ -114,7 +115,6 @@ TEST(TEST_NAME, timer_mode_fcp) {
     EXPECT_TRUE(modeHandlerHandle.functionGotCalled<mode_handler_handle>());
     EXPECT_TRUE(controllerHandle.functionGotCalled<controller_update>());
     EXPECT_TRUE(actuatorsHandle.functionGotCalled<actuators_set>());
-    EXPECT_TRUE(imuHandle.functionGotCalled<imu_start_sampling>());
 }
 
 TEST(TEST_NAME, timer_mode_remote) {
@@ -129,13 +129,14 @@ TEST(TEST_NAME, timer_mode_remote) {
 
     system_timer_16_384ms_callback timer_callback = nullptr;
     systemHandle.overrideFunc<system_pre_init>(
-            [&timer_callback](system_timer_16_384ms_callback callback) { timer_callback = callback; });
+            [&timer_callback](system_timer_16_384ms_callback callback, system_timer_4_096ms_callback /*callback*/) {
+                timer_callback = callback;
+            });
     systemHandle.overrideFunc<system_reset_watchdog>(
             []() { throw std::runtime_error{"EXCEPTION TO BREAK LOOP FOR TESTS"}; });
 
     EXPECT_THROW(application_init(), std::runtime_error);
 
-    EXPECT_TRUE(systemHandle.functionGotCalled<system_pre_init>(std::ignore));
     EXPECT_TRUE(errorHandlerHandle.functionGotCalled<error_handler_init>());
     EXPECT_TRUE(imuHandle.functionGotCalled<imu_init>());
     EXPECT_TRUE(remoteHandlerHandle.functionGotCalled<remote_init>());
@@ -177,7 +178,6 @@ TEST(TEST_NAME, timer_mode_remote) {
     timer_callback();
     EXPECT_TRUE(modeHandlerHandle.functionGotCalled<mode_handler_handle>());
     EXPECT_TRUE(actuatorsHandle.functionGotCalled<actuators_set>());
-    EXPECT_TRUE(imuHandle.functionGotCalled<imu_start_sampling>());
 }
 
 TEST(TEST_NAME, timer_mode_stabilised_failsafe) {
@@ -192,13 +192,14 @@ TEST(TEST_NAME, timer_mode_stabilised_failsafe) {
 
     system_timer_16_384ms_callback timer_callback = nullptr;
     systemHandle.overrideFunc<system_pre_init>(
-            [&timer_callback](system_timer_16_384ms_callback callback) { timer_callback = callback; });
+            [&timer_callback](system_timer_16_384ms_callback callback, system_timer_4_096ms_callback /*callback*/) {
+                timer_callback = callback;
+            });
     systemHandle.overrideFunc<system_reset_watchdog>(
             []() { throw std::runtime_error{"EXCEPTION TO BREAK LOOP FOR TESTS"}; });
 
     EXPECT_THROW(application_init(), std::runtime_error);
 
-    EXPECT_TRUE(systemHandle.functionGotCalled<system_pre_init>(std::ignore));
     EXPECT_TRUE(errorHandlerHandle.functionGotCalled<error_handler_init>());
     EXPECT_TRUE(imuHandle.functionGotCalled<imu_init>());
     EXPECT_TRUE(remoteHandlerHandle.functionGotCalled<remote_init>());
@@ -258,7 +259,6 @@ TEST(TEST_NAME, timer_mode_stabilised_failsafe) {
     EXPECT_TRUE(modeHandlerHandle.functionGotCalled<mode_handler_handle>());
     EXPECT_TRUE(controllerHandle.functionGotCalled<controller_update>());
     EXPECT_TRUE(actuatorsHandle.functionGotCalled<actuators_set>());
-    EXPECT_TRUE(imuHandle.functionGotCalled<imu_start_sampling>());
 }
 
 TEST(TEST_NAME, timer_mode_failsafe) {
@@ -273,13 +273,14 @@ TEST(TEST_NAME, timer_mode_failsafe) {
 
     system_timer_16_384ms_callback timer_callback = nullptr;
     systemHandle.overrideFunc<system_pre_init>(
-            [&timer_callback](system_timer_16_384ms_callback callback) { timer_callback = callback; });
+            [&timer_callback](system_timer_16_384ms_callback callback, system_timer_4_096ms_callback /*callback*/) {
+                timer_callback = callback;
+            });
     systemHandle.overrideFunc<system_reset_watchdog>(
             []() { throw std::runtime_error{"EXCEPTION TO BREAK LOOP FOR TESTS"}; });
 
     EXPECT_THROW(application_init(), std::runtime_error);
 
-    EXPECT_TRUE(systemHandle.functionGotCalled<system_pre_init>(std::ignore));
     EXPECT_TRUE(errorHandlerHandle.functionGotCalled<error_handler_init>());
     EXPECT_TRUE(imuHandle.functionGotCalled<imu_init>());
     EXPECT_TRUE(remoteHandlerHandle.functionGotCalled<remote_init>());
@@ -322,7 +323,6 @@ TEST(TEST_NAME, timer_mode_failsafe) {
     timer_callback();
     EXPECT_TRUE(modeHandlerHandle.functionGotCalled<mode_handler_handle>());
     EXPECT_TRUE(actuatorsHandle.functionGotCalled<actuators_set>());
-    EXPECT_TRUE(imuHandle.functionGotCalled<imu_start_sampling>());
 }
 
 TEST(TEST_NAME, timer_send_period) {
@@ -337,13 +337,14 @@ TEST(TEST_NAME, timer_send_period) {
 
     system_timer_16_384ms_callback timer_callback = nullptr;
     systemHandle.overrideFunc<system_pre_init>(
-            [&timer_callback](system_timer_16_384ms_callback callback) { timer_callback = callback; });
+            [&timer_callback](system_timer_16_384ms_callback callback, system_timer_4_096ms_callback /*callback*/) {
+                timer_callback = callback;
+            });
     systemHandle.overrideFunc<system_reset_watchdog>(
             []() { throw std::runtime_error{"EXCEPTION TO BREAK LOOP FOR TESTS"}; });
 
     EXPECT_THROW(application_init(), std::runtime_error);
 
-    EXPECT_TRUE(systemHandle.functionGotCalled<system_pre_init>(std::ignore));
     EXPECT_TRUE(errorHandlerHandle.functionGotCalled<error_handler_init>());
     EXPECT_TRUE(imuHandle.functionGotCalled<imu_init>());
     EXPECT_TRUE(remoteHandlerHandle.functionGotCalled<remote_init>());
@@ -431,7 +432,6 @@ TEST(TEST_NAME, timer_send_period) {
         EXPECT_TRUE(controllerHandle.functionGotCalled<controller_update>());
         EXPECT_TRUE(actuatorsHandle.functionGotCalled<actuators_set>());
         EXPECT_FALSE(flightComputerHandle.functionGotCalled<flight_computer_send>());
-        EXPECT_TRUE(imuHandle.functionGotCalled<imu_start_sampling>());
     }
 
     timer_callback();
@@ -439,12 +439,10 @@ TEST(TEST_NAME, timer_send_period) {
     EXPECT_TRUE(controllerHandle.functionGotCalled<controller_update>());
     EXPECT_TRUE(actuatorsHandle.functionGotCalled<actuators_set>());
     EXPECT_TRUE(flightComputerHandle.functionGotCalled<flight_computer_send>());
-    EXPECT_TRUE(imuHandle.functionGotCalled<imu_start_sampling>());
 
     timer_callback();
     EXPECT_TRUE(modeHandlerHandle.functionGotCalled<mode_handler_handle>());
     EXPECT_TRUE(controllerHandle.functionGotCalled<controller_update>());
     EXPECT_TRUE(actuatorsHandle.functionGotCalled<actuators_set>());
     EXPECT_FALSE(flightComputerHandle.functionGotCalled<flight_computer_send>());
-    EXPECT_TRUE(imuHandle.functionGotCalled<imu_start_sampling>());
 }

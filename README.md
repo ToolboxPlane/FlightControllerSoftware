@@ -4,9 +4,9 @@
 * [Test Reports](https://toolboxplane.github.io/FlightControllerSoftware/report/)
 * [Coverage Reports](https://toolboxplane.github.io/FlightControllerSoftware/coverage/)
 
-## Building and flashing 
+## Building and flashing
 
-### Build 
+### Build
 
 To compile the firmware run:
 
@@ -54,18 +54,20 @@ The error IDs are:
 | Component      | Exception                | LED configuration |
 |----------------|--------------------------|-------------------|
 | Application    | -                        | xxxx ◯◯◯🔴        |
-| System         | Timer Runtime            | ◯◯◯🔴 ◯◯🔴◯       |
-|                | Watchdog                 | ◯◯🔴◯ ◯◯🔴◯       |
-|                | Brownout                 | ◯◯🔴🔴 ◯◯🔴◯      |
-| ERROR_HANDLER_GROUP_IMU            | Init timeout error       | ◯◯◯🔴 ◯◯🔴🔴      |
+| System         | Watchdog                 | ◯◯◯🔴 ◯◯🔴◯       |
+|                | Brownout                 | ◯◯🔴◯ ◯◯🔴◯       |
+|                | Low-Prio Timer Runtime   | ◯◯🔴🔴 ◯◯🔴◯      |
+|                | High-Prio Timer Runtime  | ◯🔴◯◯ ◯◯🔴◯       |
+| IMU            | Init timeout error       | ◯◯◯🔴 ◯◯🔴🔴      |
 |                | Init self test error     | ◯◯🔴◯ ◯◯🔴🔴      |
 |                | Status error             | ◯◯🔴🔴 ◯◯🔴🔴     |
+|                | Read timeout             | ◯🔴◯◯ ◯◯🔴🔴      |
 | Flightcomputer | -                        | xxxx ◯🔴◯◯        |
 | Remote         | -                        | xxxx ◯🔴◯🔴       |
-| Mode Handler   | No ERROR_HANDLER_GROUP_IMU Data              | ◯◯◯🔴 ◯🔴🔴◯      |
+| Mode Handler   | No IMU Data              | ◯◯◯🔴 ◯🔴🔴◯      |
 |                | No FCP Data              | ◯◯🔴◯ ◯🔴🔴◯      |
 |                | No Remote Data           | ◯◯🔴🔴 ◯🔴🔴◯     |
-| ERROR_HANDLER_GROUP_BNO055         | Unexpected read success  | ◯◯◯🔴 ◯🔴🔴🔴     |
+| BNO055         | Unexpected read success  | ◯◯◯🔴 ◯🔴🔴🔴     |
 |                | Unexpected write success | ◯◯🔴◯ ◯🔴🔴🔴     |
 |                | Read fail                | ◯◯🔴🔴 ◯🔴🔴🔴    |
 |                | Write fail               | ◯🔴◯◯ ◯🔴🔴🔴     |
