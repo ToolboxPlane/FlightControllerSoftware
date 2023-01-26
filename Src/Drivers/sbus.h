@@ -27,7 +27,7 @@ typedef struct {
 } sbus_data_t;
 
 /**
- * @Initialize the SBUS module.
+ * @brief Initialize the SBUS module.
  *
  * The initialization consists of the following tasks:
  *  * Initialize the internal ring buffer
@@ -42,6 +42,7 @@ typedef struct {
  * The internal uart callback function performs the following tasks:
  *  * Add the received byte to the internal ring-buffer
  *
+ * @see https://github.com/bolderflight/sbus/blob/main/README.md
  */
 void sbus_init(void);
 
@@ -49,23 +50,50 @@ void sbus_init(void);
  * @brief Decodes all data received since the last call and returns whether the data contains a full new packet.
  *
  * This function iterates over all in the ring buffer and feeds the bytes, in the order they were received,
- * into the following state machine:
+ * into the following state machine (initialized in the INIT state, with the state kept between calls to the
+ * function):
  *
  * \dot
- * digraph example {
- *      node [shape=record, fontname=Helvetica, fontsize=10];
- *      INIT;
- *      START_RECEIVED;
- *      IN_DATA;
- *      AT_FLAGS;
- *      AT_END;
+ * digraph {
+ *      rankdir = "LR";
  *
- *      INIT -> START_RECEIVED [
- *          label = "data=0x0F";
+ *      INIT -> INIT [
+ *          label = "data!=0x0F/\nindex=0";
  *      ]
+ *      INIT -> IN_DATA [
+ *          label = "data=0x0F/";
+ *      ]
+ *
+ *      IN_DATA -> IN_DATA [
+ *          label = "index<22/\nbuffer[index]=data\nindex += 1";
+ *      ]
+ *
+ *      IN_DATA -> AT_END [
+ *          label = "index>=22/\nfailsave = data_3,\nframe-lost= data_2";
+ *      ]
+ *
+ *      AT_END -> INIT [
+ *          label = "data=0x00/\nDecode result";
+ *      ]
+ *
+ *      AT_END -> INIT [
+ *          label = "data=0x00/\nTrigger warning";
+ *      ]
+ *
  * }
  * \enddot
  *
+ * **Decode result** consists of the following tasks:
+ *  * For every bit in the (receive-) buffer calculate the overall index as the index in the byte plus the 8 times the
+ *    index of the byte
+ *  * Calculate the channel index as the result of the integer division of the (receive-) buffer index with 11 and
+ *  * Set the channel bit index as the remainder of the integer division
+ *  * Set the bit of the respective channel to the bit value
+ *
+ * After all data has been consumed the function shall return true if the **Decode result** was triggered, otherwise
+ * it shall return false.
+ *
+ * @see https://github.com/bolderflight/sbus/blob/main/README.md
  * @return true if a new packet was received, otherwise false.
  */
 bool sbus_data_available(void);
