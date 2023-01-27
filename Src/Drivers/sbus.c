@@ -70,6 +70,8 @@ static bool sbus_decode(uint8_t data) {
 
 void sbus_init(void) {
     decode_byte_count = 0;
+    latest_data.failsafe = true;
+    latest_data.frame_lost = true;
     ring_buffer_data = ring_buffer_init();
     uart_init(UART_ID, UART_BAUD, EVEN, 2, uart_callback);
 }
