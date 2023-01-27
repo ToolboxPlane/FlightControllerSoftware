@@ -31,7 +31,7 @@ typedef struct {
  *
  * The initialization consists of the following tasks:
  *  * Initialize the internal ring buffer
- *  * Initialize the uart to the following parameters (::uart_init):
+ *  * Initialize the uart to the following parameters:
  *      * ID: 2
  *      * Baud Rate: 100 000
  *      * Parity: Even
