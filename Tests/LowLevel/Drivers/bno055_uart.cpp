@@ -202,29 +202,6 @@ TEST(TEST_NAME, read_register__read_success_16bit) {
     EXPECT_EQ(result, 37 + 9 * 256);
 }
 
-TEST(TEST_NAME, read_register__buffer_invalid) {
-    auto handle = mock::uart.getHandle();
-    // Setup to capture uart-Callback
-    uart_callback_t uartCallback;
-    handle.overrideFunc<uart_init>([&uartCallback](uint8_t /*id*/, uint16_t /*baud*/, uart_parity_t /*parity*/,
-                                                   uint8_t /*stop*/,
-                                                   uart_callback_t callback) -> void { uartCallback = callback; });
-
-    bno055_uart_init();
-    bnoResponse.reset();
-
-    // Actual test
-    bno055_uart_read_register(0, 1, bnoCallback, nullptr);
-    EXPECT_TRUE(handle.functionGotCalled<uart_send_buf>());
-
-    uartCallback(0xBB);
-    uartCallback(0x01);
-    uartCallback(17);
-
-    ASSERT_TRUE(bnoResponse.has_value());
-    EXPECT_EQ(bnoResponse.value(), bno055_response_t::callback_buffer_invalid);
-}
-
 TEST(TEST_NAME, read_register__read_fail) {
     auto handle = mock::uart.getHandle();
     // Setup to capture uart-Callback

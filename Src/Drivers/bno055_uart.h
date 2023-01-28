@@ -29,7 +29,6 @@ typedef enum {
     receive_char_timeout = 0x0A,
 
     // From Library
-    callback_buffer_invalid,
     invalid_sync
 } bno055_response_t;
 
@@ -39,36 +38,100 @@ typedef enum {
 typedef void (*bno055_callback_t)(bno055_response_t);
 
 /**
- * Initialize the uart interface of the sensor.
+ * @brief Initialize the uart interface of the sensor.
  *
- * The initialization of the sensor itself (operation mode, units...) is not
+ * This function initializes the uart with the following values:
+ *  * ID: 1
+ *  * Baud rate: 115200
+ *  * No Parity bits
+ *  * 1 Stop Bit
+ *  * An internal function as callback
+ *
+ * The internal callback function decodes data in accordance with the following state machine:
+ * \dot
+ *
+ * digraph {
+ *      rankdir = "LR";
+ *      INIT -> READ_SUCCESS [
+ *          label = "data=0xBB"
+ *      ]
+ *
+ *      INIT -> READ_ERROR_OR_WRITE_RESPONSE [
+ *          label = "data=0xEE"
+ *      ]
+ *
+ *      INIT -> INIT [
+ *          label = "otherwise/\ncallback(invalid_sync)"
+ *      ]
+ *
+ *      READ_ERROR_OR_WRITE_RESPONSE -> INIT [
+ *          label = "/callback(data)";
+ *      ]
+ *
+ *      READ_SUCCESS -> IN_DATA [
+ *          label = "/length=data\nindex=0";
+ *      ]
+ *
+ *      IN_DATA -> IN_DATA [
+ *          label = "index < length/\nbuffer[index] = data\nindex += 1";
+ *      ]
+ *
+ *      IN_DATA -> INIT [
+ *          label = "index >= length/\ncallback(read_success)"
+ *      ]
+ * }
+ *
+ * \enddot
+ *
+ * @see https://www.bosch-sensortec.com/media/boschsensortec/downloads/datasheets/bst-bno055-ds000.pdf Chapter 4.7
+ * @note The initialization of the sensor itself (operation mode, units...) is not
  * done here as it is application dependent.
  */
 void bno055_uart_init(void);
 
 /**
- * Write to a register of the sensor via UART.
+ * @brief Write to a register of the sensor via UART.
  *
- * This will build the uart message, send it and report the result
- * with the provided callback.
+ * This function performs the following tasks:
+ *  * Build the message in accordance with the BNO055-UART protocol:
+ * | Byte | Description | Value |
+ * | --- | --- | --- |
+ * | 1   | Start byte | 0xAA |
+ * | 2   | Write command | 0x00 |
+ * | 3   | Register address | The value of the "reg" argument |
+ * | 4   | Length | The value of the "len" argument |
+ * | 5..5+len | Data | The "len" bytes pointed to by the argument "data" |
+ *  * Send the message via UART to ID 2.
+ *  * Store the argument "callback" such that the internal uart callback can call this function
  *
  * @param reg the address of the register
  * @param data pointer to the data to write
  * @param len the number of bytes to write
  * @param callback a function to call once the sensor sends a reply
+ * @see https://www.bosch-sensortec.com/media/boschsensortec/downloads/datasheets/bst-bno055-ds000.pdf Chapter 4.7
  */
 void bno055_uart_write_register(uint8_t reg, const uint8_t *data, uint8_t len, bno055_callback_t callback);
 
 /**
- * Read data from a register via UART.
+ * @brief Read data from a register via UART.
  *
- * This will build the uart message, send it, decode the incoming
- * response, write the result to the provided address and then call the callback.
+ * This function performs the following tasks:
+ *  * Build the message in accordance with the BNO055-UART protocol:
+ * | Byte | Description | Value |
+ * | --- | --- | --- |
+ * | 1   | Start byte | 0xAA |
+ * | 2   | Read command | 0x01 |
+ * | 3   | Register address | The value of the "reg" argument |
+ * | 4   | Length | The value of the "len" argument |
+ *  * Send the message via UART to ID 2.
+ *  * Store the arguments "callback" and "out" such that the internal uart callback can call this function and write
+ *    result data
  *
  * @param reg the address of the register to read from
  * @param len the number of bytes to read
  * @param callback a function to call once the transaction is finished
  * @param result the location at which to write the result
+ * @see https://www.bosch-sensortec.com/media/boschsensortec/downloads/datasheets/bst-bno055-ds000.pdf Chapter 4.7
  */
 void bno055_uart_read_register(uint8_t reg, uint8_t len, bno055_callback_t callback, void *result);
 
