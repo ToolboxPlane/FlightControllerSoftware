@@ -57,7 +57,7 @@ void system_pre_init(system_timer_16_384ms_callback low_prio_callback,
  *      * Call the low-priority callback
  *      * Check the runtime, if it exceeds 12ms call
  *        error_handler_handle_warning(ERROR_HANDLER_GROUP_SYSTEM, SYSTEM_ERROR_RUNTIME_LOW_PRIO)
- *  * For the low priority timer:
+ *  * For the high priority timer:
  *      * Call the high-priority callback
  *      * Check the runtime, if it exceeds 1ms call
  *        error_handler_handle_warning(ERROR_HANDLER_GROUP_SYSTEM, SYSTEM_ERROR_RUNTIME_HIGH_PRIO)

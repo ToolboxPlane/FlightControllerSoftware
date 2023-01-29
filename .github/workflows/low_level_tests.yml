@@ -40,6 +40,10 @@ jobs:
         with:
           name: RunResults
           path: build/Tests/LowLevel
+      - uses: actions/upload-artifact@v3
+        with:
+          name: ${{ matrix.compiler.cc }}
+          path: build/Tests/LowLevel
 
   Report:
     runs-on: ubuntu-latest
@@ -79,7 +83,7 @@ jobs:
           submodules: recursive
       - uses: actions/download-artifact@v3
         with:
-          name: RunResults
+          name: gcc-11
       - name: Install dependencies
         run: |
           sudo apt-get update

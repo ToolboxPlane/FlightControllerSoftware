@@ -17,26 +17,8 @@ enum { BNO_SEND_START = 0xAA };
 enum { BNO_RECEIVE_START = 0xBB };
 enum { BNO_RECEIVE_ERROR = 0xEE };
 
-enum { BNO_RECEIVE_BUF_SIZE = 2 + 8 };
-
-
-static volatile uint8_t receive_buf[BNO_RECEIVE_BUF_SIZE];
 static volatile bno055_callback_t bno_callback;
 static volatile void *bno_result_data;
-
-static void bno_uart_handle_response(volatile const uint8_t *data, uint8_t len, bno055_response_t response) {
-    if (response == read_success && len > 0) {
-        if (bno_result_data == 0 || data == 0) {
-            bno_callback(callback_buffer_invalid);
-            return;
-        }
-
-        for (uint8_t index = 0; index < len; ++index) {
-            ((uint8_t *) bno_result_data)[index] = data[index];
-        }
-    }
-    bno_callback(response);
-}
 
 static void bno_uart_callback(uint8_t data) {
     static uint8_t byte_in_message = 0;
@@ -53,24 +35,28 @@ static void bno_uart_callback(uint8_t data) {
                 byte_in_message = 1;
             } else {
                 byte_in_message = 0;
-                bno_uart_handle_response(0, 0, invalid_sync);
+                bno_callback(invalid_sync);
             }
             break;
         case 1:
             if (acknowledge_or_failure) {
                 byte_in_message = 0;
-                bno_uart_handle_response(0, 0, (bno055_response_t) data);
+                bno_callback(data);
             } else {
                 payload_len = data;
                 byte_in_message = 2;
             }
             break;
         default:
-            receive_buf[byte_in_message - 2] = data;
-            ++byte_in_message;
-            if (byte_in_message >= payload_len + 2) {
+            *((uint8_t *) bno_result_data) = data;
+            bno_result_data += 1;
+            payload_len -= 1;
+
+            if (payload_len == 0) {
                 byte_in_message = 0;
-                bno_uart_handle_response(receive_buf, payload_len, read_success);
+                bno_callback(read_success);
+            } else {
+                byte_in_message += 1;
             }
             break;
     }
