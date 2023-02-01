@@ -1,3 +1,4 @@
+#include <fstream>
 #include <gtest/gtest.h>
 
 extern "C" {
@@ -6,8 +7,15 @@ extern "C" {
 
 #include "FlightControllerSetpoint.pb.h"
 
-TEST(TEST_NAME, encode) {
-    std::array<uint8_t, ToolboxPlaneMessages_FlightControllerSetpoint_size + 3> buf;
+TEST(TEST_NAME, encode__buffer_format) {
+    /*
+     * Encode message with all zero data and id 17, expect:
+     *  * Returned length: 3
+     *  * First byte: 0x0F
+     *  * Second byte: 17
+     *  * Third byte: 0xF0
+     */
+    std::array<uint8_t, ToolboxPlaneMessages_FlightControllerSetpoint_size + 3> buf{};
     ToolboxPlaneMessages_FlightControllerSetpoint data{.motor = 0, .pitch = 0, .roll = 0};
     EXPECT_EQ(message_encode(buf.data(), buf.size(), ToolboxPlaneMessages_FlightControllerSetpoint_fields, &data, 17),
               3);

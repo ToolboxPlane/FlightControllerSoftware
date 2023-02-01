@@ -2,7 +2,7 @@
  * @file main.c
  * @author Paul Nykiel
  * @date 12.04.19
- * @brief Main file of the Flightcontroller firmware.
+ * @brief Main file of the Flight-Controller firmware.
  */
 #include "Application/application.h"
 

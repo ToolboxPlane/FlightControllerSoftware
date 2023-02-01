@@ -12,7 +12,7 @@ TEST(TEST_NAME, decode__nominal_decode) {
      * Nominal decode test.
      * Test:
      *  * Initialize with message_id as 17
-     *  * Feed 0xF0 to transition to INITIAL_END_FOUND, expect false
+     *  * Feed 0xF0 to transition to END_FOUND, expect false
      *  * Feed 0x0F to transition to START_FOUND, expect false
      *  * Feed 17 to transition to IN_DATA, expect false
      *  * Feed 0xF0 to transition to IN_DATA_END_FOUND, expect false
@@ -34,7 +34,7 @@ TEST(TEST_NAME, decode__premature_end) {
      * Premature end test.
      * Test:
      *  * Initialize with message_id as 17
-     *  * Feed 0xF0 to transition to INITIAL_END_FOUND, expect false
+     *  * Feed 0xF0 to transition to END_FOUND, expect false
      *  * Feed 0x0F to transition to START_FOUND, expect false
      *  * Feed 17 to transition to IN_DATA, expect false
      *  * Feed 0x08 to keep in IN_DATA, expect false
@@ -62,10 +62,10 @@ TEST(TEST_NAME, decode__wrong_data) {
      * Wrong data test.
      * Test:
      *  * Initialize with message_id as 17
-     *  * Feed 0xF0 to transition to INITIAL_END_FOUND, expect false
+     *  * Feed 0xF0 to transition to END_FOUND, expect false
      *  * Feed 0x0F to transition to START_FOUND, expect false
-     *  * Feed 18 to transition to IN_DATA, expect false
-     *  * Feed 0xF0 to transition to IN_DATA_END_FOUND, expect false
+     *  * Feed 18 to transition to INITIAL, expect false
+     *  * Feed 0xF0 to transition to END_FOUND, expect false
      *  * Feed 0x0F to transition to START_FOUND, expect false
      *  * Feed 17 to transition to IN_DATA, expect false
      *  * Feed 0xF0 to transition to IN_DATA_END_FOUND, expect false
@@ -90,11 +90,11 @@ TEST(TEST_NAME, decode__wrong_data_premature_end) {
      * Wrong Data Premature end test.
      * Test:
      *  * Initialize with message_id as 17
-     *  * Feed 0xF0 to transition to INITIAL_END_FOUND, expect false
+     *  * Feed 0xF0 to transition to END_FOUND, expect false
      *  * Feed 0x0F to transition to START_FOUND, expect false
-     *  * Feed 18 to transition to IN_DATA, expect false
-     *  * Feed 0x08 to keep in IN_DATA, expect false
-     *  * Feed 0xF0 to transition to IN_DATA_END_FOUND, expect false
+     *  * Feed 18 to transition to INITIAL, expect false
+     *  * Feed 0x08 to keep in INITIAL, expect false
+     *  * Feed 0xF0 to transition to END_FOUND, expect false
      *  * Feed 0x01 to transition to IN_DATA, expect false
      *  * Feed 0xF0 to transition to IN_DATA_END_FOUND, expect false
      *  * Feed 0x0F to transition to START_FOUND, expect false
@@ -125,7 +125,7 @@ TEST(TEST_NAME, decode__multiple_init) {
      * Test:
      *  * Initialize with message_id as 17
      *  * Feed 0x00 to keep in initial
-     *  * Feed 0xF0 to transition to INITIAL_END_FOUND, expect false
+     *  * Feed 0xF0 to transition to END_FOUND, expect false
      *  * Feed 0x0F to transition to START_FOUND, expect false
      *  * Feed 17 to transition to IN_DATA, expect false
      *  * Feed 0xF0 to transition to IN_DATA_END_FOUND, expect false
@@ -148,9 +148,9 @@ TEST(TEST_NAME, decode__init_wrong_end) {
      * Init wrong end test.
      * Test:
      *  * Initialize with message_id as 17
-     *  * Feed 0xF0 to transition to INITIAL_END_FOUND, expect false
+     *  * Feed 0xF0 to transition to END_FOUND, expect false
      *  * Feed 0x00 to transition to INITIAL, expect false
-     *  * Feed 0xF0 to transition to INITIAL_END_FOUND, expect false
+     *  * Feed 0xF0 to transition to END_FOUND, expect false
      *  * Feed 0x0F to transition to START_FOUND, expect false
      *  * Feed 17 to transition to IN_DATA, expect false
      *  * Feed 0xF0 to transition to IN_DATA_END_FOUND, expect false
@@ -173,7 +173,7 @@ TEST(TEST_NAME, decode__fcs_decode) {
     /*
      * Flight-Controller-Set-Point min power test:
      *  * Initialize with message_id as 0
-     *  * Feed 0xF0 to transition to INITIAL_END_FOUND, expect false
+     *  * Feed 0xF0 to transition to END_FOUND, expect false
      *  * Feed 0x0F to transition to START_FOUND, expect false
      *  * Feed 0 to transition to IN_DATA, expect false
      *  * Feed data from fcs_min_power.bin, expect false for every byte
@@ -211,7 +211,7 @@ TEST(TEST_NAME, decode__fcs_min_power) {
     /*
      * Flight-Controller-Set-Point min power test:
      *  * Initialize with message_id as 0
-     *  * Feed 0xF0 to transition to INITIAL_END_FOUND, expect false
+     *  * Feed 0xF0 to transition to END_FOUND, expect false
      *  * Feed 0x0F to transition to START_FOUND, expect false
      *  * Feed 0 to transition to IN_DATA, expect false
      *  * Feed data from fcs_min_power.bin, expect false for every byte
@@ -249,7 +249,7 @@ TEST(TEST_NAME, decode__fcs_max_power) {
     /*
      * Flight-Controller-Set-Point min power test:
      *  * Initialize with message_id as 0
-     *  * Feed 0xF0 to transition to INITIAL_END_FOUND, expect false
+     *  * Feed 0xF0 to transition to END_FOUND, expect false
      *  * Feed 0x0F to transition to START_FOUND, expect false
      *  * Feed 0 to transition to IN_DATA, expect false
      *  * Feed data from fcs_max_power.bin, expect false for every byte
@@ -287,7 +287,7 @@ TEST(TEST_NAME, decode__fcs_min_pitch) {
     /*
      * Flight-Controller-Set-Point min power test:
      *  * Initialize with message_id as 0
-     *  * Feed 0xF0 to transition to INITIAL_END_FOUND, expect false
+     *  * Feed 0xF0 to transition to END_FOUND, expect false
      *  * Feed 0x0F to transition to START_FOUND, expect false
      *  * Feed 0 to transition to IN_DATA, expect false
      *  * Feed data from fcs_min_pitch.bin, expect false for every byte
@@ -325,7 +325,7 @@ TEST(TEST_NAME, decode__fcs_max_pitch) {
     /*
      * Flight-Controller-Set-Point min power test:
      *  * Initialize with message_id as 0
-     *  * Feed 0xF0 to transition to INITIAL_END_FOUND, expect false
+     *  * Feed 0xF0 to transition to END_FOUND, expect false
      *  * Feed 0x0F to transition to START_FOUND, expect false
      *  * Feed 0 to transition to IN_DATA, expect false
      *  * Feed data from fcs_max_pitch.bin, expect false for every byte
@@ -363,7 +363,7 @@ TEST(TEST_NAME, decode__fcs_min_roll) {
     /*
      * Flight-Controller-Set-Point min power test:
      *  * Initialize with message_id as 0
-     *  * Feed 0xF0 to transition to INITIAL_END_FOUND, expect false
+     *  * Feed 0xF0 to transition to END_FOUND, expect false
      *  * Feed 0x0F to transition to START_FOUND, expect false
      *  * Feed 0 to transition to IN_DATA, expect false
      *  * Feed data from fcs_min_roll.bin, expect false for every byte
@@ -401,7 +401,7 @@ TEST(TEST_NAME, decode__fcs_max_roll) {
     /*
      * Flight-Controller-Set-Point min power test:
      *  * Initialize with message_id as 0
-     *  * Feed 0xF0 to transition to INITIAL_END_FOUND, expect false
+     *  * Feed 0xF0 to transition to END_FOUND, expect false
      *  * Feed 0x0F to transition to START_FOUND, expect false
      *  * Feed 0 to transition to IN_DATA, expect false
      *  * Feed data from fcs_max_roll.bin, expect false for every byte
