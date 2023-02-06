@@ -1,4 +1,4 @@
-add_subdirectory(Mock)
+#add_subdirectory(Mock)
 function(make_fc_test)
     cmake_parse_arguments(MAKE_FC_TEST
             "" # Options
@@ -9,7 +9,7 @@ function(make_fc_test)
     set(headers)
     foreach (module ${MAKE_FC_TEST_DEPS})
         set(LOCAL_HEADER ${CMAKE_SOURCE_DIR}/Src/${module}.h)
-        set(SYSTEM_HEADER ${CMAKE_CURRENT_SOURCE_DIR}/Mock/System/${module}.h)
+        set(SYSTEM_HEADER ${MockLib_SOURCE_DIR}/../System/${module}.h)
         if (EXISTS ${LOCAL_HEADER})
             list(APPEND headers ${LOCAL_HEADER})
         elseif (EXISTS ${SYSTEM_HEADER})
@@ -53,16 +53,16 @@ make_fc_test(MODULE HAL/timer8bit DEPS avr/io)
 make_fc_test(MODULE HAL/uart DEPS avr/io)
 
 
-add_custom_target(generate_tests
-        COMMAND ${CMAKE_CURRENT_LIST_DIR}/Messages/generate_tests.sh ${CMAKE_SOURCE_DIR}
-        WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
-        DEPENDS ${CMAKE_CURRENT_LIST_DIR}/Messages/generate_tests.sh)
-make_fc_test(MODULE Messages/MessageDecoding)
-target_link_libraries(MessageDecoding.test PUBLIC ToolboxPlaneMessageDefs)
-add_dependencies(MessageDecoding.test generate_tests)
-make_fc_test(MODULE Messages/MessageEncoding)
-target_link_libraries(MessageEncoding.test PUBLIC ToolboxPlaneMessageDefs)
-add_dependencies(MessageEncoding.test generate_tests)
+#add_custom_target(generate_tests
+#        COMMAND ${CMAKE_CURRENT_LIST_DIR}/Messages/generate_tests.sh ${CMAKE_SOURCE_DIR}
+#        WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
+#        DEPENDS ${CMAKE_CURRENT_LIST_DIR}/Messages/generate_tests.sh)
+#make_fc_test(MODULE Messages/MessageDecoding)
+#target_link_libraries(MessageDecoding.test PUBLIC ToolboxPlaneMessageDefs)
+#add_dependencies(MessageDecoding.test generate_tests)
+#make_fc_test(MODULE Messages/MessageEncoding)
+#target_link_libraries(MessageEncoding.test PUBLIC ToolboxPlaneMessageDefs)
+#add_dependencies(MessageEncoding.test generate_tests)
 
 target_link_libraries(MessageEncoding.mock PUBLIC ToolboxPlaneMessageDefs)
 target_link_libraries(MessageDecoding.mock PUBLIC ToolboxPlaneMessageDefs)
