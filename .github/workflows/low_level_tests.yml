@@ -45,11 +45,11 @@ jobs:
       - uses: actions/upload-artifact@v3
         with:
           name: RunResults
-          path: build
+          path: build/Tests/LowLevel
       - uses: actions/upload-artifact@v3
         with:
           name: ${{ matrix.compiler.cc }}
-          path: build/Tests/LowLevel
+          path: build
 
   Report:
     runs-on: ubuntu-latest
