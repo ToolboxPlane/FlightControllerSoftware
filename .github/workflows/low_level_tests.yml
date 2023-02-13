@@ -83,15 +83,9 @@ jobs:
     needs: Run-Tests
     if: ${{ always() }}
     steps:
-      - uses: actions/checkout@v2
-        with:
-          submodules: recursive
       - uses: actions/download-artifact@v3
         with:
           name: gcc-11
-      - uses: actions/download-artifact@v3
-        with:
-          name: nanopb_gcc-11
       - run: tree
       - name: Install dependencies
         run: |

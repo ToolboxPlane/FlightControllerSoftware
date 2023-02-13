@@ -17,8 +17,7 @@ TEST(TEST_NAME, encode__buffer_format) {
      */
     std::array<uint8_t, ToolboxPlaneMessages_FlightController_size + 3> buf{};
     ToolboxPlaneMessages_FlightController data{};
-    EXPECT_EQ(message_encode(buf.data(), buf.size(), ToolboxPlaneMessages_FlightController_fields, &data, 17),
-              3);
+    EXPECT_EQ(message_encode(buf.data(), buf.size(), ToolboxPlaneMessages_FlightController_fields, &data, 17), 3);
     EXPECT_EQ(buf[0], 0x0F);
     EXPECT_EQ(buf[1], 17);
     EXPECT_EQ(buf[2], 0xF0);
@@ -32,33 +31,30 @@ TEST(TEST_NAME, encode__fc_encode) {
      *  * Second byte: 17
      *  * Third byte: 0xF0
      */
-    ToolboxPlaneMessages_FlightController data{
-            .has_imu = true,
-            .imu = {
-                    .imu_ok = true,
-                    .roll_mul_16 = 17,
-                    .pitch_mul_16 = -18,
-                    .yaw_mul_16 = 19,
-                    .dRoll_mul_16 = -20,
-                    .dPitch_mul_16 = 21,
-                    .dYaw_mul_16 = -22,
-                    .accX_mul_100 = 23,
-                    .accY_mul_100 = -24,
-                    .accZ_mul_100 = 25
-            },
-            .has_remote = true,
-            .remote = {
-                    .remote_ok = false,
-                    .throttleMixed = -26,
-                    .elevonLeftMixed = 27,
-                    .elevonRightMixed = -28,
-                    .isArmed = true,
-                    .overrideActive = false,
-            },
-            .motor = 29,
-            .servoLeft = 30,
-            .servoRight = 31
-    };
+    ToolboxPlaneMessages_FlightController data{.has_imu = true,
+                                               .imu = {.imu_ok = true,
+                                                       .roll_mul_16 = 17,
+                                                       .pitch_mul_16 = -18,
+                                                       .yaw_mul_16 = 19,
+                                                       .dRoll_mul_16 = -20,
+                                                       .dPitch_mul_16 = 21,
+                                                       .dYaw_mul_16 = -22,
+                                                       .accX_mul_100 = 23,
+                                                       .accY_mul_100 = -24,
+                                                       .accZ_mul_100 = 25},
+                                               .has_remote = true,
+                                               .remote =
+                                                       {
+                                                               .remote_ok = false,
+                                                               .throttleMixed = -26,
+                                                               .elevonLeftMixed = 27,
+                                                               .elevonRightMixed = -28,
+                                                               .isArmed = true,
+                                                               .overrideActive = false,
+                                                       },
+                                               .motor = 29,
+                                               .servoLeft = 30,
+                                               .servoRight = 31};
 
     std::ifstream stream{"fc_encode.bin"};
     using c_stream_it = std::istreambuf_iterator<char>;
@@ -74,7 +70,7 @@ TEST(TEST_NAME, encode__fc_encode) {
     std::array<uint8_t, ToolboxPlaneMessages_FlightController_size + 3> buf{};
     EXPECT_EQ(message_encode(buf.data(), buf.size(), ToolboxPlaneMessages_FlightController_fields, &data, 17),
               expectedData.size());
-    for (auto idx =0U; idx <expectedData.size(); ++idx) {
+    for (auto idx = 0U; idx < expectedData.size(); ++idx) {
         EXPECT_EQ(buf[idx], expectedData[idx]);
     }
 }
