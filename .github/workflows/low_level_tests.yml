@@ -96,8 +96,7 @@ jobs:
       - name: Run LCOV
         run: |
           lcov --no-external --capture --directory build -o local.info
-          lcov --no-external --capture --directory Src/Messages/External/nanopb/tests/build -o nanopb.info
-          lcov -a local.info -a nanopb.info -o coverage.info
+          lcov -a local.info -o coverage.info
       - name: Gen HTML
         run: genhtml coverage.info --output-directory coverage
       - name: Move HTML
