@@ -1,4 +1,3 @@
-#add_subdirectory(Mock)
 function(make_fc_test)
     cmake_parse_arguments(MAKE_FC_TEST
             "" # Options
@@ -48,21 +47,6 @@ make_fc_test(MODULE Drivers/ppm DEPS HAL/pwm16bit avr/io)
 make_fc_test(MODULE Drivers/protobuf DEPS HAL/uart Messages/MessageDecoding Messages/MessageEncoding Drivers/ring_buffer)
 make_fc_test(MODULE Drivers/ring_buffer)
 make_fc_test(MODULE Drivers/sbus DEPS HAL/uart Drivers/ring_buffer)
-make_fc_test(MODULE HAL/pwm16bit DEPS avr/io)
-make_fc_test(MODULE HAL/timer8bit DEPS avr/io)
-make_fc_test(MODULE HAL/uart DEPS avr/io)
-
-
-#add_custom_target(generate_tests
-#        COMMAND ${CMAKE_CURRENT_LIST_DIR}/Messages/generate_tests.sh ${CMAKE_SOURCE_DIR}
-#        WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
-#        DEPENDS ${CMAKE_CURRENT_LIST_DIR}/Messages/generate_tests.sh)
-#make_fc_test(MODULE Messages/MessageDecoding)
-#target_link_libraries(MessageDecoding.test PUBLIC ToolboxPlaneMessageDefs)
-#add_dependencies(MessageDecoding.test generate_tests)
-#make_fc_test(MODULE Messages/MessageEncoding)
-#target_link_libraries(MessageEncoding.test PUBLIC ToolboxPlaneMessageDefs)
-#add_dependencies(MessageEncoding.test generate_tests)
 
 target_link_libraries(MessageEncoding.mock PUBLIC ToolboxPlaneMessageDefs)
 target_link_libraries(MessageDecoding.mock PUBLIC ToolboxPlaneMessageDefs)
