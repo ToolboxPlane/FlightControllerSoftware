@@ -20,5 +20,5 @@ else ()
     message(STATUS "Not building for AVR")
 endif ()
 
-add_subdirectory(Tests)
 add_subdirectory(Src)
+add_subdirectory(Tests)

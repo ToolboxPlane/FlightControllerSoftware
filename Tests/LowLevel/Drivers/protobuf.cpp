@@ -19,7 +19,8 @@ TEST(TEST_NAME, init) {
 
     EXPECT_TRUE(uartHandle.functionGotCalled<uart_init>(0, 115200U, NONE, 1, std::ignore));
     EXPECT_TRUE(ringBufferHandle.functionGotCalled<ring_buffer_init>());
-    EXPECT_TRUE(decodeHandle.functionGotCalled<message_decoding_init>(std::ignore, 0x40));
+    EXPECT_TRUE(decodeHandle.functionGotCalled<message_decoding_init>(
+            std::ignore, 0x40, ToolboxPlaneMessages_FlightControllerSetpoint_fields));
 }
 
 TEST(TEST_NAME, send_fc) {
@@ -92,7 +93,7 @@ TEST(TEST_NAME, rx_fill_buffer) {
     EXPECT_TRUE(ringBufferHandle.functionGotCalled<ring_buffer_put>(std::ignore, 54));
 }
 
-TEST(TEST_NAME, available_read_buffer) {
+TEST(TEST_NAME, available__read_buffer) {
     auto uartHandle = mock::uart.getHandle();
     auto decodeHandle = mock::MessageDecoding.getHandle();
     auto ringBufferHandle = mock::ring_buffer.getHandle();
@@ -109,18 +110,14 @@ TEST(TEST_NAME, available_read_buffer) {
         return count <= 4;
     });
     decodeHandle.overrideFunc<message_decoding_decode>([](message_decoding_data_t * /*messageDecodingData*/,
-                                                          uint8_t /*data*/, const pb_msgdesc_t * /*fields*/,
+                                                          uint8_t /*data*/,
                                                           void * /*message*/) -> bool { return false; });
 
     protobuf_available();
-    EXPECT_TRUE(decodeHandle.functionGotCalled<message_decoding_decode>(
-            std::ignore, 1, &ToolboxPlaneMessages_FlightControllerSetpoint_msg, std::ignore));
-    EXPECT_TRUE(decodeHandle.functionGotCalled<message_decoding_decode>(
-            std::ignore, 2, &ToolboxPlaneMessages_FlightControllerSetpoint_msg, std::ignore));
-    EXPECT_TRUE(decodeHandle.functionGotCalled<message_decoding_decode>(
-            std::ignore, 3, &ToolboxPlaneMessages_FlightControllerSetpoint_msg, std::ignore));
-    EXPECT_TRUE(decodeHandle.functionGotCalled<message_decoding_decode>(
-            std::ignore, 4, &ToolboxPlaneMessages_FlightControllerSetpoint_msg, std::ignore));
+    EXPECT_TRUE(decodeHandle.functionGotCalled<message_decoding_decode>(std::ignore, 1, std::ignore));
+    EXPECT_TRUE(decodeHandle.functionGotCalled<message_decoding_decode>(std::ignore, 2, std::ignore));
+    EXPECT_TRUE(decodeHandle.functionGotCalled<message_decoding_decode>(std::ignore, 3, std::ignore));
+    EXPECT_TRUE(decodeHandle.functionGotCalled<message_decoding_decode>(std::ignore, 4, std::ignore));
 }
 
 TEST(TEST_NAME, receive_pb_no_decode) {
@@ -141,7 +138,7 @@ TEST(TEST_NAME, receive_pb_no_decode) {
             });
 
     decodeHandle.overrideFunc<message_decoding_decode>([](message_decoding_data_t * /*messageDecodingData*/,
-                                                          uint8_t /*data*/, const pb_msgdesc_t * /*fields*/,
+                                                          uint8_t /*data*/,
                                                           void * /*message*/) -> bool { return false; });
 
     EXPECT_FALSE(protobuf_available());
@@ -165,7 +162,7 @@ TEST(TEST_NAME, receive_pb_yes_decode) {
             });
 
     decodeHandle.overrideFunc<message_decoding_decode>([](message_decoding_data_t * /*messageDecodingData*/,
-                                                          uint8_t /*data*/, const pb_msgdesc_t * /*fields*/,
+                                                          uint8_t /*data*/,
                                                           void * /*message*/) -> bool { return true; });
 
     EXPECT_TRUE(protobuf_available());
@@ -188,15 +185,14 @@ TEST(TEST_NAME, receive_pb_decode_data) {
                 return count == 1;
             });
 
-    decodeHandle.overrideFunc<message_decoding_decode>([](message_decoding_data_t * /*messageDecodingData*/,
-                                                          uint8_t /*data*/, const pb_msgdesc_t * /*fields*/,
-                                                          void *message) -> bool {
-        auto fcData = static_cast<ToolboxPlaneMessages_FlightControllerSetpoint *>(message);
-        fcData->motor = 1337;
-        fcData->pitch = 17;
-        fcData->roll = 34;
-        return true;
-    });
+    decodeHandle.overrideFunc<message_decoding_decode>(
+            [](message_decoding_data_t * /*messageDecodingData*/, uint8_t /*data*/, void *message) -> bool {
+                auto fcData = static_cast<ToolboxPlaneMessages_FlightControllerSetpoint *>(message);
+                fcData->motor = 1337;
+                fcData->pitch = 17;
+                fcData->roll = 34;
+                return true;
+            });
 
     EXPECT_TRUE(protobuf_available());
     EXPECT_EQ(protobuf_get().motor, 1337);

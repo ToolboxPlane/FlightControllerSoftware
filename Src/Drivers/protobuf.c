@@ -28,7 +28,7 @@ static void uart_callback(uint8_t data) {
 }
 
 void protobuf_init(void) {
-    message_decoding_init(&message_decoding_data, FC_SP_ID);
+    message_decoding_init(&message_decoding_data, FC_SP_ID, ToolboxPlaneMessages_FlightControllerSetpoint_fields);
     ring_buffer_data = ring_buffer_init();
     uart_init(UART_ID, UART_BAUD, NONE, 1, uart_callback);
 }
@@ -43,8 +43,7 @@ bool protobuf_available(void) {
     bool res = false;
     uint8_t data = 0;
     while (ring_buffer_get(&ring_buffer_data, &data)) {
-        if (message_decoding_decode(&message_decoding_data, data, &ToolboxPlaneMessages_FlightControllerSetpoint_msg,
-                                    &setpoint_message)) {
+        if (message_decoding_decode(&message_decoding_data, data, &setpoint_message)) {
             res = true;
         }
     }

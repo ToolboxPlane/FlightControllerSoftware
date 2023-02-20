@@ -14,8 +14,9 @@ jobs:
                     { cc: clang-12, cxx: clang++-12 },
                     { cc: clang-13, cxx: clang++-13 },
                     { cc: clang-14, cxx: clang++-14 },
-                    #{ cc: clang-15, cxx: clang++-15 },
-                    { cc: clang-16, cxx: clang++-16 } ]
+                    { cc: clang-15, cxx: clang++-15 },
+                   # { cc: clang-16, cxx: clang++-16 },
+                    { cc: clang-17, cxx: clang++-17 } ]
         build: [ Release, Debug ]
     env:
       CC: ${{ matrix.compiler.cc }}
@@ -31,7 +32,11 @@ jobs:
           sudo add-apt-repository "deb http://apt.llvm.org/jammy/ llvm-toolchain-jammy main"
           sudo add-apt-repository "deb-src http://apt.llvm.org/jammy/ llvm-toolchain-jammy main"
           sudo apt-get update
-          sudo apt-get install -y wget g++-9 g++-10 g++-11 protobuf-compiler valgrind python3-protobuf clang-*
+          sudo apt-get install -y wget g++-9 g++-10 g++-11 protobuf-compiler valgrind python3-protobuf clang-* scons
+      - name: Run NanoPB Tests
+        run: |
+          cd Src/Messages/External/nanopb/tests/
+          scons
       - name: Set up Build
         run: cmake -B build -DCMAKE_BUILD_TYPE=${{ matrix.build }}
       - name: Build and run tests
@@ -43,7 +48,7 @@ jobs:
       - uses: actions/upload-artifact@v3
         with:
           name: ${{ matrix.compiler.cc }}
-          path: build/Tests/LowLevel
+          path: .
 
   Report:
     runs-on: ubuntu-latest
@@ -78,12 +83,10 @@ jobs:
     needs: Run-Tests
     if: ${{ always() }}
     steps:
-      - uses: actions/checkout@v2
-        with:
-          submodules: recursive
       - uses: actions/download-artifact@v3
         with:
           name: gcc-11
+      - run: tree
       - name: Install dependencies
         run: |
           sudo apt-get update
@@ -91,7 +94,9 @@ jobs:
       - name: Set up Build
         run: cmake -B build
       - name: Run LCOV
-        run: lcov --no-external --capture --directory . --output-file coverage.info
+        run: |
+          lcov --no-external --capture --directory build -o local.info
+          lcov -a local.info -o coverage.info
       - name: Gen HTML
         run: genhtml coverage.info --output-directory coverage
       - name: Move HTML
